@@ -1,0 +1,104 @@
+.register-container {
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to right, #ffedea, #fffaf5);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.register-card {
+  padding: 2.5rem 2rem;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+}
+
+h2 {
+  margin-bottom: 0.3rem;
+  color: #ff5722;
+  font-size: 1.8rem;
+}
+
+.subtext {
+  font-size: 0.95rem;
+  color: #888;
+  margin-bottom: 1.5rem;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 2.5rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  transition: 0.3s;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: #888;
+}
+
+.eye-toggle {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #888;
+}
+
+.register-btn {
+  width: 100%;
+  background-color: #ff5722;
+  color: white;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 1rem;
+}
+
+.register-btn:hover {
+  background-color: #e64a19;
+}
+
+.message {
+  margin-top: 1rem;
+  color: #cc0000;
+  font-weight: bold;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.redirect-text {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.redirect-text a {
+  color: #ff5722;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
