@@ -33,7 +33,10 @@ function Chatbot() {
       const res = await fetch("https://capstone-backend-kiax.onrender.com/chatbot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userText }),
+        body: JSON.stringify({
+          message: userText,
+          userName: userName
+        }),
       });
       const data = await res.json();
 
