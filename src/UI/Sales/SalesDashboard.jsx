@@ -39,7 +39,7 @@ function SalesDashboard() {
 
   const fetchSales = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/sales');
+      const res = await axios.get('https://capstone-backend-kiax.onrender.com/sales');
       setSales(res.data);
     } catch {
       alert('Failed to load sales');
@@ -48,7 +48,7 @@ function SalesDashboard() {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/products');
+      const res = await axios.get('https://capstone-backend-kiax.onrender.com/products');
       setProducts(res.data);
     } catch {
       alert('Failed to load products');
@@ -98,7 +98,7 @@ function SalesDashboard() {
 
   const updateStatus = async (id, newStatus, reason = '') => {
     try {
-      await axios.put(`http://localhost:5000/sales/${id}/status`, { status: newStatus, reason });
+      await axios.put(`https://capstone-backend-kiax.onrender.com/sales/${id}/status`, { status: newStatus, reason });
       fetchSales();
     } catch {
       alert('Failed to update status');
@@ -132,7 +132,7 @@ function SalesDashboard() {
     const formData = new FormData();
     formData.append('qrImage', qrFile);
     try {
-      await axios.post('http://localhost:5000/admin/upload-qr', formData, {
+      await axios.post('https://capstone-backend-kiax.onrender.com/admin/upload-qr', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       showToast('QR image uploaded successfully');
@@ -285,7 +285,7 @@ function SalesDashboard() {
               <button className="checkout-button cancel" onClick={async () => {
                 if (!cancelReason.trim()) return alert('Please enter a reason');
                 try {
-                  await axios.put(`http://localhost:5000/sales/${cancelingSaleId}/status`, { status: 'cancelled', reason: cancelReason, cancelled_by: user.id });
+                  await axios.put(`https://capstone-backend-kiax.onrender.com/sales/${cancelingSaleId}/status`, { status: 'cancelled', reason: cancelReason, cancelled_by: user.id });
                   setShowCancelModal(false); setCancelReason(''); setCancelingSaleId(null); fetchSales();
                 } catch { alert('Failed to cancel order'); }
               }}>Confirm</button>

@@ -37,7 +37,7 @@ function PaymentModal({
 
     setIsUploading(true);
     try {
-      const res = await axios.post("http://localhost:5000/upload-receipt", formData, {
+      const res = await axios.post("https://capstone-backend-kiax.onrender.com/upload-receipt", formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
       return res.data.url; // assume backend returns { url: "http://..." }
@@ -84,7 +84,7 @@ function PaymentModal({
         customer_name: user.fullname,
       };
 
-      const createdSale = await axios.post("http://localhost:5000/sales", salePayload);
+      const createdSale = await axios.post("https://capstone-backend-kiax.onrender.com/sales", salePayload);
 
       localStorage.setItem("orderSuccess", "true");
       localStorage.setItem("recentOrderId", String(createdSale.data.saleId));

@@ -13,7 +13,7 @@ function ProfileTab({ user, setUser }) {
     if (!newContact.trim()) return alert("📵 Contact can't be empty");
     try {
       setUpdatingContact(true);
-      await axios.put(`http://localhost:5000/users/${user.id}/contact`, {
+      await axios.put(`https://capstone-backend-kiax.onrender.com/users/${user.id}/contact`, {
         contact: newContact,
       });
       const updatedUser = { ...user, contact: newContact };
@@ -31,7 +31,7 @@ function ProfileTab({ user, setUser }) {
     if (!newPassword.trim()) return alert("Password can't be empty");
     try {
       setSavingPassword(true);
-      await axios.put(`http://localhost:5000/users/${user.id}/password`, {
+      await axios.put(`https://capstone-backend-kiax.onrender.com/users/${user.id}/password`, {
         password: newPassword,
       });
       alert("✅ Password updated!");

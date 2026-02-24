@@ -13,8 +13,10 @@ function LoginForm() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
+      // const res = await axios.post(
+      //   'http://localhost:5000/login',
       const res = await axios.post(
-        'http://localhost:5000/login',
+        'https://capstone-backend-kiax.onrender.com/login',
         { username, password },
         { headers: { 'Content-Type': 'application/json' } }
       );

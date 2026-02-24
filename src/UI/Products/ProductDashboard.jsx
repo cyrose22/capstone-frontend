@@ -20,7 +20,7 @@ function ProductDashboard() {
   // Fetch products
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/products");
+      const res = await axios.get("https://capstone-backend-kiax.onrender.com/products");
       const normalized = (res.data || []).map((p) => {
         const variants = (p.variants || []).map((v) => ({
           id: v.id,
@@ -168,7 +168,7 @@ function ProductDashboard() {
 
     try {
       if (editingId !== null) {
-        await axios.put(`http://localhost:5000/products/${editingId}`, {
+        await axios.put(`https://capstone-backend-kiax.onrender.com/products/${editingId}`, {
           name,
           price: parseFloat(price),
           image,
@@ -183,7 +183,7 @@ function ProductDashboard() {
             ? mappedVariants[0].qty
             : 0;
 
-        await axios.post("http://localhost:5000/products", {
+        await axios.post("https://capstone-backend-kiax.onrender.com/products", {
           name,
           price: parseFloat(price),
           image,
@@ -223,7 +223,7 @@ function ProductDashboard() {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this product?")) return;
     try {
-      await axios.delete(`http://localhost:5000/products/${id}`);
+      await axios.delete(`https://capstone-backend-kiax.onrender.com/products/${id}`);
       fetchProducts();
     } catch {
       alert("Failed to delete product");

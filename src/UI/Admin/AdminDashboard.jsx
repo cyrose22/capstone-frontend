@@ -28,7 +28,7 @@ function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/users');
+      const res = await axios.get('https://capstone-backend-kiax.onrender.com/users');
       setUsers(res.data);
     } catch {
       alert('Failed to load users');
@@ -39,7 +39,7 @@ function AdminDashboard() {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
     try {
       setDeletingId(id);
-      await axios.delete(`http://localhost:5000/users/${id}`);
+      await axios.delete(`https://capstone-backend-kiax.onrender.com/users/${id}`);
       fetchUsers();
     } catch {
       alert('Delete failed');
@@ -65,7 +65,7 @@ function AdminDashboard() {
         return;
       }
       // demote admin to staff
-      axios.put(`http://localhost:5000/users/${user.id}/role`, { role: 'staff' })
+      axios.put(`https://capstone-backend-kiax.onrender.com/users/${user.id}/role`, { role: 'staff' })
         .then(() => {
           alert('Admin demoted to Staff');
           fetchUsers();
@@ -76,7 +76,7 @@ function AdminDashboard() {
 
     if (user.role === 'staff') {
       // promote staff to admin
-      axios.put(`http://localhost:5000/users/${user.id}/role`, { role: 'admin' })
+      axios.put(`https://capstone-backend-kiax.onrender.com/users/${user.id}/role`, { role: 'admin' })
         .then(() => {
           alert('Staff promoted to Admin');
           fetchUsers();
@@ -90,7 +90,7 @@ function AdminDashboard() {
   const handleStaffRegister = async () => {
     try {
       setRegistering(true);
-      await axios.post('http://localhost:5000/register', {
+      await axios.post('https://capstone-backend-kiax.onrender.com/register', {
         fullname: newStaff.fullname,
         username: newStaff.username,
         password: newStaff.password,
@@ -293,7 +293,7 @@ function AdminDashboard() {
                   if (!newPassword.trim()) return alert("Password can't be empty");
                   try {
                     setSaving(true);
-                    await axios.put(`http://localhost:5000/users/${editingUser.id}/password`, {
+                    await axios.put(`https://capstone-backend-kiax.onrender.com/users/${editingUser.id}/password`, {
                       password: newPassword,
                     });
                     alert('Password updated!');

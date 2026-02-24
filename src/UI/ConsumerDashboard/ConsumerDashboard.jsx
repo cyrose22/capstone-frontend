@@ -75,7 +75,7 @@ function ConsumerDashboard() {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/products");
+      const res = await axios.get("https://capstone-backend-kiax.onrender.com/products");
       setProducts(res.data);
     } catch (err) {
       console.error("Failed to load products:", err);
@@ -84,7 +84,7 @@ function ConsumerDashboard() {
 
   const fetchSales = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/sales/user/${user.id}`);
+      const res = await axios.get(`https://capstone-backend-kiax.onrender.com/sales/user/${user.id}`);
       const updatedSales = res.data;
 
       updatedSales.forEach((sale) => {
@@ -210,7 +210,7 @@ function ConsumerDashboard() {
     if (!newPassword.trim()) return alert("Password can't be empty");
     try {
       setSavingPassword(true);
-      await axios.put(`http://localhost:5000/users/${user.id}/password`, {
+      await axios.put(`https://capstone-backend-kiax.onrender.com/users/${user.id}/password`, {
         password: newPassword,
       });
       alert("Password updated!");

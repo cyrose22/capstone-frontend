@@ -25,14 +25,14 @@ function CancelOrderModal({
       const saleId = saleToCancel?.id || saleToCancel?.saleId;
       if (!saleId) throw new Error("Sale ID is missing");
 
-      await axios.put(`http://localhost:5000/sales/${saleId}/status`, {
+      await axios.put(`https://capstone-backend-kiax.onrender.com/sales/${saleId}/status`, {
         status: 'cancelled',
         reason: cancelReason,
         cancelled_by: user.id,
       });
 
       // Refresh sales
-      const updated = await axios.get(`http://localhost:5000/sales/user/${user.id}`);
+      const updated = await axios.get(`https://capstone-backend-kiax.onrender.com/sales/user/${user.id}`);
       setSalesHistory(enrichSalesWithImages(updated.data, products));
 
       onClose();

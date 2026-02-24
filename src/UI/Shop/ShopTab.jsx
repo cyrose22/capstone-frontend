@@ -28,7 +28,7 @@ function ShopTab({ addToCart }) {
   // fetch + normalize
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/products");
+      const res = await axios.get("https://capstone-backend-kiax.onrender.com/products");
       const normalized = (res.data || []).map((p) => {
         const variants = Array.isArray(p.variants) ? p.variants : [];
 

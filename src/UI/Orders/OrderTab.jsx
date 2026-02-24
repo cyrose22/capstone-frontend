@@ -324,11 +324,11 @@ function OrdersTab({
                   onClick={async () => {
                     try {
                       await axios.put(
-                        `http://localhost:5000/sales/${sale.id}/status`,
+                        `https://capstone-backend-kiax.onrender.com/sales/${sale.id}/status`,
                         { status: "completed" }
                       );
                       const updated = await axios.get(
-                        `http://localhost:5000/sales/user/${user.id}`
+                        `https://capstone-backend-kiax.onrender.com/sales/user/${user.id}`
                       );
                       setSalesHistory(enrichSalesWithImages(updated.data, products));
                     } catch {

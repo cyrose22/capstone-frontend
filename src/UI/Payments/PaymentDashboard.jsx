@@ -17,7 +17,7 @@
 
 //     if (paymentMethod === "QR") {
 //       axios
-//         .get("http://localhost:5000/api/admin/qr-code")
+//         .get("https://capstone-backend-kiax.onrender.com/api/admin/qr-code")
 //         .then((res) => {
 //           if (res.data?.url) setQrImage(res.data.url);
 //         })
@@ -61,7 +61,7 @@
 //         const uploadData = new FormData();
 //         uploadData.append("receipt", receiptFile);
 
-//         const uploadRes = await axios.post("http://localhost:5000/upload-receipt", uploadData);
+//         const uploadRes = await axios.post("https://capstone-backend-kiax.onrender.com/upload-receipt", uploadData);
 //         receiptUrl = uploadRes.data.url;
 //       }
 
@@ -74,7 +74,7 @@
 //         customer_name: user.fullname,
 //       };
 
-//       const createdSale = await axios.post("http://localhost:5000/sales", salePayload);
+//       const createdSale = await axios.post("https://capstone-backend-kiax.onrender.com/sales", salePayload);
 
 //       localStorage.setItem("orderSuccess", "true");
 //       localStorage.setItem("recentOrderId", String(createdSale.data.saleId));
@@ -463,7 +463,7 @@ const PaymentDashboard = ({
       customer_name: user.fullname,
     };
 
-    const createdSale = await axios.post("http://localhost:5000/sales", salePayload);
+    const createdSale = await axios.post("https://capstone-backend-kiax.onrender.com/sales", salePayload);
 
     localStorage.setItem("orderSuccess", "true");
     localStorage.setItem("recentOrderId", String(createdSale.data.saleId));
