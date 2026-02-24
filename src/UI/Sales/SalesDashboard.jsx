@@ -244,7 +244,7 @@ function SalesDashboard() {
                   <ul className="items-list">
                     {sale.items?.length ? sale.items.map((item, idx) => (
                       <li key={idx}>
-                        <img src={item.variant_image} alt={item.variant_name} style={{ width: '40px', height: '40px', marginRight: '6px', objectFit: 'cover', verticalAlign: 'middle' }} />
+                        <img src={item.variant_image || item.product_image} alt={item.variant_name || item.product_name} style={{ width: '40px', height: '40px', marginRight: '6px', objectFit: 'cover', verticalAlign: 'middle' }} />
                         <span className="item-name">{item.variant_name || item.name}</span> × {item.quantity} pcs.
                       </li>
                     )) : <li>No items</li>}
@@ -312,7 +312,7 @@ function SalesDashboard() {
                   {selectedSale.items.map((item, idx) => (
                     <tr key={idx}>
                       <td>
-                        <img src={item.variant_image} alt={item.variant_name} style={{ width: '40px', height: '40px', marginRight: '6px', objectFit: 'cover', verticalAlign: 'middle' }} />
+                        <img src={item.variant_image || item.product_image} alt={item.variant_name || item.product_name} style={{ width: '40px', height: '40px', marginRight: '6px', objectFit: 'cover', verticalAlign: 'middle' }} />
                         {item.variant_name || item.name}
                       </td>
                       <td>{item.quantity}</td>
