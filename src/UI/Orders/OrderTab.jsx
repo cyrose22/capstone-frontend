@@ -115,12 +115,16 @@ function OrdersTab({
                       v.variant_name === item.variant_name
                   ) || null;
 
+                // const imageSrc =
+                //   item.variantImage ||
+                //   item.image ||
+                //   item.variant_image ||
+                //   variant?.images?.[0] ||
+                //   product?.image;
                 const imageSrc =
-                  item.variantImage ||
-                  item.image ||
                   item.variant_image ||
-                  variant?.images?.[0] ||
-                  product?.image;
+                  item.product_image ||
+                  null;
 
                 return (
                   <div
@@ -166,7 +170,9 @@ function OrdersTab({
                       )}
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: "600" }}>{item.name}</div>
+                      <div style={{ fontWeight: "600" }}>
+                        {item.product_name}
+                      </div>
                       {(item.variantName || item.variant_name) && (
                         <div style={{ fontSize: "0.8rem", color: "#555" }}>
                           Variant: {item.variantName || item.variant_name}
