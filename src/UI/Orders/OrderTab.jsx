@@ -124,7 +124,7 @@ function OrdersTab({
                 const imageSrc =
                   item.variant_image ||
                   item.product_image ||
-                  null;
+                  null; 
 
                 return (
                   <div
