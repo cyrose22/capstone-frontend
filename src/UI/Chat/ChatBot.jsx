@@ -30,7 +30,7 @@ function Chatbot() {
     setLastUserInteraction(Date.now()); // reset idle timer
 
     try {
-      const res = await fetch("https://capstone-backend-kiax.onrender.com", {
+      const res = await fetch("https://capstone-backend-kiax.onrender.com/chatbot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userText }),
