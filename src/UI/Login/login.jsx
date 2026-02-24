@@ -6,90 +6,155 @@ import { useNavigate, Link } from 'react-router-dom';
 function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
+  const [useOtp, setUseOtp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // const res = await axios.post(
-      //   'http://localhost:5000/login',
       const res = await axios.post(
         'https://capstone-backend-kiax.onrender.com/login',
-        { username, password },
-        { headers: { 'Content-Type': 'application/json' } }
+        { username, password }
       );
 
-      const userData = res.data;
-
-      setMessage(userData.message);
-
-      // Store the full object
-      localStorage.setItem('user', JSON.stringify(userData));
-
-      // Store individual keys for quick access
-      localStorage.setItem('role', userData.role);
-      localStorage.setItem('username', userData.username);
-      localStorage.setItem('fullname', userData.fullname);
-      localStorage.setItem('id', userData.id);
-      localStorage.setItem('contact', userData.contact);
-
-      // Redirect based on role
-      if (userData.role === 'admin' || userData.role === 'staff') {
-        navigate('/admin-dashboard');
-      } else {
-        navigate('/consumer-dashboard');
-      }
+      handleSuccess(res.data);
     } catch (err) {
       setMessage(err.response?.data?.message || 'Login failed');
+    }
+  };
+
+  const handleSendOtp = async () => {
+    try {
+      await axios.post(
+        'https://capstone-backend-kiax.onrender.com/send-login-otp',
+        { username }
+      );
+      setOtpSent(true);
+      setMessage('OTP sent to your email/phone');
+    } catch (err) {
+      setMessage('Failed to send OTP');
+    }
+  };
+
+  const handleOtpLogin = async () => {
+    try {
+      const res = await axios.post(
+        'https://capstone-backend-kiax.onrender.com/login-otp',
+        { username, otp }
+      );
+      handleSuccess(res.data);
+    } catch (err) {
+      setMessage('Invalid OTP');
+    }
+  };
+
+  const handleSuccess = (userData) => {
+    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('role', userData.role);
+
+    if (userData.role === 'admin' || userData.role === 'staff') {
+      navigate('/admin-dashboard');
+    } else {
+      navigate('/consumer-dashboard');
     }
   };
 
   return (
     <div className="login-container">
       <div className="login-card">
-        <h1 className="brand">Oscar D'Gr8</h1>
-        <p className="subtitle">Pet Supplies Trading</p>
 
-        <form onSubmit={handleLogin}>
-          <div className="form-group">
+        <div className="brand-section">
+          <h1>Oscar D'Great</h1>
+          <p>Pet Supplies Trading</p>
+        </div>
+
+        <div className="login-tabs">
+          <button
+            className={!useOtp ? 'active' : ''}
+            onClick={() => setUseOtp(false)}
+          >
+            Password
+          </button>
+          <button
+            className={useOtp ? 'active' : ''}
+            onClick={() => setUseOtp(true)}
+          >
+            OTP Login
+          </button>
+        </div>
+
+        {!useOtp ? (
+          <form onSubmit={handleLogin}>
             <input
               type="text"
+              placeholder="Username or Email"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter username"
               required
             />
-          </div>
 
-          <div className="form-group password-group">
-            <input
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password"
-              required
-              className="password-input"
-            />
-            <button
-              type="button"
-              className="toggle-password-btn"
-              onClick={() => setShowPassword((prev) => !prev)}
-            >
-              {showPassword ? '🙈' : '👁️'}
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <span onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? '🙈' : '👁️'}
+              </span>
+            </div>
+
+            <button type="submit" className="primary-btn">
+              Login
             </button>
+
+            <div className="extra-links">
+              <Link to="/forgot-password">Forgot Password?</Link>
+            </div>
+          </form>
+        ) : (
+          <div className="otp-section">
+            <input
+              type="text"
+              placeholder="Username or Email"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+
+            {!otpSent ? (
+              <button className="primary-btn" onClick={handleSendOtp}>
+                Send OTP
+              </button>
+            ) : (
+              <>
+                <input
+                  type="text"
+                  placeholder="Enter OTP"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                />
+                <button className="primary-btn" onClick={handleOtpLogin}>
+                  Verify & Login
+                </button>
+              </>
+            )}
           </div>
-
-
-          <button type="submit" className="login-btn">Login</button>
-        </form>
+        )}
 
         <p className="message">{message}</p>
 
-        <p className="register-link">
-          Don’t have an account? <Link to="/register">Register here</Link>
-        </p>
+        <div className="register-link">
+          Don’t have an account?
+          <Link to="/register"> Register here</Link>
+        </div>
+
       </div>
     </div>
   );

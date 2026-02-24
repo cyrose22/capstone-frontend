@@ -1602,6 +1602,102 @@ button:disabled {
   cursor: pointer;
 }
 
+/* ================= TRUE MOBILE LAYOUT ================= */
+
+@media (max-width: 768px) {
+
+  /* Hide sidebar by default */
+  .sidebar {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    width: 240px;
+    height: 100%;
+    z-index: 1000;
+    transition: left 0.3s ease;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  /* Make layout vertical */
+  .layout {
+    flex-direction: column;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+    width: 100%;
+    padding: 1rem;
+  }
+
+  /* Compact header */
+  .top-header {
+    padding: 0.8rem 1rem;
+  }
+
+  .top-header h2 {
+    font-size: 18px;
+  }
+
+  /* Reduce welcome text size */
+  .welcome-title {
+    font-size: 22px !important;
+  }
+
+  /* Product grid: 2 columns */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+  }
+
+  .product-card {
+    width: 100%;
+    padding: 0.8rem;
+  }
+
+  .product-card img {
+    height: 140px;
+  }
+
+  .product-card h4 {
+    font-size: 14px;
+  }
+
+  .product-card p {
+    font-size: 13px;
+  }
+
+  .product-card button {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  /* Reduce section spacing */
+  .checkout-summary,
+  .checkout-history {
+    padding: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  /* Order cards stack properly */
+  .order-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Fix floating chat button overlap */
+  .chat-button,
+  .floating-chat {
+    bottom: 20px;
+    right: 20px;
+  }
+
+}
+
 
 
 
