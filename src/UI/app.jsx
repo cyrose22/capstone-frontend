@@ -19,7 +19,7 @@ import './app.css';
 // Dashboard layout with sidebar
 // ==========================
 function DashboardLayout() {
-  const role = localStorage.getItem('role');
+  const role = localStorage.getItem('role');   // ✅ FIXED
   const showSidebar = role === 'admin' || role === 'staff';
 
   return (
@@ -40,25 +40,18 @@ function DashboardLayout() {
 // 🔐 Route guard
 // ==========================
 function ProtectedRoute({ children }) {
-  const token = localStorage.getItem('token');
-
-  // If no token → redirect to login
-  if (!token) {
-    return <Navigate to="/" replace />;
-  }
-
-  return children;
+  const token = localStorage.getItem('token');   // ✅ FIXED
+  return token ? children : <Navigate to="/" />;
 }
 
 
 // ==========================
-// Wrapper to check route & auth
+// Wrapper so we can check route & auth
 // ==========================
 function AppWrapper() {
   const location = useLocation();
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token');   // ✅ FIXED
 
-  // Hide chatbot on login/register OR if not logged in
   const hideChatBot =
     location.pathname === '/' ||
     location.pathname === '/register' ||
@@ -95,7 +88,6 @@ function AppWrapper() {
 
       </Routes>
 
-      {/* Chatbot only when logged in */}
       {!hideChatBot && <Chatbot />}
     </>
   );
