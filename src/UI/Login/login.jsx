@@ -163,18 +163,18 @@ function LoginForm() {
   };
 
   const handleSuccess = (userData) => {
-    if (!userData) {
-      toast.error("Login failed. No user data received.");
-      return;
-    }
-
     const role = userData.role?.toLowerCase().trim();
 
-    localStorage.setItem('id', userData.id);
-    localStorage.setItem('username', userData.username);
-    localStorage.setItem('fullname', userData.fullname);
-    localStorage.setItem('role', role);
-    localStorage.setItem('token', userData.token);
+    const userObject = {
+      id: userData.id,
+      username: userData.username,
+      fullname: userData.fullname,
+      role: role,
+      token: userData.token
+    };
+
+    // ✅ Save as ONE object
+    localStorage.setItem('user', JSON.stringify(userObject));
 
     if (role === 'admin' || role === 'staff') {
       navigate('/dashboard/admin');
