@@ -149,3 +149,14 @@ input::placeholder {
 .register-link a:hover {
   text-decoration: underline;
 }
+
+.forgot-link {
+  color: #ff3b3b;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 14px;
+}
+
+.forgot-link:hover {
+  opacity: 0.8;
+}
