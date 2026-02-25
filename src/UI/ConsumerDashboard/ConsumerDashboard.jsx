@@ -215,10 +215,10 @@ function ConsumerDashboard() {
 
           </div>
         </div>
-
+{/* 
         <div className="store-search">
           <input placeholder="Search products..." />
-        </div>
+        </div> */}
       </header>
 
       <section className="store-hero">
