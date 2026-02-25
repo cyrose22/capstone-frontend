@@ -54,6 +54,7 @@ function ConsumerDashboard() {
   const [showPassword, setShowPassword] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Effects
   useEffect(() => {
@@ -228,9 +229,8 @@ function ConsumerDashboard() {
     <div className="consumer-layout">
 
       {/* Sidebar */}
-      <aside className="consumer-sidebar">
+      <aside className={`consumer-sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="sidebar-brand">
-          <img src={logo} alt="Oscar D'Great Logo" className="sidebar-logo" />
           <h3>Oscar D'Great</h3>
           <p>Pet Trading Supplies</p>
         </div>
@@ -239,7 +239,10 @@ function ConsumerDashboard() {
           {["shop", "orders", "profile"].map((tab) => (
             <li
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => {
+                setActiveTab(tab);
+                setSidebarOpen(false);
+              }}
               className={activeTab === tab ? "active" : ""}
             >
               {tab === "shop" && "🛒 Shop"}
@@ -255,8 +258,22 @@ function ConsumerDashboard() {
 
         {/* Header */}
         <header className="consumer-header">
-          <h2>🛍️ Welcome, {user?.fullname || "Guest"}!</h2>
 
+          {/* LEFT SIDE */}
+          <div className="header-left">
+            <button
+              className="menu-btn"
+              onClick={() => setSidebarOpen(true)}
+            >
+              ☰
+            </button>
+
+            <h2 className="welcome-text">
+              🛍️ Welcome, {user?.fullname || user?.username || "Guest"}!
+            </h2>
+          </div>
+
+          {/* RIGHT SIDE */}
           <div className="header-actions">
             <NotificationPanel
               notifBounce={notifBounce}
@@ -305,6 +322,7 @@ function ConsumerDashboard() {
               )}
             </div>
           </div>
+
         </header>
 
         {/* Content */}

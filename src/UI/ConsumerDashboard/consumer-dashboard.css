@@ -89,15 +89,49 @@ button:hover {
 
 /* ===== HEADER ===== */
 
+/* HEADER LAYOUT */
+
 .consumer-header {
-  background: white;
-  padding: 1rem 2rem;
-  border-bottom: 1px solid #eee;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 18px 24px;
+  background: #ffffff;
+  border-bottom: 1px solid #eee;
 }
 
+/* LEFT */
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.welcome-text {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #222;
+}
+
+/* MENU BUTTON */
+
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  display: none;
+}
+
+/* SHOW MENU BUTTON ON MOBILE */
+
+@media (max-width: 768px) {
+  .menu-btn {
+    display: block;
+  }
+}
 .consumer-header h2 {
   margin: 0;
   font-size: 1.4rem;
@@ -376,4 +410,37 @@ th {
 .sidebar-brand p {
   font-size: 0.85rem;
   opacity: 0.85;
+}
+
+/* DEFAULT DESKTOP */
+.consumer-sidebar {
+  width: 240px;
+  background: linear-gradient(180deg, #ff7a18, #ff5722);
+  color: white;
+  padding: 2rem 1rem;
+  transition: 0.3s ease;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+
+  .consumer-sidebar {
+    position: fixed;
+    top: 0;
+    left: -260px;
+    height: 100vh;
+    z-index: 200;
+    width: 240px;
+  }
+
+  .consumer-sidebar.open {
+    left: 0;
+  }
+
+  .menu-btn {
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+  }
 }
