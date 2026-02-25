@@ -32,7 +32,8 @@ button {
   top: 0;
   left: -260px;
   height: 100vh;
-  z-index: 3000; /* HIGHER than header */
+  width: 240px;
+  z-index: 3000;
 }
 
 .sidebar-brand {
@@ -91,8 +92,8 @@ button {
 .sidebar-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.3);
-  z-index: 2500;
+  background: rgba(0,0,0,0.4);
+  z-index: 2500;   /* must be lower than sidebar but higher than header */
 }
 
 /* ================= HEADER ================= */
@@ -105,7 +106,8 @@ button {
   background: linear-gradient(135deg, #ff7a18, #ff5722);
   color: white;
 
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 1000;        /* increase this */
 }
 
