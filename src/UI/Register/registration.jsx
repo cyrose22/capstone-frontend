@@ -90,8 +90,8 @@ function RegisterForm() {
             <input name="province" placeholder="Province" onChange={handleChange} required />
             <input name="municipality" placeholder="Municipality" onChange={handleChange} required />
             <input name="barangay" placeholder="Barangay" onChange={handleChange} required />
-            <input name="street" placeholder="Street" onChange={handleChange} required />
-            <input name="block" placeholder="Block #" onChange={handleChange} required />
+            <input name="street" placeholder="Street" onChange={handleChange} />
+            <input name="block" placeholder="Block #" onChange={handleChange} />
 
             <button type="submit" className="primary-btn">
               Register & Send OTP
