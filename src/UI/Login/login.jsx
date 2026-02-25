@@ -40,7 +40,7 @@ function LoginForm() {
         pending: 'Logging in...',
         success: {
           render({ data }) {
-            handleSuccess(data.data);
+            handleSuccess(data.data[0]);
             return 'Login successful!';
           }
         },
@@ -115,7 +115,7 @@ function LoginForm() {
           pending: 'Verifying OTP...',
           success: {
             render({ data }) {
-              handleSuccess(data.data);
+              handleSuccess(data.data[0]);
               return 'Login successful!';
             }
           },
@@ -163,14 +163,19 @@ function LoginForm() {
   };
 
   const handleSuccess = (userData) => {
+    console.log("USER DATA:", userData);
+
+    const role = userData.role?.toLowerCase().trim();
+
     const user = {
-      token: userData.token,
-      role: userData.role
+      id: userData.id,
+      role: role,
+      fullname: userData.fullname
     };
 
     localStorage.setItem('user', JSON.stringify(user));
 
-    if (user.role === 'admin' || user.role === 'staff') {
+    if (role === 'admin' || role === 'staff') {
       navigate('/dashboard/admin');
     } else {
       navigate('/dashboard/consumer');
