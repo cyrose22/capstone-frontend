@@ -182,9 +182,9 @@ function LoginForm() {
       <div className="login-card">
 
         <div className="brand-section">
-          <img src={logo} alt="Oscar Logo" className="brand-logo" />
-          <h1>Oscar D'Great</h1>
-          <p>Pet Supplies Trading</p>
+          <div className="logo-wrapper">
+            <img src={logo} alt="Oscar Logo" className="brand-logo" />
+          </div>
         </div>
 
         <div className="login-tabs">
