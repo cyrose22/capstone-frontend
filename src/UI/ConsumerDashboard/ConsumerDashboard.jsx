@@ -224,55 +224,21 @@ function ConsumerDashboard() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        height: "100%",
-        overflow: "hidden",
-        backgroundColor: "#f5f6fa",
-      }}
-    >
+    <div className="consumer-layout">
+
       {/* Sidebar */}
-      <aside
-        style={{
-          width: "240px",
-          background: "#fff",
-          borderRight: "1px solid #eee",
-          display: "flex",
-          flexDirection: "column",
-          padding: "1rem 0.5rem",
-          boxShadow: "2px 0 6px rgba(0,0,0,0.05)",
-        }}
-      >
-        <div style={{ textAlign: "center", padding: "1rem 0" }}>
-          <h3 style={{ margin: 0, color: "#e74c3c" }}>Oscar D'Great</h3>
-          <p style={{ margin: 0, fontSize: "0.85rem", color: "#666" }}>
-            Pet Trading Supplies
-          </p>
+      <aside className="consumer-sidebar">
+        <div className="sidebar-brand">
+          <h3>Oscar D'Great</h3>
+          <p>Pet Trading Supplies</p>
         </div>
-        <ul style={{ listStyle: "none", padding: 0, marginTop: "1rem" }}>
+
+        <ul className="sidebar-menu">
           {["shop", "orders", "profile"].map((tab) => (
             <li
               key={tab}
               onClick={() => setActiveTab(tab)}
-              style={{
-                padding: "0.9rem 1rem",
-                cursor: "pointer",
-                margin: "0.3rem 0",
-                borderRadius: "0.6rem",
-                backgroundColor: activeTab === tab ? "#ffecec" : "transparent",
-                color: activeTab === tab ? "#e74c3c" : "#333",
-                fontWeight: activeTab === tab ? "600" : "500",
-                transition: "all 0.25s ease",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor =
-                  activeTab === tab ? "#ffecec" : "#f9f9f9")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor =
-                  activeTab === tab ? "#ffecec" : "transparent")
-              }
+              className={activeTab === tab ? "active" : ""}
             >
               {tab === "shop" && "🛒 Shop"}
               {tab === "orders" && "📜 Orders"}
@@ -283,21 +249,13 @@ function ConsumerDashboard() {
       </aside>
 
       {/* Main */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+      <div className="consumer-main">
+
         {/* Header */}
-        <header
-          style={{
-            padding: "1rem",
-            background: "#fff",
-            borderBottom: "1px solid #eee",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
-          }}
-        >
-          <h2 style={{ margin: 0 }}>🛍️ Welcome, {user?.fullname || "Guest"}!</h2>
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        <header className="consumer-header">
+          <h2>🛍️ Welcome, {user?.fullname || "Guest"}!</h2>
+
+          <div className="header-actions">
             <NotificationPanel
               notifBounce={notifBounce}
               newStatusChanges={newStatusChanges}
@@ -307,88 +265,36 @@ function ConsumerDashboard() {
 
             {/* Cart */}
             <button
+              className="cart-btn"
               onClick={() => setShowCartModal(true)}
-              style={{
-                position: "relative",
-                background: "transparent",
-                border: "none",
-                fontSize: "1.5rem",
-                cursor: "pointer",
-              }}
             >
               🛒
               {cart.length > 0 && (
-                <span
-                  style={{
-                    position: "absolute",
-                    top: "-6px",
-                    right: "-6px",
-                    background: "#e74c3c",
-                    color: "#fff",
-                    borderRadius: "50%",
-                    padding: "2px 6px",
-                    fontSize: "0.7rem",
-                    fontWeight: "bold",
-                  }}
-                >
+                <span className="cart-badge">
                   {cart.reduce((sum, item) => sum + item.quantity, 0)}
                 </span>
               )}
             </button>
 
             {/* Profile */}
-            <div style={{ position: "relative" }}>
+            <div className="profile-wrapper">
               <button
+                className="profile-btn"
                 onClick={() => setShowProfileMenu((p) => !p)}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  fontSize: "1.5rem",
-                  cursor: "pointer",
-                }}
               >
                 👤
               </button>
+
               {showProfileMenu && (
-                <div
-                  style={{
-                    position: "absolute",
-                    right: 0,
-                    marginTop: "0.5rem",
-                    background: "#fff",
-                    border: "1px solid #eee",
-                    borderRadius: "8px",
-                    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-                    overflow: "hidden",
-                  }}
-                >
-                  <button
-                    onClick={() => setEditingPassword(true)}
-                    style={{
-                      display: "block",
-                      padding: "0.75rem 1rem",
-                      width: "100%",
-                      border: "none",
-                      background: "transparent",
-                      cursor: "pointer",
-                    }}
-                  >
+                <div className="profile-dropdown">
+                  <button onClick={() => setEditingPassword(true)}>
                     Change Password
                   </button>
                   <button
+                    className="logout-btn"
                     onClick={() => {
                       localStorage.removeItem("user");
                       navigate("/");
-                    }}
-                    style={{
-                      display: "block",
-                      padding: "0.75rem 1rem",
-                      width: "100%",
-                      border: "none",
-                      background: "transparent",
-                      cursor: "pointer",
-                      color: "#e74c3c",
-                      fontWeight: "600",
                     }}
                   >
                     Logout
@@ -400,7 +306,7 @@ function ConsumerDashboard() {
         </header>
 
         {/* Content */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "1rem" }}>
+        <div className="consumer-content">
           {activeTab === "shop" && (
             <ShopTab
               products={products}
@@ -408,6 +314,7 @@ function ConsumerDashboard() {
               openVariantModal={openVariantModal}
             />
           )}
+
           {activeTab === "orders" && (
             <OrdersTab
               salesHistory={salesHistory}
@@ -424,13 +331,14 @@ function ConsumerDashboard() {
               user={user}
             />
           )}
+
           {activeTab === "profile" && (
             <ProfileTab user={user} setUser={setUser} />
           )}
         </div>
       </div>
 
-      {/* Modals */}
+      {/* MODALS (unchanged) */}
       {showCartModal && (
         <CartModal
           key={cart.length}
@@ -442,6 +350,7 @@ function ConsumerDashboard() {
           formatCurrency={formatCurrency}
         />
       )}
+
       {showPaymentModal && (
         <PaymentModal
           cart={cart}
@@ -456,6 +365,7 @@ function ConsumerDashboard() {
           onClose={() => setShowPaymentModal(false)}
         />
       )}
+
       {variantModalOpen && (
         <VariantModal
           product={selectedProduct}
@@ -465,6 +375,7 @@ function ConsumerDashboard() {
           addToCart={addToCart}
         />
       )}
+
       {cancelModalVisible && (
         <CancelOrderModal
           saleToCancel={saleToCancel}
@@ -474,123 +385,6 @@ function ConsumerDashboard() {
           setSalesHistory={setSalesHistory}
           onClose={() => setCancelModalVisible(false)}
         />
-      )}
-
-      {/* Change Password Modal */}
-      {editingPassword && (
-        <div
-          onClick={() => setEditingPassword(false)}
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-          }}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              backgroundColor: '#fff',
-              padding: '1.5rem',
-              borderRadius: '8px',
-              width: '90%',
-              maxWidth: '400px',
-              position: 'relative',
-            }}
-          >
-            <button
-              onClick={() => setEditingPassword(false)}
-              style={{
-                position: 'absolute',
-                top: '0.5rem',
-                right: '0.5rem',
-                background: 'none',
-                border: 'none',
-                fontSize: '1.2rem',
-                cursor: 'pointer',
-              }}
-            >
-              &times;
-            </button>
-            <div style={{ marginBottom: '1rem' }}>
-              <h2>🔐 Update Password</h2>
-              <p style={{ fontSize: '0.9rem', color: '#555' }}>
-                Keep your account secure by using a strong password
-              </p>
-            </div>
-            <input
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Enter new password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.5rem',
-                border: '1px solid #ccc',
-                borderRadius: '6px',
-                marginBottom: '0.75rem',
-              }}
-            />
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                marginBottom: '1rem',
-              }}
-            >
-              <input
-                type="checkbox"
-                id="showPassword"
-                checked={showPassword}
-                onChange={() => setShowPassword((prev) => !prev)}
-              />
-              <label htmlFor="showPassword" style={{ fontSize: '0.9rem' }}>
-                Show Password
-              </label>
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                gap: '0.5rem',
-              }}
-            >
-              <button
-                onClick={() => setEditingPassword(false)}
-                style={{
-                  padding: '0.4rem 0.75rem',
-                  borderRadius: '6px',
-                  border: 'none',
-                  backgroundColor: '#ccc',
-                  cursor: 'pointer',
-                }}
-              >
-                ❌ Cancel
-              </button>
-              <button
-                onClick={handlePasswordSave}
-                disabled={savingPassword}
-                style={{
-                  padding: '0.4rem 0.75rem',
-                  borderRadius: '6px',
-                  border: 'none',
-                  backgroundColor: '#4CAF50',
-                  color: '#fff',
-                  cursor: 'pointer',
-                }}
-              >
-                {savingPassword ? 'Saving...' : '💾 Save'}
-              </button>
-            </div>
-          </div>
-        </div>
       )}
 
       {showToast && <ToastMessage type={toastType} message={toastMessage} />}
