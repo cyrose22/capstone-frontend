@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import "./consumer-dashboard.css";
 import ShopTab from "../Shop/ShopTab";
 import OrdersTab from "../Orders/OrderTab";
 import ProfileTab from "../Profile/ProfileTab";
