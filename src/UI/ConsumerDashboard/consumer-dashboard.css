@@ -179,17 +179,14 @@ button:hover {
   flex: 1;
   padding: 2rem;
   overflow-y: auto;
-  max-width: 1200px;   /* 👈 add this */
-  margin: 0 auto;
 }
 
 /* ================= PRODUCT GRID ================= */
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 280px));
   gap: 2rem;
-  margin-top: 2rem;
 }
 
 .product-card {
