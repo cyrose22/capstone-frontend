@@ -2,122 +2,123 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import './register.css';
-import { FaUser, FaLock, FaPhone, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 function RegisterForm() {
-  const [fullname, setFullname] = useState('');
-  const [username, setUsername] = useState('');
-  const [contact, setContact] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [message, setMessage] = useState('');
   const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    fullname: '',
+    username: '',
+    contact: '',
+    password: '',
+    confirmPassword: '',
+    province: '',
+    municipality: '',
+    barangay: '',
+    street: '',
+    block: ''
+  });
+
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       setMessage("❌ Passwords do not match.");
       return;
     }
 
     try {
-      // const res = await axios.post('http://localhost:5000/register', {
-      const res = await axios.post('https://capstone-backend-kiax.onrender.com/register', {
-        fullname,
-        username,
-        password,
-        contact,
-        role: 'user',
-      });
+      await axios.post(
+        'https://capstone-backend-kiax.onrender.com/register',
+        {
+          ...formData,
+          role: 'user'
+        }
+      );
 
-      setMessage(res.data.message);
-      if (res.data.message.includes('successful')) {
-        navigate('/');
-      }
+      setOtpSent(true);
+      setMessage("OTP sent to your email/phone.");
     } catch (err) {
-      setMessage(err.response?.data?.message || '❌ Registration failed.');
+      setMessage(err.response?.data?.message || 'Registration failed.');
+    }
+  };
+
+  const verifyOtp = async () => {
+    try {
+      await axios.post(
+        'https://capstone-backend-kiax.onrender.com/verify-otp',
+        {
+          username: formData.username,
+          otp
+        }
+      );
+
+      setMessage("✅ Account verified successfully!");
+      setTimeout(() => navigate('/'), 1500);
+    } catch {
+      setMessage("❌ Invalid OTP.");
     }
   };
 
   return (
     <div className="register-container">
       <div className="register-card">
-        <h2>👋 Register</h2>
-        <p className="subtext">Create your Oscar D'Gr8 account</p>
 
-        <form onSubmit={handleRegister}>
-          <div className="input-group">
-            <FaUser className="input-icon" />
+        <h2>Create Account</h2>
+        <p className="subtext">Join Oscar D'Great Pet Supplies</p>
+
+        {!otpSent ? (
+          <form onSubmit={handleRegister}>
+
+            <input name="fullname" placeholder="Full Name" onChange={handleChange} required />
+            <input name="username" placeholder="Email or Username" onChange={handleChange} required />
+            <input name="contact" placeholder="Contact Number" onChange={handleChange} required />
+
+            <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
+            <input type="password" name="confirmPassword" placeholder="Confirm Password" onChange={handleChange} required />
+
+            <h4>Address Information</h4>
+
+            <input name="province" placeholder="Province" onChange={handleChange} required />
+            <input name="municipality" placeholder="Municipality" onChange={handleChange} required />
+            <input name="barangay" placeholder="Barangay" onChange={handleChange} required />
+            <input name="street" placeholder="Street" onChange={handleChange} required />
+            <input name="block" placeholder="Block #" onChange={handleChange} required />
+
+            <button type="submit" className="primary-btn">
+              Register & Send OTP
+            </button>
+
+          </form>
+        ) : (
+          <div className="otp-section">
+            <h4>Enter OTP</h4>
             <input
               type="text"
-              placeholder="Full Name"
-              value={fullname}
-              onChange={(e) => setFullname(e.target.value)}
-              required
+              placeholder="Enter 6-digit OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
             />
+            <button className="primary-btn" onClick={verifyOtp}>
+              Verify Account
+            </button>
           </div>
-
-          <div className="input-group">
-            <FaUser className="input-icon" />
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="input-group">
-            <FaLock className="input-icon" />
-            <input
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <span onClick={() => setShowPassword(!showPassword)} className="eye-toggle">
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
-          </div>
-
-          <div className="input-group">
-            <FaLock className="input-icon" />
-            <input
-              type={showConfirmPassword ? 'text' : 'password'}
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-            <span onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="eye-toggle">
-              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
-          </div>
-
-          <div className="input-group">
-            <FaPhone className="input-icon" />
-            <input
-              type="text"
-              placeholder="Contact Number"
-              value={contact}
-              onChange={(e) => setContact(e.target.value)}
-              required
-            />
-          </div>
-
-          <button type="submit" className="register-btn">Register</button>
-        </form>
+        )}
 
         {message && <p className="message">{message}</p>}
 
         <p className="redirect-text">
           Already have an account? <Link to="/">Login</Link>
         </p>
+
       </div>
     </div>
   );
