@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './login.css';
 import { useNavigate, Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function LoginForm() {
   const [username, setUsername] = useState('');
@@ -16,62 +17,80 @@ function LoginForm() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    try {
-      const res = await axios.post(
+
+    await toast.promise(
+      axios.post(
         'https://capstone-backend-kiax.onrender.com/login',
         { username, password }
-      );
-
-      handleSuccess(res.data);
-    } catch (err) {
-      setMessage(err.response?.data?.message || 'Login failed');
-    }
+      ),
+      {
+        pending: 'Logging in...',
+        success: {
+          render({ data }) {
+            handleSuccess(data.data);
+            return 'Login successful!';
+          }
+        },
+        error: {
+          render({ data }) {
+            return data.response?.data?.message || 'Login failed';
+          }
+        }
+      }
+    );
   };
 
   const handleSendOtp = async () => {
     if (!username) {
-      setMessage("Please enter your email first.");
+      toast.error("Please enter your email first.");
       return;
     }
 
-    try {
-      await axios.post(
+    await toast.promise(
+      axios.post(
         'https://capstone-backend-kiax.onrender.com/send-login-otp',
         { username }
-      );
-
-      setOtpSent(true);
-      setMessage('OTP sent to your email');
-
-    } catch (err) {
-      if (err.response?.status === 404) {
-        setMessage('Account not found. Redirecting to register...');
-        setTimeout(() => navigate('/register'), 1500);
-      } else {
-        setMessage(err.response?.data?.message || 'Failed to send OTP');
+      ),
+      {
+        pending: 'Sending OTP...',
+        success: 'OTP sent successfully!',
+        error: {
+          render({ data }) {
+            return data.response?.data?.message || 'Failed to send OTP';
+          }
+        }
       }
-    }
+    );
+
+    setOtpSent(true);
   };
 
   const handleOtpLogin = async () => {
     if (otp.length !== 6) {
-      setMessage("OTP must be 6 digits.");
+      toast.error("OTP must be 6 digits.");
       return;
     }
 
-    try {
-      const res = await axios.post(
+    await toast.promise(
+      axios.post(
         'https://capstone-backend-kiax.onrender.com/login-otp',
         { username, otp }
-      );
-
-      console.log("OTP LOGIN RESPONSE:", res.data);
-
-      handleSuccess(res.data);
-
-    } catch (err) {
-      setMessage(err.response?.data?.message || "Invalid or expired OTP");
-    }
+      ),
+      {
+        pending: 'Verifying OTP...',
+        success: {
+          render({ data }) {
+            handleSuccess(data.data);
+            return 'Login successful!';
+          }
+        },
+        error: {
+          render({ data }) {
+            return data.response?.data?.message || 'Invalid or expired OTP';
+          }
+        }
+      }
+    );
   };
 
   const handleSuccess = (userData) => {

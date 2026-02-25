@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import Sidebar from './Sidebar/Sidebar';
 import LoginForm from './Login/login';
@@ -83,6 +85,18 @@ function App() {
   return (
     <BrowserRouter>
       <AppWrapper />
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}   // 👈 SHOW PROGRESS BAR
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        pauseOnFocusLoss
+        theme="colored"           // 👈 colored theme
+      />
     </BrowserRouter>
   );
 }
