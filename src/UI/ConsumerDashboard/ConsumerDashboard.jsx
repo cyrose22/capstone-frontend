@@ -35,8 +35,7 @@ function ConsumerDashboard() {
   const previousStatusesRef = useRef({});
 
   const [variantModalOpen, setVariantModalOpen] = useState(false);
-  const [modalImages, setModalImages] = useState([]);
-  const [modalTitle, setModalTitle] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [currentModalImageIndex, setCurrentModalImageIndex] = useState(0);
 
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
@@ -47,11 +46,7 @@ function ConsumerDashboard() {
   const [showToast, setShowToast] = useState(false);
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-
   const [editingPassword, setEditingPassword] = useState(false);
-  const [newPassword, setNewPassword] = useState("");
-  const [savingPassword, setSavingPassword] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("user");
@@ -82,44 +77,23 @@ function ConsumerDashboard() {
       const res = await axios.get(
         `https://capstone-backend-kiax.onrender.com/sales/user/${user.id}`
       );
-
-      const updatedSales = res.data;
-
-      updatedSales.forEach((sale) => {
-        const prevStatus = previousStatusesRef.current[sale.id];
-        if (prevStatus && prevStatus !== sale.status) {
-          setNewStatusChanges((prev) => [
-            ...prev,
-            { id: sale.id, status: sale.status },
-          ]);
-          setNotifBounce(true);
-          setTimeout(() => setNotifBounce(false), 1000);
-        }
-        previousStatusesRef.current[sale.id] = sale.status;
-      });
-
-      setSalesHistory(updatedSales);
+      setSalesHistory(res.data);
     } catch (err) {
       console.error(err);
     }
   };
 
-  const addToCart = (product, variant = null) => {
+  const addToCart = (product) => {
     if (!user) {
       navigate("/");
       return;
     }
 
     setCart((prev) => {
-      const existing = prev.find(
-        (item) =>
-          item.id === product.id &&
-          item.variantId === variant?.variantId
-      );
-
+      const existing = prev.find((item) => item.id === product.id);
       if (existing) {
         return prev.map((item) =>
-          item === existing
+          item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -130,10 +104,8 @@ function ConsumerDashboard() {
         {
           id: product.id,
           name: product.name,
-          price: variant ? variant.price : product.price,
+          price: product.price,
           image: product.image,
-          variantId: variant?.variantId || null,
-          variantName: variant?.variantName,
           quantity: 1,
         },
       ];
@@ -163,6 +135,7 @@ function ConsumerDashboard() {
     <div className="storefront-layout">
 
       <header className="store-header">
+
         <div className="store-header-top">
           <img src={logo} alt="logo" className="store-logo" />
 
@@ -216,9 +189,14 @@ function ConsumerDashboard() {
           </div>
         </div>
 
+        {/* MAXIMIZED SEARCH */}
         <div className="store-search">
-          <input placeholder="Search products..." />
+          <input
+            className="store-search-input"
+            placeholder="🔍 Search products by name..."
+          />
         </div>
+
       </header>
 
       <section className="store-hero">
@@ -227,28 +205,7 @@ function ConsumerDashboard() {
       </section>
 
       <div className="store-content">
-
-        {activeTab === "shop" && (
-          <ShopTab
-            products={products}
-            addToCart={addToCart}
-          />
-        )}
-
-        {activeTab === "orders" && (
-          <OrdersTab
-            salesHistory={salesHistory}
-            user={user}
-          />
-        )}
-
-        {activeTab === "profile" && (
-          <ProfileTab
-            user={user}
-            setUser={setUser}
-          />
-        )}
-
+        <ShopTab products={products} addToCart={addToCart} />
       </div>
 
       {showCartModal && (
@@ -274,24 +231,6 @@ function ConsumerDashboard() {
           setToastType={setToastType}
           setShowToast={setShowToast}
           onClose={() => setShowPaymentModal(false)}
-        />
-      )}
-
-      {variantModalOpen && (
-        <VariantModal
-          product={selectedProduct}
-          currentIndex={currentModalImageIndex}
-          setCurrentIndex={setCurrentModalImageIndex}
-          onClose={() => setVariantModalOpen(false)}
-          addToCart={addToCart}
-        />
-      )}
-
-      {cancelModalVisible && (
-        <CancelOrderModal
-          saleToCancel={saleToCancel}
-          user={user}
-          onClose={() => setCancelModalVisible(false)}
         />
       )}
 

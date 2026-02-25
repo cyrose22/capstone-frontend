@@ -237,3 +237,26 @@ button {
   }
 
 }
+
+/* ================= ENHANCED SEARCH ================= */
+
+.store-search {
+  margin-top: 16px;
+}
+
+.store-search-input {
+  width: 100%;
+  padding: 18px 22px;
+  border-radius: 40px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  outline: none;
+  background: #eef7f6;
+  transition: all 0.2s ease;
+}
+
+.store-search-input:focus {
+  background: white;
+  border-color: #ff5722;
+  box-shadow: 0 0 0 4px rgba(255,87,34,0.15);
+}
