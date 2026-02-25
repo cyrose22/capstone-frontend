@@ -231,6 +231,7 @@ function ConsumerDashboard() {
       {/* Sidebar */}
       <aside className={`consumer-sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="sidebar-brand">
+          <img src={logo} alt="Logo" className="sidebar-logo" />
           <h3>Oscar D'Great</h3>
           <p>Pet Trading Supplies</p>
         </div>
@@ -259,7 +260,6 @@ function ConsumerDashboard() {
         {/* Header */}
         <header className="consumer-header">
 
-          {/* LEFT SIDE */}
           <div className="header-left">
             <button
               className="menu-btn"
@@ -273,10 +273,8 @@ function ConsumerDashboard() {
             </h2>
           </div>
 
-          {/* RIGHT SIDE */}
           <div className="header-icons">
 
-            {/* Notification */}
             <div className="icon-wrapper">
               <NotificationPanel
                 notifBounce={notifBounce}
@@ -286,7 +284,6 @@ function ConsumerDashboard() {
               />
             </div>
 
-            {/* Cart */}
             <button
               className="icon-wrapper"
               onClick={() => setShowCartModal(true)}
@@ -299,7 +296,6 @@ function ConsumerDashboard() {
               )}
             </button>
 
-            {/* Profile */}
             <button
               className="icon-wrapper"
               onClick={() => setShowProfileMenu((p) => !p)}
@@ -308,7 +304,6 @@ function ConsumerDashboard() {
             </button>
 
           </div>
-
         </header>
 
         {/* Content */}
