@@ -40,7 +40,7 @@ function LoginForm() {
         pending: 'Logging in...',
         success: {
           render({ data }) {
-            handleSuccess(data.data[0]);
+            handleSuccess(data.data);   // ✅ FIXED
             return 'Login successful!';
           }
         },
@@ -115,7 +115,7 @@ function LoginForm() {
           pending: 'Verifying OTP...',
           success: {
             render({ data }) {
-              handleSuccess(data.data[0]);
+              handleSuccess(data.data);   // ✅ FIXED
               return 'Login successful!';
             }
           },
@@ -163,6 +163,11 @@ function LoginForm() {
   };
 
   const handleSuccess = (userData) => {
+    if (!userData) {
+      toast.error("Login failed. No user data received.");
+      return;
+    }
+
     const role = userData.role?.toLowerCase().trim();
 
     localStorage.setItem('id', userData.id);
