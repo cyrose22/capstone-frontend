@@ -65,6 +65,8 @@ function LoginForm() {
         { username, otp }
       );
 
+      console.log("OTP LOGIN RESPONSE:", res.data);
+
       handleSuccess(res.data);
 
     } catch (err) {
@@ -73,13 +75,17 @@ function LoginForm() {
   };
 
   const handleSuccess = (userData) => {
-    localStorage.setItem('token', userData.token);
-    localStorage.setItem('role', userData.role);
+    const user = {
+      token: userData.token,
+      role: userData.role
+    };
 
-    if (userData.role === 'admin' || userData.role === 'staff') {
-      navigate('/admin-dashboard');
+    localStorage.setItem('user', JSON.stringify(user));
+
+    if (user.role === 'admin' || user.role === 'staff') {
+      navigate('/dashboard/admin');
     } else {
-      navigate('/consumer-dashboard');
+      navigate('/dashboard/consumer');
     }
   };
 
