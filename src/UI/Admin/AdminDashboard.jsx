@@ -21,10 +21,18 @@ function AdminDashboard() {
   const [registering, setRegistering] = useState(false);
   const [showStaffPassword, setShowStaffPassword] = useState(false);
 
+  // ✅ FIXED localStorage reading
+  const storedUser = JSON.parse(localStorage.getItem('user'));
+  const loggedInUser = storedUser?.username || '';
+  const loggedInRole = storedUser?.role || '';
+  const fullname = storedUser?.fullname || '';
 
-  const loggedInUser = localStorage.getItem('username') || '';
-  const loggedInRole = localStorage.getItem('role') || '';
-  const fullname = localStorage.getItem('fullname');
+  // ✅ Protect admin route
+  useEffect(() => {
+    if (!storedUser || storedUser.role !== 'admin') {
+      navigate('/login');
+    }
+  }, [navigate, storedUser]);
 
   const fetchUsers = async () => {
     try {
@@ -59,12 +67,11 @@ function AdminDashboard() {
     }
 
     if (user.role === 'admin') {
-      // If user is admin, allow demotion only if it's NOT the logged-in admin themselves
       if (user.username === loggedInUser) {
         alert('You cannot demote yourself.');
         return;
       }
-      // demote admin to staff
+
       axios.put(`https://capstone-backend-kiax.onrender.com/users/${user.id}/role`, { role: 'staff' })
         .then(() => {
           alert('Admin demoted to Staff');
@@ -75,17 +82,14 @@ function AdminDashboard() {
     }
 
     if (user.role === 'staff') {
-      // promote staff to admin
       axios.put(`https://capstone-backend-kiax.onrender.com/users/${user.id}/role`, { role: 'admin' })
         .then(() => {
           alert('Staff promoted to Admin');
           fetchUsers();
         })
         .catch(() => alert('Error updating role'));
-      return;
     }
   };
-
 
   const handleStaffRegister = async () => {
     try {
@@ -97,12 +101,13 @@ function AdminDashboard() {
         role: 'staff',
         contact: null
       });
+
       alert('Staff registered successfully!');
       setNewStaff({ fullname: '', username: '', password: '' });
       fetchUsers();
-      setShowRegisterModal(false);  // <-- Close the modal here
+      setShowRegisterModal(false);
     } catch (err) {
-      console.error('Error registering staff:', err);
+      console.error(err);
       alert('Failed to register staff');
     } finally {
       setRegistering(false);
@@ -114,15 +119,17 @@ function AdminDashboard() {
 
     const canEditPassword =
       loggedInRole === 'admin' ||
-      (loggedInRole === 'staff' && (user.role === 'user' || isSelf))
-    // const canEditPassword = loggedInRole === 'user' && isSelf;
-      
+      (loggedInRole === 'staff' && (user.role === 'user' || isSelf));
+
     return (
       <>
         <div className="user-header">
           <h3>{user.fullname}</h3>
-          <span className={`role-badge ${user.role || 'null'}`}>{user.role || 'pending'}</span>
+          <span className={`role-badge ${user.role || 'null'}`}>
+            {user.role || 'pending'}
+          </span>
         </div>
+
         <p><strong>Username:</strong> {user.username}</p>
 
         <div className="user-actions">
@@ -139,71 +146,28 @@ function AdminDashboard() {
             </div>
           )}
 
-          {/* Admin-only actions like delete, promote/demote, but exclude self */}
           {loggedInRole === 'admin' && !isSelf && (
             <>
-              {/* Promote button for staff only */}
               {user.role === 'staff' && (
-                <div
-                  className="button-with-toast"
-                  onMouseEnter={() => setHovered(`toggle-${user.id}`)}
-                  onMouseLeave={() => setHovered(null)}
-                >
-                  <button className="toggle-role" onClick={() => toggleUserRole(user)}>
-                    Make Admin
-                  </button>
-                  {hovered === `toggle-${user.id}` && <span className="toast">Make Admin</span>}
-                </div>
+                <button className="toggle-role" onClick={() => toggleUserRole(user)}>
+                  Make Admin
+                </button>
               )}
 
-              {/* Demote button for admins except self */}
-              {user.role === 'admin' && user.username !== loggedInUser && (
-                <div
-                  className="button-with-toast"
-                  onMouseEnter={() => setHovered(`toggle-${user.id}`)}
-                  onMouseLeave={() => setHovered(null)}
-                >
-                  <button className="toggle-role" onClick={() => toggleUserRole(user)}>
-                    Demote to Staff
-                  </button>
-                  {hovered === `toggle-${user.id}` && <span className="toast">Remove as Admin</span>}
-                </div>
+              {user.role === 'admin' && !isSelf && (
+                <button className="toggle-role" onClick={() => toggleUserRole(user)}>
+                  Demote to Staff
+                </button>
               )}
 
-              {/* Delete button for staff */}
-              {user.role === 'staff' && (
-                <div
-                  className="button-with-toast"
-                  onMouseEnter={() => setHovered(`delete-${user.id}`)}
-                  onMouseLeave={() => setHovered(null)}
+              {(user.role === 'staff' || user.role === 'user') && (
+                <button
+                  className="delete-user"
+                  onClick={() => deleteUser(user.id)}
+                  disabled={deletingId === user.id}
                 >
-                  <button
-                    className="delete-user"
-                    onClick={() => deleteUser(user.id)}
-                    disabled={deletingId === user.id}
-                  >
-                    <FaTrash />
-                  </button>
-                  {hovered === `delete-${user.id}` && <span className="toast">Delete Staff</span>}
-                </div>
-              )}
-
-              {/* Delete button for users */}
-              {user.role === 'user' && (
-                <div
-                  className="button-with-toast"
-                  onMouseEnter={() => setHovered(`delete-${user.id}`)}
-                  onMouseLeave={() => setHovered(null)}
-                >
-                  <button
-                    className="delete-user"
-                    onClick={() => deleteUser(user.id)}
-                    disabled={deletingId === user.id}
-                  >
-                    <FaTrash />
-                  </button>
-                  {hovered === `delete-${user.id}` && <span className="toast">Delete User</span>}
-                </div>
+                  <FaTrash />
+                </button>
               )}
             </>
           )}
@@ -218,84 +182,80 @@ function AdminDashboard() {
 
       {loggedInRole === 'admin' && (
         <div className="register-staff-container">
-          <br/>
+          <br />
           <button className="register-staff-btn" onClick={() => setShowRegisterModal(true)}>
             <FaUserPlus /> Register New Staff
           </button>
         </div>
       )}
 
-      {loggedInRole !== 'staff' && (
-        <>
-          <h2>🛡️ Admins</h2>
-          <div className="user-card-grid">
-            {users
-              .filter(user => user.role === 'admin')
-              .map((user) => (
-                <div key={user.id} className="user-card">
-                  {renderUserCard(user)}
-                </div>
-            ))}
-          </div>
-        </>
-      )}
-
-      <h2>👨‍💼 Staff</h2>
+      <h2>🛡️ Admins</h2>
       <div className="user-card-grid">
-        {users
-          .filter(user => user.role === 'staff')
-          .map((user) => (
-            <div key={user.id} className="user-card">
-              {renderUserCard(user)}
-            </div>
-        ))}
-      </div>
-
-      <h2>👤 Customer</h2>
-      <div className="user-card-grid">
-        {users.filter(user => user.role === 'user').map((user) => (
+        {users.filter(user => user.role === 'admin').map(user => (
           <div key={user.id} className="user-card">
             {renderUserCard(user)}
           </div>
         ))}
       </div>
 
-      {/* Password Modal */}
+      <h2>👨‍💼 Staff</h2>
+      <div className="user-card-grid">
+        {users.filter(user => user.role === 'staff').map(user => (
+          <div key={user.id} className="user-card">
+            {renderUserCard(user)}
+          </div>
+        ))}
+      </div>
+
+      <h2>👤 Customer</h2>
+      <div className="user-card-grid">
+        {users.filter(user => user.role === 'user').map(user => (
+          <div key={user.id} className="user-card">
+            {renderUserCard(user)}
+          </div>
+        ))}
+      </div>
+
+      {/* 🔐 PASSWORD MODAL */}
       {editingUser && (
         <div className="modal-overlay" onClick={() => setEditingUser(null)}>
           <div className="modal-content animated-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setEditingUser(null)}>&times;</button>
-            <div className="modal-header">
-              <h2>🔐 Update Password</h2>
-              <p>Updating password for <strong>{editingUser.fullname}</strong></p>
-            </div>
+            <button className="modal-close" onClick={() => setEditingUser(null)}>
+              &times;
+            </button>
+
+            <h2>🔐 Update Password</h2>
+            <p>Updating password for <strong>{editingUser.fullname}</strong></p>
+
             <input
               type={showPassword ? 'text' : 'password'}
               placeholder="Enter new password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="modal-input styled-input"
+              className="modal-input"
             />
+
             <div className="show-password-toggle">
               <input
                 type="checkbox"
-                id="showPassword"
                 checked={showPassword}
-                onChange={() => setShowPassword((prev) => !prev)}
+                onChange={() => setShowPassword(!showPassword)}
               />
-              <label htmlFor="showPassword">Show Password</label>
+              Show Password
             </div>
+
             <div className="modal-actions">
-              <button className="cancel-btn" onClick={() => setEditingUser(null)}>❌ Cancel</button>
+              <button onClick={() => setEditingUser(null)}>Cancel</button>
               <button
-                className="save-btn"
+                disabled={saving}
                 onClick={async () => {
                   if (!newPassword.trim()) return alert("Password can't be empty");
                   try {
                     setSaving(true);
-                    await axios.put(`https://capstone-backend-kiax.onrender.com/users/${editingUser.id}/password`, {
-                      password: newPassword,
-                    });
+                    await axios.put(
+                      `https://capstone-backend-kiax.onrender.com/users/${editingUser.id}/password`,
+                      { password: newPassword }
+                    );
                     alert('Password updated!');
                     setEditingUser(null);
                     setNewPassword('');
@@ -305,61 +265,61 @@ function AdminDashboard() {
                     setSaving(false);
                   }
                 }}
-                disabled={saving}
               >
-                {saving ? 'Saving...' : '💾 Save'}
+                {saving ? 'Saving...' : 'Save'}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Register Staff Modal */}
+      {/* 🆕 REGISTER STAFF MODAL */}
       {showRegisterModal && (
         <div className="modal-overlay" onClick={() => setShowRegisterModal(false)}>
           <div className="modal-content animated-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowRegisterModal(false)}>&times;</button>
-            <div className="modal-header">
-              <h2>🆕 New Staff</h2>
-            </div>
+            <button className="modal-close" onClick={() => setShowRegisterModal(false)}>
+              &times;
+            </button>
+
+            <h2>🆕 New Staff</h2>
+
             <input
               type="text"
               placeholder="Full Name"
               value={newStaff.fullname}
               onChange={(e) => setNewStaff({ ...newStaff, fullname: e.target.value })}
-              className="modal-input styled-input"
+              className="modal-input"
             />
+
             <input
               type="text"
               placeholder="Username"
               value={newStaff.username}
               onChange={(e) => setNewStaff({ ...newStaff, username: e.target.value })}
-              className="modal-input styled-input"
+              className="modal-input"
             />
+
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showStaffPassword ? 'text' : 'password'}
               placeholder="Password"
               value={newStaff.password}
               onChange={(e) => setNewStaff({ ...newStaff, password: e.target.value })}
-              className="modal-input styled-input"
+              className="modal-input"
             />
+
             <div className="show-password-toggle">
               <input
                 type="checkbox"
-                id="showPassword"
-                checked={showPassword}
-                onChange={() => setShowPassword((prev) => !prev)}
+                checked={showStaffPassword}
+                onChange={() => setShowStaffPassword(!showStaffPassword)}
               />
-              <label htmlFor="showPassword">Show Password</label>
+              Show Password
             </div>
+
             <div className="modal-actions">
-              <button className="cancel-btn" onClick={() => setShowRegisterModal(false)}>❌ Cancel</button>
-              <button
-                className="save-btn"
-                onClick={handleStaffRegister}
-                disabled={registering}
-              >
-                {registering ? 'Registering...' : '✅ Register'}
+              <button onClick={() => setShowRegisterModal(false)}>Cancel</button>
+              <button onClick={handleStaffRegister} disabled={registering}>
+                {registering ? 'Registering...' : 'Register'}
               </button>
             </div>
           </div>

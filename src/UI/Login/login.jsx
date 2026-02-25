@@ -169,8 +169,9 @@ function LoginForm() {
 
     const user = {
       id: userData.id,
-      role: role,
-      fullname: userData.fullname
+      fullname: userData.fullname,
+      username: userData.username,   // ✅ ADD THIS
+      role: role
     };
 
     localStorage.setItem('user', JSON.stringify(user));
