@@ -10,21 +10,20 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(180deg, #ee4d2d, #ff7337);
+  background: #f5f5f5;
   padding: 16px;
 }
 
 /* Card */
 .register-card {
-  background: #fff;
+  background: #ffffff;
   width: 100%;
   max-width: 420px;
   border-radius: 20px;
-  padding: 30px 28px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  padding: 35px 40px; /* same as login */
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
   max-height: 95vh;
   overflow-y: auto;
-  animation: fadeIn 0.4s ease-in-out;
 }
 
 /* Title */
@@ -46,8 +45,8 @@ body {
 /* Inputs */
 input {
   width: 100%;
-  padding: 14px;
-  margin-bottom: 14px;
+  padding: 12px;
+  margin-bottom: 10px; /* smaller */
   border-radius: 12px;
   border: 1px solid #e5e5e5;
   font-size: 14px;
@@ -156,4 +155,10 @@ input:focus {
 .brand-logo {
   width: 120px;
   margin-bottom: 8px;
+}
+
+.section-title {
+  margin: 12px 0 6px;
+  font-size: 13px;
+  color: #555;
 }

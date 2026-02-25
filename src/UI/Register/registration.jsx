@@ -95,7 +95,7 @@ function RegisterForm() {
             <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
             <input type="password" name="confirmPassword" placeholder="Confirm Password" onChange={handleChange} required />
 
-            <h4>Address Information</h4>
+            <h4 className="section-title">Address Information</h4>
 
             <input name="province" placeholder="Province" onChange={handleChange} required />
             <input name="municipality" placeholder="Municipality" onChange={handleChange} required />
