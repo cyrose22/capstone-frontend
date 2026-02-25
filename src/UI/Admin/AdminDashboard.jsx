@@ -22,19 +22,22 @@ function AdminDashboard() {
   const [showStaffPassword, setShowStaffPassword] = useState(false);
 
 
-  const loggedInUser = localStorage.getItem('username') || '';
-  const loggedInRole = localStorage.getItem('role') || '';
-  const fullname = localStorage.getItem('fullname');
+  const storedUser = localStorage.getItem('user');
+  const user = storedUser ? JSON.parse(storedUser) : null;
 
-  // 🔐 PROTECT ADMIN ROUTE
+  const loggedInUser = user?.username || '';
+  const loggedInRole = user?.role || '';
+  const fullname = user?.fullname || '';
+
   useEffect(() => {
-    if (!loggedInRole) {
-      navigate('/login');
+    if (!user?.token) {
+      navigate('/');
+    } else if (user.role !== 'admin') {
+      navigate('/dashboard/consumer');
     }
-  }, [loggedInRole, navigate]);
+  }, [user, navigate]);
 
-  // ⛔ Stop rendering until role exists
-  if (!loggedInRole) {
+  if (!user?.token || user.role !== 'admin') {
     return null;
   }
 
