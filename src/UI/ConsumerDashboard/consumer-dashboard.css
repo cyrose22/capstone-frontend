@@ -90,8 +90,7 @@ button {
   justify-content: space-between;
   align-items: center;
   padding: 16px 22px;
-  background: linear-gradient(90deg, #ff5722, #ff784e);
-  color: white;
+  background: linear-gradient(135deg, #ff5722, #ff784e);
   position: sticky;
   top: 0;
   z-index: 100;
