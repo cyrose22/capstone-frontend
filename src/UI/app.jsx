@@ -19,8 +19,11 @@ import './app.css';
 // Dashboard layout with sidebar
 // ==========================
 function DashboardLayout() {
-  const role = localStorage.getItem('role');   // ✅ FIXED
-  const showSidebar = role === 'admin' || role === 'staff';
+  const storedUser = localStorage.getItem('user');
+  const user = storedUser ? JSON.parse(storedUser) : null;
+
+  const showSidebar =
+    user?.role === 'admin' || user?.role === 'staff';
 
   return (
     <div className="modern-layout">
@@ -40,22 +43,26 @@ function DashboardLayout() {
 // 🔐 Route guard
 // ==========================
 function ProtectedRoute({ children }) {
-  const token = localStorage.getItem('token');   // ✅ FIXED
-  return token ? children : <Navigate to="/" />;
+  const storedUser = localStorage.getItem('user');
+  const user = storedUser ? JSON.parse(storedUser) : null;
+
+  return user?.token ? children : <Navigate to="/" />;
 }
 
 
 // ==========================
-// Wrapper so we can check route & auth
+// Wrapper
 // ==========================
 function AppWrapper() {
   const location = useLocation();
-  const token = localStorage.getItem('token');   // ✅ FIXED
+
+  const storedUser = localStorage.getItem('user');
+  const user = storedUser ? JSON.parse(storedUser) : null;
 
   const hideChatBot =
     location.pathname === '/' ||
     location.pathname === '/register' ||
-    !token;
+    !user?.token;
 
   return (
     <>
@@ -65,13 +72,7 @@ function AppWrapper() {
         <Route path="/" element={<LoginForm />} />
         <Route path="/register" element={<Registration />} />
 
-        {/* Optional redirects */}
-        <Route path="/admin-dashboard" element={<Navigate to="/dashboard/admin" />} />
-        <Route path="/sales-dashboard" element={<Navigate to="/dashboard/sales" />} />
-        <Route path="/product-dashboard" element={<Navigate to="/dashboard/products" />} />
-        <Route path="/consumer-dashboard" element={<Navigate to="/dashboard/consumer" />} />
-
-        {/* 🔐 Protected routes */}
+        {/* Protected routes */}
         <Route
           path="/dashboard"
           element={
