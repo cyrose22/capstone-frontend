@@ -23,6 +23,7 @@ function RegisterForm() {
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [message, setMessage] = useState('');
+  const [showAddress, setShowAddress] = useState(false); // ✅ NEW
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -95,13 +96,25 @@ function RegisterForm() {
             <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
             <input type="password" name="confirmPassword" placeholder="Confirm Password" onChange={handleChange} required />
 
-            <h4 className="section-title">Address Information</h4>
+            {/* ✅ Collapsible Address Section */}
+            <div 
+              className="address-toggle"
+              onClick={() => setShowAddress(!showAddress)}
+            >
+              <h4 className="section-title">
+                Address Information {showAddress ? "▲" : "▼"}
+              </h4>
+            </div>
 
-            <input name="province" placeholder="Province" onChange={handleChange} required />
-            <input name="municipality" placeholder="Municipality" onChange={handleChange} required />
-            <input name="barangay" placeholder="Barangay" onChange={handleChange} required />
-            <input name="street" placeholder="Street" onChange={handleChange} />
-            <input name="block" placeholder="Block #" onChange={handleChange} />
+            {showAddress && (
+              <div className="address-section">
+                <input name="province" placeholder="Province" onChange={handleChange} required />
+                <input name="municipality" placeholder="Municipality" onChange={handleChange} required />
+                <input name="barangay" placeholder="Barangay" onChange={handleChange} required />
+                <input name="street" placeholder="Street (Optional)" onChange={handleChange} />
+                <input name="block" placeholder="Block # (Optional)" onChange={handleChange} />
+              </div>
+            )}
 
             <button type="submit" className="primary-btn">
               Register & Send OTP

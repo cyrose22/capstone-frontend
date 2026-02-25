@@ -165,3 +165,30 @@ input:focus {
   font-size: 13px;
   color: #555;
 }
+
+.address-toggle {
+  cursor: pointer;
+  user-select: none;
+  margin: 10px 0 6px;
+}
+
+.address-toggle h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #444;
+}
+
+.address-section {
+  animation: slideDown 0.25s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
