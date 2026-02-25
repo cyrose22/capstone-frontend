@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import './register.css';
 import logo from '../../assets/logo.png';
+import { toast } from 'react-toastify';
 
 function RegisterForm() {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ function RegisterForm() {
   const [otpSent, setOtpSent] = useState(false);
   const [message, setMessage] = useState('');
   const [showAddress, setShowAddress] = useState(false); // ✅ NEW
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -38,18 +40,30 @@ function RegisterForm() {
     }
 
     try {
-      await axios.post(
-        'https://capstone-backend-kiax.onrender.com/register',
+      setLoading(true);
+
+      await toast.promise(
+        axios.post(
+          'https://capstone-backend-kiax.onrender.com/register',
+          {
+            ...formData,
+            role: 'user'
+          }
+        ),
         {
-          ...formData,
-          role: 'user'
+          pending: 'Sending OTP...',
+          success: 'OTP sent to your email address!',
+          error: {
+            render({ data }) {
+              return data.response?.data?.message || 'Registration failed.';
+            }
+          }
         }
       );
 
       setOtpSent(true);
-      setMessage("OTP sent to your email address.");
-    } catch (err) {
-      setMessage(err.response?.data?.message || 'Registration failed.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -116,8 +130,8 @@ function RegisterForm() {
               </div>
             )}
 
-            <button type="submit" className="primary-btn">
-              Register & Send OTP
+            <button type="submit" className="primary-btn" disabled={loading}>
+              {loading ? "Sending..." : "Register & Send OTP"}
             </button>
 
           </form>
