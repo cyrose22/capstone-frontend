@@ -11,6 +11,7 @@ import NotificationPanel from "../Notification/NotificationPanel";
 import VariantModal from "../Variant/VariantModal";
 import CancelOrderModal from "../CancelOrder/CancelOrderModal";
 import ToastMessage from "../ToastMessage/ToastMessage";
+import logo from '../../assets/logo.png';
 
 function ConsumerDashboard() {
   const navigate = useNavigate();
@@ -229,6 +230,7 @@ function ConsumerDashboard() {
       {/* Sidebar */}
       <aside className="consumer-sidebar">
         <div className="sidebar-brand">
+          <img src={logo} alt="Oscar D'Great Logo" className="sidebar-logo" />
           <h3>Oscar D'Great</h3>
           <p>Pet Trading Supplies</p>
         </div>

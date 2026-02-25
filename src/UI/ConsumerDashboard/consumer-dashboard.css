@@ -355,3 +355,25 @@ th {
     padding: 6px 10px;
   }
 }
+
+.sidebar-logo {
+  width: 80px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+}
+
+.sidebar-brand {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.sidebar-brand h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.sidebar-brand p {
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
