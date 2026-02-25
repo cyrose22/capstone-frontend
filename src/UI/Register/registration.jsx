@@ -45,7 +45,7 @@ function RegisterForm() {
       );
 
       setOtpSent(true);
-      setMessage("OTP sent to your email/phone.");
+      setMessage("OTP sent to your email address.");
     } catch (err) {
       setMessage(err.response?.data?.message || 'Registration failed.');
     }
@@ -63,8 +63,8 @@ function RegisterForm() {
 
       setMessage("✅ Account verified successfully!");
       setTimeout(() => navigate('/'), 1500);
-    } catch {
-      setMessage("❌ Invalid OTP.");
+    } catch (err) {
+      setMessage(err.response?.data?.message || "❌ OTP verification failed.");
     }
   };
 
@@ -79,7 +79,13 @@ function RegisterForm() {
           <form onSubmit={handleRegister}>
 
             <input name="fullname" placeholder="Full Name" onChange={handleChange} required />
-            <input name="username" placeholder="Email or Username" onChange={handleChange} required />
+            <input 
+              type="email"
+              name="username" 
+              placeholder="Email Address" 
+              onChange={handleChange} 
+              required 
+            />
             <input name="contact" placeholder="Contact Number" onChange={handleChange} required />
 
             <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
