@@ -26,6 +26,18 @@ function AdminDashboard() {
   const loggedInRole = localStorage.getItem('role') || '';
   const fullname = localStorage.getItem('fullname');
 
+  // 🔐 PROTECT ADMIN ROUTE
+  useEffect(() => {
+    if (!loggedInRole) {
+      navigate('/login');
+    }
+  }, [loggedInRole, navigate]);
+
+  // ⛔ Stop rendering until role exists
+  if (!loggedInRole) {
+    return null;
+  }
+
   const fetchUsers = async () => {
     try {
       const res = await axios.get('https://capstone-backend-kiax.onrender.com/users');
