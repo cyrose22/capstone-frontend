@@ -163,23 +163,23 @@ input::placeholder {
 
 .brand-section {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 28px; /* keep space before tabs */
 }
 
 .brand-logo {
-  width: 120px;  /* increase from current */
-  margin-bottom: 12px;
+  width: 150px;
+  margin-bottom: 6px;
 }
 
 .brand-title {
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 700;
   color: #ee4d2d;
-  margin: 0;
+  margin: 0; /* remove default margin */
 }
 
 .brand-subtitle {
   font-size: 13px;
   color: #777;
-  margin-top: 4px;
+  margin-top: 4px; /* small controlled spacing */
 }
