@@ -29,32 +29,51 @@ function LoginForm() {
   };
 
   const handleSendOtp = async () => {
+    if (!username) {
+      setMessage("Please enter your email first.");
+      return;
+    }
+
     try {
       await axios.post(
         'https://capstone-backend-kiax.onrender.com/send-login-otp',
         { username }
       );
+
       setOtpSent(true);
-      setMessage('OTP sent to your email/phone');
+      setMessage('OTP sent to your email');
+
     } catch (err) {
-      setMessage('Failed to send OTP');
+      if (err.response?.status === 404) {
+        setMessage('Account not found. Redirecting to register...');
+        setTimeout(() => navigate('/register'), 1500);
+      } else {
+        setMessage(err.response?.data?.message || 'Failed to send OTP');
+      }
     }
   };
 
   const handleOtpLogin = async () => {
+    if (otp.length !== 6) {
+      setMessage("OTP must be 6 digits.");
+      return;
+    }
+
     try {
       const res = await axios.post(
         'https://capstone-backend-kiax.onrender.com/login-otp',
         { username, otp }
       );
+
       handleSuccess(res.data);
+
     } catch (err) {
-      setMessage('Invalid OTP');
+      setMessage(err.response?.data?.message || "Invalid or expired OTP");
     }
   };
 
   const handleSuccess = (userData) => {
-    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('token', userData.token);
     localStorage.setItem('role', userData.role);
 
     if (userData.role === 'admin' || userData.role === 'staff') {
