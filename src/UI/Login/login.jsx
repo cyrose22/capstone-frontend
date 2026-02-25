@@ -195,14 +195,15 @@ function LoginForm() {
           >
             Password
           </button>
+
           <button
-            className={useOtp && !recoverMode ? 'active' : ''}
+            className={useOtp ? 'active' : ''}
             onClick={() => {
               setUseOtp(true);
               setRecoverMode(false);
             }}
           >
-            OTP Login
+            {recoverMode ? 'Recover Password' : 'OTP Login'}
           </button>
         </div>
 
