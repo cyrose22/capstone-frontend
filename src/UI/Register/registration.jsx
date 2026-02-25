@@ -23,21 +23,42 @@ function RegisterForm() {
 
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
-  const [message, setMessage] = useState('');
-  const [showAddress, setShowAddress] = useState(false); // ✅ NEW
+  const [showAddress, setShowAddress] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+
+    // Live password match validation
+    if (
+      e.target.name === "password" ||
+      e.target.name === "confirmPassword"
+    ) {
+      if (
+        formData.password !== formData.confirmPassword &&
+        e.target.value !== formData.password
+      ) {
+        setPasswordError("Passwords do not match");
+      } else {
+        setPasswordError('');
+      }
+    }
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      setMessage("❌ Passwords do not match.");
+      setPasswordError("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
+
+    setPasswordError('');
 
     try {
       setLoading(true);
@@ -69,18 +90,28 @@ function RegisterForm() {
 
   const verifyOtp = async () => {
     try {
-      await axios.post(
-        'https://capstone-backend-kiax.onrender.com/verify-otp',
+      await toast.promise(
+        axios.post(
+          'https://capstone-backend-kiax.onrender.com/verify-otp',
+          {
+            username: formData.username,
+            otp
+          }
+        ),
         {
-          username: formData.username,
-          otp
+          pending: 'Verifying OTP...',
+          success: 'Account verified successfully!',
+          error: {
+            render({ data }) {
+              return data.response?.data?.message || "OTP verification failed.";
+            }
+          }
         }
       );
 
-      setMessage("✅ Account verified successfully!");
       setTimeout(() => navigate('/'), 1500);
     } catch (err) {
-      setMessage(err.response?.data?.message || "❌ OTP verification failed.");
+      console.error(err);
     }
   };
 
@@ -107,10 +138,41 @@ function RegisterForm() {
             />
             <input name="contact" placeholder="Contact Number" onChange={handleChange} required />
 
-            <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
-            <input type="password" name="confirmPassword" placeholder="Confirm Password" onChange={handleChange} required />
+            {/* Password */}
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                onChange={handleChange}
+                className={passwordError ? "input-error" : ""}
+                required
+              />
+              <span onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? "🙈" : "👁️"}
+              </span>
+            </div>
 
-            {/* ✅ Collapsible Address Section */}
+            {/* Confirm Password */}
+            <div className="password-wrapper">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                onChange={handleChange}
+                className={passwordError ? "input-error" : ""}
+                required
+              />
+              <span onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                {showConfirmPassword ? "🙈" : "👁️"}
+              </span>
+            </div>
+
+            {passwordError && (
+              <p className="error-text">{passwordError}</p>
+            )}
+
+            {/* Collapsible Address */}
             <div 
               className="address-toggle"
               onClick={() => setShowAddress(!showAddress)}
@@ -149,8 +211,6 @@ function RegisterForm() {
             </button>
           </div>
         )}
-
-        {message && <p className="message">{message}</p>}
 
         <p className="redirect-text">
           Already have an account? <Link to="/">Login</Link>

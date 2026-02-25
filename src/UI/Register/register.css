@@ -192,3 +192,27 @@ input:focus {
     transform: translateY(0);
   }
 }
+
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper span {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.input-error {
+  border: 1px solid #ff3b3b !important;
+  background: #fff5f5;
+}
+
+.error-text {
+  color: #ff3b3b;
+  font-size: 13px;
+  margin-top: -6px;
+  margin-bottom: 10px;
+}
