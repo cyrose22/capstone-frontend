@@ -22,17 +22,17 @@ function AdminDashboard() {
   const [showStaffPassword, setShowStaffPassword] = useState(false);
 
   // ✅ FIXED localStorage reading
-  const storedUser = JSON.parse(localStorage.getItem('user'));
+  const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
   const loggedInUser = storedUser?.username || '';
   const loggedInRole = storedUser?.role || '';
   const fullname = storedUser?.fullname || '';
 
   // ✅ Protect admin route
   useEffect(() => {
-    if (!storedUser || storedUser.role !== 'admin') {
+    if (!storedUser?.role || storedUser.role !== 'admin') {
       navigate('/login');
     }
-  }, [navigate, storedUser]);
+  }, [navigate]);
 
   const fetchUsers = async () => {
     try {
