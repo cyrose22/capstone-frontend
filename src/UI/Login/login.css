@@ -160,3 +160,14 @@ input::placeholder {
 .forgot-link:hover {
   opacity: 0.8;
 }
+
+.brand-logo {
+  width: 180px;
+  height: auto;
+  margin-bottom: 15px;
+}
+
+.brand-section {
+  text-align: center;
+  margin-bottom: 20px;
+}

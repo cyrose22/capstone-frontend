@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import logo from '../../assets/logo.jpg';
 import './login.css';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -181,8 +182,7 @@ function LoginForm() {
       <div className="login-card">
 
         <div className="brand-section">
-          <h1>Oscar D'Great</h1>
-          <p>Pet Supplies Trading</p>
+          <img src={logo} alt="Oscar D'Great Logo" className="brand-logo" />
         </div>
 
         <div className="login-tabs">
