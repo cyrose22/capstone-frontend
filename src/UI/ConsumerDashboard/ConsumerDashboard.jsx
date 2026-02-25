@@ -226,31 +226,65 @@ function ConsumerDashboard() {
   };
 
   return (
-    <div className="store-container">
+    <div className="consumer-layout">
 
-      {/* TOP BAR */}
-      <div className="top-bar">
-        <span>Get 50% Off on Selected Items</span>
-        <button>Shop Now</button>
-      </div>
-
-      {/* NAVBAR */}
-      <header className="store-navbar">
-
-        <div className="nav-left">
-          <img src={logo} alt="logo" className="store-logo" />
-          <h2>Oscar D'Great</h2>
+      {/* Sidebar */}
+      <aside className={`consumer-sidebar ${sidebarOpen ? "open" : ""}`}>
+        <div className="sidebar-brand">
+          <h3>Oscar D'Great</h3>
+          <p>Pet Trading Supplies</p>
         </div>
 
-        <div className="nav-center">
-          <input type="text" placeholder="Search Product..." />
-        </div>
+        <ul className="sidebar-menu">
+          {["shop", "orders", "profile"].map((tab) => (
+            <li
+              key={tab}
+              onClick={() => {
+                setActiveTab(tab);
+                setSidebarOpen(false);
+              }}
+              className={activeTab === tab ? "active" : ""}
+            >
+              {tab === "shop" && "🛒 Shop"}
+              {tab === "orders" && "📜 Orders"}
+              {tab === "profile" && "👤 Profile"}
+            </li>
+          ))}
+        </ul>
+      </aside>
 
-        <div className="nav-right">
-          <button className="nav-icon">🔔</button>
+      {/* Main */}
+      <div className="consumer-main">
 
+        {/* Header */}
+        <header className="consumer-header">
+
+        {/* LEFT SIDE */}
+        <div className="header-left">
           <button
-            className="nav-icon"
+            className="menu-btn"
+            onClick={() => setSidebarOpen(true)}
+          >
+            ☰
+          </button>
+
+          <h2 className="welcome-text">
+            🛍️ Welcome, {user?.fullname || user?.username || "Guest"}!
+          </h2>
+        </div>
+
+        {/* RIGHT SIDE */}
+        <div className="header-actions">
+          <NotificationPanel
+            notifBounce={notifBounce}
+            newStatusChanges={newStatusChanges}
+            setNewStatusChanges={setNewStatusChanges}
+            notifRef={notifRef}
+          />
+
+          {/* Cart */}
+          <button
+            className="cart-btn"
             onClick={() => setShowCartModal(true)}
           >
             🛒
@@ -261,29 +295,119 @@ function ConsumerDashboard() {
             )}
           </button>
 
-          <button className="nav-icon">👤</button>
+          {/* Profile */}
+          <div className="profile-wrapper">
+            <button
+              className="profile-btn"
+              onClick={() => setShowProfileMenu((p) => !p)}
+            >
+              👤
+            </button>
+
+            {showProfileMenu && (
+              <div className="profile-dropdown">
+                <button onClick={() => setEditingPassword(true)}>
+                  Change Password
+                </button>
+                <button
+                  className="logout-btn"
+                  onClick={() => {
+                    localStorage.removeItem("user");
+                    navigate("/");
+                  }}
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
       </header>
 
-      {/* HERO SECTION */}
-      <section className="hero-section">
-        <div className="hero-text">
-          <h1>Premium Pet Supplies</h1>
-          <p>Everything your pet needs in one place</p>
-          <button>Shop Now</button>
+        {/* Content */}
+        <div className="consumer-content">
+          {activeTab === "shop" && (
+            <ShopTab
+              products={products}
+              addToCart={addToCart}
+              openVariantModal={openVariantModal}
+            />
+          )}
+
+          {activeTab === "orders" && (
+            <OrdersTab
+              salesHistory={salesHistory}
+              products={products}
+              cart={cart}
+              setCart={setCart}
+              setActiveTab={setActiveTab}
+              setShowCartModal={setShowCartModal}
+              setCancelModalVisible={setCancelModalVisible}
+              setSaleToCancel={setSaleToCancel}
+              setCancelReason={setCancelReason}
+              enrichSalesWithImages={enrichSalesWithImages}
+              setSalesHistory={setSalesHistory}
+              user={user}
+            />
+          )}
+
+          {activeTab === "profile" && (
+            <ProfileTab user={user} setUser={setUser} />
+          )}
         </div>
-      </section>
+      </div>
 
-      {/* PRODUCT SECTION */}
-      <main className="store-content">
-        <ShopTab
-          products={products}
-          addToCart={addToCart}
-          openVariantModal={openVariantModal}
+      {/* MODALS (unchanged) */}
+      {showCartModal && (
+        <CartModal
+          key={cart.length}
+          cart={cart}
+          updateCartQuantity={updateCartQuantity}
+          removeFromCart={removeFromCart}
+          setShowPaymentModal={setShowPaymentModal}
+          setShowCartModal={setShowCartModal}
+          formatCurrency={formatCurrency}
         />
-      </main>
+      )}
 
+      {showPaymentModal && (
+        <PaymentModal
+          cart={cart}
+          user={user}
+          paymentMethod={paymentMethod}
+          setPaymentMethod={setPaymentMethod}
+          hasSelectedPayment={hasSelectedPayment}
+          setHasSelectedPayment={setHasSelectedPayment}
+          setToastMessage={setToastMessage}
+          setToastType={setToastType}
+          setShowToast={setShowToast}
+          onClose={() => setShowPaymentModal(false)}
+        />
+      )}
+
+      {variantModalOpen && (
+        <VariantModal
+          product={selectedProduct}
+          currentIndex={currentModalImageIndex}
+          setCurrentIndex={setCurrentModalImageIndex}
+          onClose={() => setVariantModalOpen(false)}
+          addToCart={addToCart}
+        />
+      )}
+
+      {cancelModalVisible && (
+        <CancelOrderModal
+          saleToCancel={saleToCancel}
+          user={user}
+          products={products}
+          enrichSalesWithImages={enrichSalesWithImages}
+          setSalesHistory={setSalesHistory}
+          onClose={() => setCancelModalVisible(false)}
+        />
+      )}
+
+      {showToast && <ToastMessage type={toastType} message={toastMessage} />}
     </div>
   );
 }
