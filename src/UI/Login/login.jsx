@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import './login.css';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-
 function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -12,8 +11,15 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState('');
   const [otpSent, setOtpSent] = useState(false);
+  const otpInputRef = useRef(null);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (useOtp && otpSent) {
+      otpInputRef.current?.focus();
+    }
+  }, [useOtp, otpSent]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -183,6 +189,7 @@ function LoginForm() {
                   placeholder="Enter OTP"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
+                  ref={otpInputRef}
                 />
                 <button className="primary-btn" onClick={handleOtpLogin}>
                   Verify & Login
