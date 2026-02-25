@@ -3,6 +3,7 @@ import axios from 'axios';
 import './login.css';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+
 function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -11,15 +12,20 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState('');
   const [otpSent, setOtpSent] = useState(false);
-  const otpInputRef = useRef(null);
 
+  // ✅ NEW STATES
+  const [recoverMode, setRecoverMode] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+
+  const otpInputRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (useOtp && otpSent) {
+    if (useOtp && otpSent && !otpVerified) {
       otpInputRef.current?.focus();
     }
-  }, [useOtp, otpSent]);
+  }, [useOtp, otpSent, otpVerified]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -46,17 +52,19 @@ function LoginForm() {
     );
   };
 
+  // ✅ UPDATED (handles both OTP login & recover)
   const handleSendOtp = async () => {
     if (!username) {
       toast.error("Please enter your email first.");
       return;
     }
 
+    const endpoint = recoverMode
+      ? 'https://capstone-backend-kiax.onrender.com/forgot-password'
+      : 'https://capstone-backend-kiax.onrender.com/send-login-otp';
+
     await toast.promise(
-      axios.post(
-        'https://capstone-backend-kiax.onrender.com/send-login-otp',
-        { username }
-      ),
+      axios.post(endpoint, { email: username }),
       {
         pending: 'Sending OTP...',
         success: 'OTP sent successfully!',
@@ -71,32 +79,86 @@ function LoginForm() {
     setOtpSent(true);
   };
 
+  // ✅ UPDATED (handles login OR verify for reset)
   const handleOtpLogin = async () => {
     if (otp.length !== 6) {
       toast.error("OTP must be 6 digits.");
       return;
     }
 
+    if (recoverMode) {
+      await toast.promise(
+        axios.post(
+          'https://capstone-backend-kiax.onrender.com/verify-forgot-otp',
+          { email: username, otp }
+        ),
+        {
+          pending: 'Verifying OTP...',
+          success: 'OTP verified!',
+          error: {
+            render({ data }) {
+              return data.response?.data?.message || 'Invalid or expired OTP';
+            }
+          }
+        }
+      );
+
+      setOtpVerified(true);
+    } else {
+      await toast.promise(
+        axios.post(
+          'https://capstone-backend-kiax.onrender.com/login-otp',
+          { username, otp }
+        ),
+        {
+          pending: 'Verifying OTP...',
+          success: {
+            render({ data }) {
+              handleSuccess(data.data);
+              return 'Login successful!';
+            }
+          },
+          error: {
+            render({ data }) {
+              return data.response?.data?.message || 'Invalid or expired OTP';
+            }
+          }
+        }
+      );
+    }
+  };
+
+  // ✅ NEW FUNCTION
+  const handleResetPassword = async () => {
+    if (newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters.");
+      return;
+    }
+
     await toast.promise(
       axios.post(
-        'https://capstone-backend-kiax.onrender.com/login-otp',
-        { username, otp }
+        'https://capstone-backend-kiax.onrender.com/reset-password',
+        { email: username, newPassword }
       ),
       {
-        pending: 'Verifying OTP...',
-        success: {
-          render({ data }) {
-            handleSuccess(data.data);
-            return 'Login successful!';
-          }
-        },
+        pending: 'Resetting password...',
+        success: 'Password reset successful!',
         error: {
           render({ data }) {
-            return data.response?.data?.message || 'Invalid or expired OTP';
+            return data.response?.data?.message || 'Failed to reset password';
           }
         }
       }
     );
+
+    // Reset UI
+    setRecoverMode(false);
+    setUseOtp(false);
+    setOtpSent(false);
+    setOtpVerified(false);
+    setUsername('');
+    setOtp('');
+    setNewPassword('');
   };
 
   const handleSuccess = (userData) => {
@@ -126,13 +188,19 @@ function LoginForm() {
         <div className="login-tabs">
           <button
             className={!useOtp ? 'active' : ''}
-            onClick={() => setUseOtp(false)}
+            onClick={() => {
+              setUseOtp(false);
+              setRecoverMode(false);
+            }}
           >
             Password
           </button>
           <button
-            className={useOtp ? 'active' : ''}
-            onClick={() => setUseOtp(true)}
+            className={useOtp && !recoverMode ? 'active' : ''}
+            onClick={() => {
+              setUseOtp(true);
+              setRecoverMode(false);
+            }}
           >
             OTP Login
           </button>
@@ -166,14 +234,27 @@ function LoginForm() {
             </button>
 
             <div className="extra-links">
-              <Link to="/forgot-password">Forgot Password?</Link>
+              {/* ✅ Changed to Recover Password (no redirect) */}
+              <span
+                className="forgot-link"
+                onClick={() => {
+                  setUseOtp(true);
+                  setRecoverMode(true);
+                  setOtpSent(false);
+                  setOtpVerified(false);
+                  setUsername('');
+                  setOtp('');
+                }}
+              >
+                Recover Password
+              </span>
             </div>
           </form>
         ) : (
           <div className="otp-section">
             <input
               type="text"
-              placeholder="Username or Email"
+              placeholder="Email"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -182,7 +263,7 @@ function LoginForm() {
               <button className="primary-btn" onClick={handleSendOtp}>
                 Send OTP
               </button>
-            ) : (
+            ) : !otpVerified ? (
               <>
                 <input
                   type="text"
@@ -192,7 +273,19 @@ function LoginForm() {
                   ref={otpInputRef}
                 />
                 <button className="primary-btn" onClick={handleOtpLogin}>
-                  Verify & Login
+                  Verify OTP
+                </button>
+              </>
+            ) : (
+              <>
+                <input
+                  type="password"
+                  placeholder="Enter New Password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+                <button className="primary-btn" onClick={handleResetPassword}>
+                  Change Password
                 </button>
               </>
             )}
