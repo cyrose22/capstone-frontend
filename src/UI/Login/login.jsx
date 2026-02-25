@@ -163,15 +163,14 @@ function LoginForm() {
   };
 
   const handleSuccess = (userData) => {
-    console.log("USER DATA:", userData);
-
     const role = userData.role?.toLowerCase().trim();
 
     const user = {
       id: userData.id,
       fullname: userData.fullname,
-      username: userData.username,   // ✅ ADD THIS
-      role: role
+      username: userData.username,
+      role: role,
+      token: userData.token
     };
 
     localStorage.setItem('user', JSON.stringify(user));
@@ -182,7 +181,7 @@ function LoginForm() {
       navigate('/dashboard/consumer');
     }
   };
-
+  
   return (
     <div className="login-container">
       <div className="login-card">
