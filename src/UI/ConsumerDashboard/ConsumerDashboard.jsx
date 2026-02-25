@@ -226,169 +226,64 @@ function ConsumerDashboard() {
   };
 
   return (
-    <div className="consumer-layout">
+    <div className="store-container">
 
-      {/* Sidebar */}
-      <aside className={`consumer-sidebar ${sidebarOpen ? "open" : ""}`}>
-        <div className="sidebar-brand">
-          <img src={logo} alt="Logo" className="sidebar-logo" />
-          <h3>Oscar D'Great</h3>
-          <p>Pet Trading Supplies</p>
-        </div>
-
-        <ul className="sidebar-menu">
-          {["shop", "orders", "profile"].map((tab) => (
-            <li
-              key={tab}
-              onClick={() => {
-                setActiveTab(tab);
-                setSidebarOpen(false);
-              }}
-              className={activeTab === tab ? "active" : ""}
-            >
-              {tab === "shop" && "🛒 Shop"}
-              {tab === "orders" && "📜 Orders"}
-              {tab === "profile" && "👤 Profile"}
-            </li>
-          ))}
-        </ul>
-      </aside>
-
-      {/* Main */}
-      <div className="consumer-main">
-
-        {/* Header */}
-        <header className="consumer-header">
-
-          <div className="header-left">
-            <button
-              className="menu-btn"
-              onClick={() => setSidebarOpen(true)}
-            >
-              ☰
-            </button>
-
-            <h2 className="welcome-text">
-              Welcome, {user?.fullname || user?.username || "Guest"}
-            </h2>
-          </div>
-
-          <div className="header-icons">
-
-            <div className="icon-wrapper">
-              <NotificationPanel
-                notifBounce={notifBounce}
-                newStatusChanges={newStatusChanges}
-                setNewStatusChanges={setNewStatusChanges}
-                notifRef={notifRef}
-              />
-            </div>
-
-            <button
-              className="icon-wrapper"
-              onClick={() => setShowCartModal(true)}
-            >
-              🛒
-              {cart.length > 0 && (
-                <span className="icon-badge">
-                  {cart.reduce((sum, item) => sum + item.quantity, 0)}
-                </span>
-              )}
-            </button>
-
-            <button
-              className="icon-wrapper"
-              onClick={() => setShowProfileMenu((p) => !p)}
-            >
-              👤
-            </button>
-
-          </div>
-        </header>
-
-        {/* Content */}
-        <div className="consumer-content">
-          {activeTab === "shop" && (
-            <ShopTab
-              products={products}
-              addToCart={addToCart}
-              openVariantModal={openVariantModal}
-            />
-          )}
-
-          {activeTab === "orders" && (
-            <OrdersTab
-              salesHistory={salesHistory}
-              products={products}
-              cart={cart}
-              setCart={setCart}
-              setActiveTab={setActiveTab}
-              setShowCartModal={setShowCartModal}
-              setCancelModalVisible={setCancelModalVisible}
-              setSaleToCancel={setSaleToCancel}
-              setCancelReason={setCancelReason}
-              enrichSalesWithImages={enrichSalesWithImages}
-              setSalesHistory={setSalesHistory}
-              user={user}
-            />
-          )}
-
-          {activeTab === "profile" && (
-            <ProfileTab user={user} setUser={setUser} />
-          )}
-        </div>
+      {/* TOP BAR */}
+      <div className="top-bar">
+        <span>Get 50% Off on Selected Items</span>
+        <button>Shop Now</button>
       </div>
 
-      {/* MODALS (unchanged) */}
-      {showCartModal && (
-        <CartModal
-          key={cart.length}
-          cart={cart}
-          updateCartQuantity={updateCartQuantity}
-          removeFromCart={removeFromCart}
-          setShowPaymentModal={setShowPaymentModal}
-          setShowCartModal={setShowCartModal}
-          formatCurrency={formatCurrency}
-        />
-      )}
+      {/* NAVBAR */}
+      <header className="store-navbar">
 
-      {showPaymentModal && (
-        <PaymentModal
-          cart={cart}
-          user={user}
-          paymentMethod={paymentMethod}
-          setPaymentMethod={setPaymentMethod}
-          hasSelectedPayment={hasSelectedPayment}
-          setHasSelectedPayment={setHasSelectedPayment}
-          setToastMessage={setToastMessage}
-          setToastType={setToastType}
-          setShowToast={setShowToast}
-          onClose={() => setShowPaymentModal(false)}
-        />
-      )}
+        <div className="nav-left">
+          <img src={logo} alt="logo" className="store-logo" />
+          <h2>Oscar D'Great</h2>
+        </div>
 
-      {variantModalOpen && (
-        <VariantModal
-          product={selectedProduct}
-          currentIndex={currentModalImageIndex}
-          setCurrentIndex={setCurrentModalImageIndex}
-          onClose={() => setVariantModalOpen(false)}
-          addToCart={addToCart}
-        />
-      )}
+        <div className="nav-center">
+          <input type="text" placeholder="Search Product..." />
+        </div>
 
-      {cancelModalVisible && (
-        <CancelOrderModal
-          saleToCancel={saleToCancel}
-          user={user}
+        <div className="nav-right">
+          <button className="nav-icon">🔔</button>
+
+          <button
+            className="nav-icon"
+            onClick={() => setShowCartModal(true)}
+          >
+            🛒
+            {cart.length > 0 && (
+              <span className="cart-badge">
+                {cart.reduce((sum, item) => sum + item.quantity, 0)}
+              </span>
+            )}
+          </button>
+
+          <button className="nav-icon">👤</button>
+        </div>
+
+      </header>
+
+      {/* HERO SECTION */}
+      <section className="hero-section">
+        <div className="hero-text">
+          <h1>Premium Pet Supplies</h1>
+          <p>Everything your pet needs in one place</p>
+          <button>Shop Now</button>
+        </div>
+      </section>
+
+      {/* PRODUCT SECTION */}
+      <main className="store-content">
+        <ShopTab
           products={products}
-          enrichSalesWithImages={enrichSalesWithImages}
-          setSalesHistory={setSalesHistory}
-          onClose={() => setCancelModalVisible(false)}
+          addToCart={addToCart}
+          openVariantModal={openVariantModal}
         />
-      )}
+      </main>
 
-      {showToast && <ToastMessage type={toastType} message={toastMessage} />}
     </div>
   );
 }
