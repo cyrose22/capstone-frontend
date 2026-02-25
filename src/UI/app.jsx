@@ -14,41 +14,60 @@ import Chatbot from './Chat/ChatBot';
 
 import './app.css';
 
+
+// ==========================
 // Dashboard layout with sidebar
+// ==========================
 function DashboardLayout() {
-  const user = JSON.parse(localStorage.getItem('user'));
-  const showSidebar = user?.role === 'admin' || user?.role === 'staff';
+  const role = localStorage.getItem('role');
+  const showSidebar = role === 'admin' || role === 'staff';
 
   return (
     <div className="modern-layout">
       {showSidebar && <Sidebar />}
-      <div className="dashboard-main" style={{ width: showSidebar ? 'calc(100% - 240px)' : '100%' }}>
+      <div
+        className="dashboard-main"
+        style={{ width: showSidebar ? 'calc(100% - 240px)' : '100%' }}
+      >
         <Outlet />
       </div>
     </div>
   );
 }
 
+
+// ==========================
 // 🔐 Route guard
+// ==========================
 function ProtectedRoute({ children }) {
-  const user = JSON.parse(localStorage.getItem('user'));
-  return user ? children : <Navigate to="/" />;
+  const token = localStorage.getItem('token');
+
+  // If no token → redirect to login
+  if (!token) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
 }
 
-// ✅ Wrapper so we can check route & user
+
+// ==========================
+// Wrapper to check route & auth
+// ==========================
 function AppWrapper() {
   const location = useLocation();
-  const user = JSON.parse(localStorage.getItem('user'));
+  const token = localStorage.getItem('token');
 
-  // Hide chatbot on login/register OR if no user (logged out)
+  // Hide chatbot on login/register OR if not logged in
   const hideChatBot =
     location.pathname === '/' ||
     location.pathname === '/register' ||
-    !user;
+    !token;
 
   return (
     <>
       <Routes>
+
         {/* Public routes */}
         <Route path="/" element={<LoginForm />} />
         <Route path="/register" element={<Registration />} />
@@ -73,14 +92,19 @@ function AppWrapper() {
           <Route path="products" element={<ProductDashboard />} />
           <Route path="consumer" element={<ConsumerDashboard />} />
         </Route>
+
       </Routes>
 
-      {/* ✅ Only show chatbot when user is logged in & not on login/register */}
+      {/* Chatbot only when logged in */}
       {!hideChatBot && <Chatbot />}
     </>
   );
 }
 
+
+// ==========================
+// Main App
+// ==========================
 function App() {
   return (
     <BrowserRouter>
@@ -89,13 +113,13 @@ function App() {
       <ToastContainer
         position="top-right"
         autoClose={3000}
-        hideProgressBar={false}   // 👈 SHOW PROGRESS BAR
+        hideProgressBar={false}
         newestOnTop
         closeOnClick
         pauseOnHover
         draggable
         pauseOnFocusLoss
-        theme="colored"           // 👈 colored theme
+        theme="colored"
       />
     </BrowserRouter>
   );
