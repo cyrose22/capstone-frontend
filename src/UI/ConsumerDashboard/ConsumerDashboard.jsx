@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./consumer-dashboard.css";
+
 import ShopTab from "../Shop/ShopTab";
 import OrdersTab from "../Orders/OrderTab";
 import ProfileTab from "../Profile/ProfileTab";
@@ -11,12 +12,14 @@ import NotificationPanel from "../Notification/NotificationPanel";
 import VariantModal from "../Variant/VariantModal";
 import CancelOrderModal from "../CancelOrder/CancelOrderModal";
 import ToastMessage from "../ToastMessage/ToastMessage";
-import logo from '../../assets/logo.png';
+
+import logo from "../../assets/logo.png";
 
 function ConsumerDashboard() {
   const navigate = useNavigate();
 
-  // States
+  // ================= STATES =================
+
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
   const [salesHistory, setSalesHistory] = useState([]);
@@ -54,9 +57,11 @@ function ConsumerDashboard() {
   const [showPassword, setShowPassword] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Effects
+  // ================= EFFECTS =================
+
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => (document.body.style.overflow = "auto");
@@ -68,16 +73,27 @@ function ConsumerDashboard() {
   }, []);
 
   useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
     if (user?.id) fetchSales();
   }, [user]);
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    if (!user?.id) return;
+    fetchSales();
+    const interval = setInterval(fetchSales, 5000);
+    return () => clearInterval(interval);
+  }, [user]);
+
+  // ================= API =================
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("https://capstone-backend-kiax.onrender.com/products");
+      const res = await axios.get(
+        "https://capstone-backend-kiax.onrender.com/products"
+      );
       setProducts(res.data);
     } catch (err) {
       console.error("Failed to load products:", err);
@@ -86,7 +102,10 @@ function ConsumerDashboard() {
 
   const fetchSales = async () => {
     try {
-      const res = await axios.get(`https://capstone-backend-kiax.onrender.com/sales/user/${user.id}`);
+      const res = await axios.get(
+        `https://capstone-backend-kiax.onrender.com/sales/user/${user.id}`
+      );
+
       const updatedSales = res.data;
 
       updatedSales.forEach((sale) => {
@@ -108,12 +127,7 @@ function ConsumerDashboard() {
     }
   };
 
-  useEffect(() => {
-    if (!user?.id) return;
-    fetchSales();
-    const interval = setInterval(fetchSales, 5000);
-    return () => clearInterval(interval);
-  }, [user]);
+  // ================= HELPERS =================
 
   const formatCurrency = (amount) =>
     `₱${Number(amount).toLocaleString("en-PH", {
@@ -128,13 +142,19 @@ function ConsumerDashboard() {
         const product = products.find((p) => p.id === item.product_id);
         const variant =
           product?.variants?.find(
-            (v) => String(v.id) === String(item.variantId || item.variant_id)
+            (v) =>
+              String(v.id) ===
+              String(item.variantId || item.variant_id)
           ) || null;
+
         return {
           ...item,
-          variantId: item.variantId || item.variant_id || variant?.id,
-          variantName: item.variantName || variant?.variant_name,
-          variantImage: item.variantImage || variant?.images?.[0],
+          variantId:
+            item.variantId || item.variant_id || variant?.id,
+          variantName:
+            item.variantName || variant?.variant_name,
+          variantImage:
+            item.variantImage || variant?.images?.[0],
           image: product?.image,
           name: item.name || product?.name,
         };
@@ -142,22 +162,30 @@ function ConsumerDashboard() {
     }));
   };
 
-  const norm = (v) => (v == null ? null : String(v).trim().toLowerCase());
+  const norm = (v) =>
+    v == null ? null : String(v).trim().toLowerCase();
+
+  // ================= CART =================
 
   const addToCart = (product, variant = null) => {
     setCart((prev) => {
       const variantId = variant?.variantId || null;
+
       const existing = prev.find(
         (item) =>
           item.id === product.id &&
           norm(item.variantId) === norm(variantId) &&
           norm(item.variantName) === norm(variant?.variantName)
       );
+
       if (existing) {
         return prev.map((item) =>
-          item === existing ? { ...item, quantity: item.quantity + 1 } : item
+          item === existing
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
         );
       }
+
       return [
         ...prev,
         {
@@ -167,7 +195,8 @@ function ConsumerDashboard() {
           image: product.image,
           variantId,
           variantName: variant?.variantName,
-          variantImage: variant?.variantImage || product.image,
+          variantImage:
+            variant?.variantImage || product.image,
           quantity: 1,
         },
       ];
@@ -176,6 +205,7 @@ function ConsumerDashboard() {
 
   const updateCartQuantity = (id, qty, variantId, variantName) => {
     if (qty < 1) return;
+
     setCart((prev) =>
       prev.map((item) =>
         item.id === id &&
@@ -200,6 +230,8 @@ function ConsumerDashboard() {
     );
   };
 
+  // ================= VARIANT =================
+
   const openVariantModal = (product, images, title, index = 0) => {
     setSelectedProduct(product);
     setModalImages(images);
@@ -208,13 +240,20 @@ function ConsumerDashboard() {
     setVariantModalOpen(true);
   };
 
+  // ================= PASSWORD =================
+
   const handlePasswordSave = async () => {
-    if (!newPassword.trim()) return alert("Password can't be empty");
+    if (!newPassword.trim())
+      return alert("Password can't be empty");
+
     try {
       setSavingPassword(true);
-      await axios.put(`https://capstone-backend-kiax.onrender.com/users/${user.id}/password`, {
-        password: newPassword,
-      });
+
+      await axios.put(
+        `https://capstone-backend-kiax.onrender.com/users/${user.id}/password`,
+        { password: newPassword }
+      );
+
       alert("Password updated!");
       setEditingPassword(false);
       setNewPassword("");
@@ -225,12 +264,23 @@ function ConsumerDashboard() {
     }
   };
 
+  // ================= UI =================
+
   return (
     <div className="consumer-layout">
 
-      {/* Sidebar */}
-      <aside className={`consumer-sidebar ${sidebarOpen ? "open" : ""}`}>
+      {/* SIDEBAR */}
+      <aside
+        className={`consumer-sidebar ${
+          sidebarOpen ? "open" : ""
+        }`}
+      >
         <div className="sidebar-brand">
+          <img
+            src={logo}
+            alt="Logo"
+            className="sidebar-logo"
+          />
           <h3>Oscar D'Great</h3>
           <p>Pet Trading Supplies</p>
         </div>
@@ -239,11 +289,11 @@ function ConsumerDashboard() {
           {["shop", "orders", "profile"].map((tab) => (
             <li
               key={tab}
+              className={activeTab === tab ? "active" : ""}
               onClick={() => {
                 setActiveTab(tab);
                 setSidebarOpen(false);
               }}
-              className={activeTab === tab ? "active" : ""}
             >
               {tab === "shop" && "🛒 Shop"}
               {tab === "orders" && "📜 Orders"}
@@ -253,80 +303,92 @@ function ConsumerDashboard() {
         </ul>
       </aside>
 
-      {/* Main */}
+      {/* MAIN */}
       <div className="consumer-main">
 
-        {/* Header */}
+        {/* HEADER */}
         <header className="consumer-header">
 
-        {/* LEFT SIDE */}
-        <div className="header-left">
-          <button
-            className="menu-btn"
-            onClick={() => setSidebarOpen(true)}
-          >
-            ☰
-          </button>
-
-          <h2 className="welcome-text">
-            🛍️ Welcome, {user?.fullname || user?.username || "Guest"}!
-          </h2>
-        </div>
-
-        {/* RIGHT SIDE */}
-        <div className="header-actions">
-          <NotificationPanel
-            notifBounce={notifBounce}
-            newStatusChanges={newStatusChanges}
-            setNewStatusChanges={setNewStatusChanges}
-            notifRef={notifRef}
-          />
-
-          {/* Cart */}
-          <button
-            className="cart-btn"
-            onClick={() => setShowCartModal(true)}
-          >
-            🛒
-            {cart.length > 0 && (
-              <span className="cart-badge">
-                {cart.reduce((sum, item) => sum + item.quantity, 0)}
-              </span>
-            )}
-          </button>
-
-          {/* Profile */}
-          <div className="profile-wrapper">
+          <div className="header-left">
             <button
-              className="profile-btn"
-              onClick={() => setShowProfileMenu((p) => !p)}
+              className="menu-btn"
+              onClick={() => setSidebarOpen(true)}
             >
-              👤
+              ☰
             </button>
 
-            {showProfileMenu && (
-              <div className="profile-dropdown">
-                <button onClick={() => setEditingPassword(true)}>
-                  Change Password
-                </button>
-                <button
-                  className="logout-btn"
-                  onClick={() => {
-                    localStorage.removeItem("user");
-                    navigate("/");
-                  }}
-                >
-                  Logout
-                </button>
-              </div>
-            )}
+            <h2 className="welcome-text">
+              Welcome,{" "}
+              {user?.fullname ||
+                user?.username ||
+                "Guest"}
+              !
+            </h2>
           </div>
-        </div>
 
-      </header>
+          <div className="header-icons">
 
-        {/* Content */}
+            <NotificationPanel
+              notifBounce={notifBounce}
+              newStatusChanges={newStatusChanges}
+              setNewStatusChanges={setNewStatusChanges}
+              notifRef={notifRef}
+            />
+
+            <button
+              className="icon-wrapper"
+              onClick={() => setShowCartModal(true)}
+            >
+              🛒
+              {cart.length > 0 && (
+                <span className="icon-badge">
+                  {cart.reduce(
+                    (sum, item) =>
+                      sum + item.quantity,
+                    0
+                  )}
+                </span>
+              )}
+            </button>
+
+            <div className="profile-wrapper">
+              <button
+                className="icon-wrapper"
+                onClick={() =>
+                  setShowProfileMenu((p) => !p)
+                }
+              >
+                👤
+              </button>
+
+              {showProfileMenu && (
+                <div className="profile-dropdown">
+                  <button
+                    onClick={() =>
+                      setEditingPassword(true)
+                    }
+                  >
+                    Change Password
+                  </button>
+                  <button
+                    className="logout-btn"
+                    onClick={() => {
+                      localStorage.removeItem("user");
+                      navigate("/");
+                    }}
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+
+          </div>
+        </header>
+
+        {/* CONTENT */}
         <div className="consumer-content">
+
           {activeTab === "shop" && (
             <ShopTab
               products={products}
@@ -343,22 +405,31 @@ function ConsumerDashboard() {
               setCart={setCart}
               setActiveTab={setActiveTab}
               setShowCartModal={setShowCartModal}
-              setCancelModalVisible={setCancelModalVisible}
+              setCancelModalVisible={
+                setCancelModalVisible
+              }
               setSaleToCancel={setSaleToCancel}
               setCancelReason={setCancelReason}
-              enrichSalesWithImages={enrichSalesWithImages}
+              enrichSalesWithImages={
+                enrichSalesWithImages
+              }
               setSalesHistory={setSalesHistory}
               user={user}
             />
           )}
 
           {activeTab === "profile" && (
-            <ProfileTab user={user} setUser={setUser} />
+            <ProfileTab
+              user={user}
+              setUser={setUser}
+            />
           )}
+
         </div>
       </div>
 
-      {/* MODALS (unchanged) */}
+      {/* MODALS */}
+
       {showCartModal && (
         <CartModal
           key={cart.length}
@@ -378,11 +449,15 @@ function ConsumerDashboard() {
           paymentMethod={paymentMethod}
           setPaymentMethod={setPaymentMethod}
           hasSelectedPayment={hasSelectedPayment}
-          setHasSelectedPayment={setHasSelectedPayment}
+          setHasSelectedPayment={
+            setHasSelectedPayment
+          }
           setToastMessage={setToastMessage}
           setToastType={setToastType}
           setShowToast={setShowToast}
-          onClose={() => setShowPaymentModal(false)}
+          onClose={() =>
+            setShowPaymentModal(false)
+          }
         />
       )}
 
@@ -390,8 +465,12 @@ function ConsumerDashboard() {
         <VariantModal
           product={selectedProduct}
           currentIndex={currentModalImageIndex}
-          setCurrentIndex={setCurrentModalImageIndex}
-          onClose={() => setVariantModalOpen(false)}
+          setCurrentIndex={
+            setCurrentModalImageIndex
+          }
+          onClose={() =>
+            setVariantModalOpen(false)
+          }
           addToCart={addToCart}
         />
       )}
@@ -401,13 +480,22 @@ function ConsumerDashboard() {
           saleToCancel={saleToCancel}
           user={user}
           products={products}
-          enrichSalesWithImages={enrichSalesWithImages}
+          enrichSalesWithImages={
+            enrichSalesWithImages
+          }
           setSalesHistory={setSalesHistory}
-          onClose={() => setCancelModalVisible(false)}
+          onClose={() =>
+            setCancelModalVisible(false)
+          }
         />
       )}
 
-      {showToast && <ToastMessage type={toastType} message={toastMessage} />}
+      {showToast && (
+        <ToastMessage
+          type={toastType}
+          message={toastMessage}
+        />
+      )}
     </div>
   );
 }

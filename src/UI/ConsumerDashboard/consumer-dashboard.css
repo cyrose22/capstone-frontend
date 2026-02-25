@@ -1,3 +1,5 @@
+/* ================= GLOBAL ================= */
+
 * {
   box-sizing: border-box;
 }
@@ -8,7 +10,7 @@ html, body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #f8fafc;
   color: #333;
-  overflow-x: hidden; /* fixes left-right movement */
+  overflow-x: hidden;
 }
 
 button {
@@ -16,10 +18,14 @@ button {
   cursor: pointer;
 }
 
+/* ================= LAYOUT ================= */
+
 .consumer-layout {
   display: flex;
   min-height: 100vh;
 }
+
+/* ================= SIDEBAR ================= */
 
 .consumer-sidebar {
   width: 240px;
@@ -40,7 +46,7 @@ button {
 }
 
 .sidebar-logo {
-  width: 75px;
+  width: 80px;
   margin-bottom: 1rem;
 }
 
@@ -52,7 +58,7 @@ button {
 
 .sidebar-brand p {
   font-size: 0.85rem;
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 .sidebar-menu {
@@ -62,7 +68,7 @@ button {
 
 .sidebar-menu li {
   padding: 0.9rem 1rem;
-  border-radius: 8px;
+  border-radius: 10px;
   margin-bottom: 0.6rem;
   cursor: pointer;
   transition: 0.2s ease;
@@ -78,12 +84,16 @@ button {
   font-weight: 600;
 }
 
+/* ================= MAIN ================= */
+
 .consumer-main {
   flex: 1;
   margin-left: 240px;
   display: flex;
   flex-direction: column;
 }
+
+/* ================= HEADER ================= */
 
 .consumer-header {
   display: flex;
@@ -114,9 +124,10 @@ button {
   font-size: 1.2rem;
   font-weight: 600;
   margin: 0;
+  color: white;
 }
 
-/* RIGHT ICONS */
+/* HEADER ICONS */
 
 .header-icons {
   display: flex;
@@ -150,50 +161,15 @@ button {
   border-radius: 50%;
 }
 
+/* ================= CONTENT ================= */
+
 .consumer-content {
   flex: 1;
   padding: 2rem;
   overflow-y: auto;
 }
 
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.5rem;
-}
-
-.product-card {
-  border-radius: 16px;
-  background: white;
-  padding: 1.2rem;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.05);
-  text-align: center;
-  transition: 0.3s ease;
-}
-
-.product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 14px 30px rgba(0,0,0,0.08);
-}
-
-.product-card img {
-  width: 100%;
-  aspect-ratio: 1/1;
-  object-fit: contain;
-  background: #f5f5f5;
-  border-radius: 12px;
-  margin-bottom: 0.75rem;
-}
-
-.product-card button {
-  margin-top: 0.6rem;
-  padding: 8px 14px;
-  background: linear-gradient(90deg, #ff5722, #ff9f1a);
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-weight: 600;
-}
+/* ================= MOBILE ================= */
 
 @media (max-width: 768px) {
 
@@ -215,9 +191,5 @@ button {
 
   .consumer-content {
     padding: 1rem;
-  }
-
-  .product-grid {
-    grid-template-columns: repeat(2, 1fr);
   }
 }
