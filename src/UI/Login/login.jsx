@@ -31,26 +31,23 @@ function LoginForm() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    await toast.promise(
-      axios.post(
+    try {
+      toast.loading("Logging in...");
+
+      const response = await axios.post(
         'https://capstone-backend-kiax.onrender.com/login',
         { username, password }
-      ),
-      {
-        pending: 'Logging in...',
-        success: {
-          render({ data }) {
-            handleSuccess(data.data);   // ✅ FIXED
-            return 'Login successful!';
-          }
-        },
-        error: {
-          render({ data }) {
-            return data.response?.data?.message || 'Login failed';
-          }
-        }
-      }
-    );
+      );
+
+      toast.dismiss();
+      toast.success("Login successful!");
+
+      handleSuccess(response.data);  // ✅ navigate will work properly
+
+    } catch (err) {
+      toast.dismiss();
+      toast.error(err.response?.data?.message || "Login failed");
+    }
   };
 
   // ✅ UPDATED (handles both OTP login & recover)
@@ -87,45 +84,34 @@ function LoginForm() {
       return;
     }
 
-    if (recoverMode) {
-      await toast.promise(
-        axios.post(
+    try {
+      toast.loading("Verifying OTP...");
+
+      if (recoverMode) {
+        await axios.post(
           'https://capstone-backend-kiax.onrender.com/verify-forgot-otp',
           { email: username, otp }
-        ),
-        {
-          pending: 'Verifying OTP...',
-          success: 'OTP verified!',
-          error: {
-            render({ data }) {
-              return data.response?.data?.message || 'Invalid or expired OTP';
-            }
-          }
-        }
-      );
+        );
 
-      setOtpVerified(true);
-    } else {
-      await toast.promise(
-        axios.post(
+        toast.dismiss();
+        toast.success("OTP verified!");
+        setOtpVerified(true);
+
+      } else {
+        const response = await axios.post(
           'https://capstone-backend-kiax.onrender.com/login-otp',
           { username, otp }
-        ),
-        {
-          pending: 'Verifying OTP...',
-          success: {
-            render({ data }) {
-              handleSuccess(data.data);   // ✅ FIXED
-              return 'Login successful!';
-            }
-          },
-          error: {
-            render({ data }) {
-              return data.response?.data?.message || 'Invalid or expired OTP';
-            }
-          }
-        }
-      );
+        );
+
+        toast.dismiss();
+        toast.success("Login successful!");
+
+        handleSuccess(response.data);   // ✅ Navigation will now work properly
+      }
+
+    } catch (err) {
+      toast.dismiss();
+      toast.error(err.response?.data?.message || "Invalid or expired OTP");
     }
   };
 
