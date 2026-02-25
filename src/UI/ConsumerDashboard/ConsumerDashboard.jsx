@@ -269,58 +269,44 @@ function ConsumerDashboard() {
             </button>
 
             <h2 className="welcome-text">
-              🛍️ Welcome, {user?.fullname || user?.username || "Guest"}!
+              Welcome, {user?.fullname || user?.username || "Guest"}
             </h2>
           </div>
 
           {/* RIGHT SIDE */}
-          <div className="header-actions">
-            <NotificationPanel
-              notifBounce={notifBounce}
-              newStatusChanges={newStatusChanges}
-              setNewStatusChanges={setNewStatusChanges}
-              notifRef={notifRef}
-            />
+          <div className="header-icons">
+
+            {/* Notification */}
+            <div className="icon-wrapper">
+              <NotificationPanel
+                notifBounce={notifBounce}
+                newStatusChanges={newStatusChanges}
+                setNewStatusChanges={setNewStatusChanges}
+                notifRef={notifRef}
+              />
+            </div>
 
             {/* Cart */}
             <button
-              className="cart-btn"
+              className="icon-wrapper"
               onClick={() => setShowCartModal(true)}
             >
               🛒
               {cart.length > 0 && (
-                <span className="cart-badge">
+                <span className="icon-badge">
                   {cart.reduce((sum, item) => sum + item.quantity, 0)}
                 </span>
               )}
             </button>
 
             {/* Profile */}
-            <div className="profile-wrapper">
-              <button
-                className="profile-btn"
-                onClick={() => setShowProfileMenu((p) => !p)}
-              >
-                👤
-              </button>
+            <button
+              className="icon-wrapper"
+              onClick={() => setShowProfileMenu((p) => !p)}
+            >
+              👤
+            </button>
 
-              {showProfileMenu && (
-                <div className="profile-dropdown">
-                  <button onClick={() => setEditingPassword(true)}>
-                    Change Password
-                  </button>
-                  <button
-                    className="logout-btn"
-                    onClick={() => {
-                      localStorage.removeItem("user");
-                      navigate("/");
-                    }}
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
           </div>
 
         </header>
