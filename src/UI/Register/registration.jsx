@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import './register.css';
+import logo from '../../assets/logo.png';
 
 function RegisterForm() {
   const navigate = useNavigate();
@@ -72,8 +73,11 @@ function RegisterForm() {
     <div className="register-container">
       <div className="register-card">
 
-        <h2>Create Account</h2>
-        <p className="subtext">Join Oscar D'Great Pet Supplies</p>
+        <div className="brand-section">
+          <img src={logo} alt="Oscar Logo" className="brand-logo" />
+          <h2>Create Account</h2>
+          <p className="subtext">Join Oscar D’Great Pet Supplies</p>
+        </div>
 
         {!otpSent ? (
           <form onSubmit={handleRegister}>
