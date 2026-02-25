@@ -28,16 +28,11 @@ button {
 /* ================= SIDEBAR ================= */
 
 .consumer-sidebar {
-  width: 240px;
-  background: linear-gradient(135deg, #ff5722, #ff784e);
-  color: white;
-  padding: 2rem 1rem;
   position: fixed;
-  height: 100vh;
-  left: 0;
   top: 0;
-  transition: 0.3s ease;
-  z-index: 200;
+  left: -260px;
+  height: 100vh;
+  z-index: 3000; /* HIGHER than header */
 }
 
 .sidebar-brand {
@@ -93,6 +88,13 @@ button {
   flex-direction: column;
 }
 
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 2500;
+}
+
 /* ================= HEADER ================= */
 
 .consumer-header {
@@ -103,7 +105,7 @@ button {
   background: linear-gradient(135deg, #ff7a18, #ff5722);
   color: white;
 
-  position: relative;   /* change from sticky if needed */
+  position: relative;
   z-index: 1000;        /* increase this */
 }
 

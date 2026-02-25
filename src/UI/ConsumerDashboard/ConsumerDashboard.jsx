@@ -269,6 +269,14 @@ function ConsumerDashboard() {
   return (
     <div className="consumer-layout">
 
+      {/* OVERLAY */}
+      {sidebarOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* SIDEBAR */}
       <aside
         className={`consumer-sidebar ${
