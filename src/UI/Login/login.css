@@ -63,28 +63,40 @@ body {
   opacity: 0.9;
 }
 
-/* Inputs */
+/* Clean input styling */
 input {
   width: 100%;
-  padding: 13px;
+  height: 48px;                /* fixed height */
+  padding: 0 16px;             /* horizontal padding only */
   margin-bottom: 14px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid #ddd;
   font-size: 14px;
-  transition: 0.3s;
+  background: #f9f9f9;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
+/* Focus effect */
 input:focus {
   outline: none;
   border-color: #ee4d2d;
+  background: #fff;
   box-shadow: 0 0 0 3px rgba(238, 77, 45, 0.15);
+}
+
+/* Placeholder fix */
+input::placeholder {
+  color: #aaa;
+  font-size: 14px;
 }
 
 /* OTP style */
 .otp-section input {
   text-align: center;
-  letter-spacing: 5px;
-  font-size: 18px;
+  letter-spacing: 4px;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 /* Button */
@@ -103,6 +115,23 @@ input:focus {
 .primary-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(238, 77, 45, 0.3);
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  padding-right: 45px;
+}
+
+.password-wrapper span {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 16px;
 }
 
 /* Links */
