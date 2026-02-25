@@ -15,7 +15,7 @@ body {
   background: #ffffff;
   width: 100%;
   max-width: 420px;
-  padding: 2rem;
+  padding: 35px 40px;
   border-radius: 18px;
   box-shadow: 0 15px 40px rgba(0,0,0,0.25);
   text-align: center;
@@ -38,7 +38,8 @@ body {
 /* Tabs */
 .login-tabs {
   display: flex;
-  margin-bottom: 20px;
+  margin-top: 18px;
+  margin-bottom: 18px;
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid #eee;
@@ -163,23 +164,22 @@ input::placeholder {
 
 .brand-section {
   text-align: center;
-  margin-bottom: 28px; /* keep space before tabs */
+  margin-bottom: 24px;
 }
 
 .brand-logo {
-  width: 150px;
-  margin-bottom: 6px;
+  width: 130px;
+  margin-bottom: 8px;
 }
 
-.brand-title {
-  font-size: 21px;
-  font-weight: 700;
+.brand-text h1 {
+  font-size: 22px;
   color: #ee4d2d;
-  margin: 0; /* remove default margin */
+  margin: 0;
 }
 
-.brand-subtitle {
+.brand-text p {
   font-size: 13px;
   color: #777;
-  margin-top: 4px; /* small controlled spacing */
+  margin: 3px 0 0 0;
 }
