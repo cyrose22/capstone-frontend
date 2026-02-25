@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import logo from '../../assets/logo.jpg';
+import logo from '../../assets/logo.png';
 import './login.css';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
