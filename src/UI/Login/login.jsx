@@ -165,15 +165,11 @@ function LoginForm() {
   const handleSuccess = (userData) => {
     const role = userData.role?.toLowerCase().trim();
 
-    const user = {
-      id: userData.id,
-      fullname: userData.fullname,
-      username: userData.username,
-      role: role,
-      token: userData.token
-    };
-
-    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('id', userData.id);
+    localStorage.setItem('username', userData.username);
+    localStorage.setItem('fullname', userData.fullname);
+    localStorage.setItem('role', role);
+    localStorage.setItem('token', userData.token);
 
     if (role === 'admin' || role === 'staff') {
       navigate('/dashboard/admin');
@@ -181,7 +177,7 @@ function LoginForm() {
       navigate('/dashboard/consumer');
     }
   };
-  
+
   return (
     <div className="login-container">
       <div className="login-card">
