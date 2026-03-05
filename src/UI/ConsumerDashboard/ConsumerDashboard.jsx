@@ -178,7 +178,7 @@ function ConsumerDashboard() {
 
         {/* TOP BAR */}
         <div className="store-topbar">
-          <span>Need help? Call us: +63 900 123 4567</span>
+          <span>Need help? Call us: +63 912 345 6789</span>
         </div>
 
         {/* MAIN NAV */}
