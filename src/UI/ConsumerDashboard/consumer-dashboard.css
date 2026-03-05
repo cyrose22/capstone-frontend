@@ -362,3 +362,11 @@ button {
 .category-card:hover{
   transform:translateY(-4px);
 }
+
+.shop-search{
+  position: sticky;
+  top: 80px; /* adjust depending on header height */
+  background: white;
+  padding: 10px 0;
+  z-index: 50;
+}

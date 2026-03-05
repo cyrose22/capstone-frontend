@@ -136,7 +136,7 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
   return (
     <div style={{ padding: "1rem" }}>
       {/* 🔍 Search */}
-      <div style={{ marginBottom: "1rem" }}>
+      <div className="shop-search">
         <input
           type="text"
           placeholder="🔍 Search products by name..."
