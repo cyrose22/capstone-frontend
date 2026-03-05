@@ -180,6 +180,13 @@ function ConsumerDashboard() {
       maximumFractionDigits: 2,
     })}`;
 
+  
+  const categoryCounts = products.reduce((acc, p) => {
+    const c = p.category || "Others";
+    acc[c] = (acc[c] || 0) + 1;
+    return acc;
+  }, {});
+
   return (
     <div className="storefront-layout">
 
@@ -193,7 +200,15 @@ function ConsumerDashboard() {
         {/* MAIN NAV */}
         <div className="store-header-main">
 
-          <div className="store-logo-section">
+          <div
+            className="store-logo-section"
+            onClick={() => {
+              setActiveTab("shop");
+              setSelectedCategory("All");
+              goToProducts();
+            }}
+            style={{ cursor: "pointer" }}
+          >
             <img src={logo} alt="logo" className="store-logo" />
           </div>
 
@@ -320,27 +335,29 @@ function ConsumerDashboard() {
         </div>
       </section>
 
-      <section className="pet-categories">
+      <section className="category-strip">
+        <div className="category-strip-inner">
+          <div className="category-strip-title">
+            <h2>Browse</h2>
+            <p>Pick a category to filter products</p>
+          </div>
 
-        <h2>Categories</h2>
-
-        <div className="category-grid">
-          {categories
-            .filter((cat) => cat !== "All")
-            .map((cat) => (
-              <div
+          <div className="category-pills" role="tablist" aria-label="Product categories">
+            {categories.map((cat) => (
+              <button
                 key={cat}
-                className={`category-card ${selectedCategory === cat ? "active" : ""}`}
+                type="button"
+                className={`cat-pill ${selectedCategory === cat ? "active" : ""}`}
                 onClick={() => {
                   setSelectedCategory(cat);
                   goToProducts();
                 }}
               >
-                <h3>{cat}</h3>
-              </div>
-          ))}
+                {cat === "All" ? "All" : `${cat} (${categoryCounts[cat] || 0})`}
+              </button>
+            ))}
+          </div>
         </div>
-
       </section>
 
       <div className="store-content">
