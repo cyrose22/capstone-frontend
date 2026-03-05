@@ -163,8 +163,41 @@ function ConsumerDashboard() {
     <div className="storefront-layout">
 
       <header className="store-header">
-        <div className="store-header-top">
-          <img src={logo} alt="logo" className="store-logo" />
+
+        {/* TOP BAR */}
+        <div className="store-topbar">
+          <span>Need help? Call us: +63 900 123 4567</span>
+        </div>
+
+        {/* MAIN NAV */}
+        <div className="store-header-main">
+
+          <div className="store-logo-section">
+            <img src={logo} alt="logo" className="store-logo" />
+          </div>
+
+          <nav className="store-nav">
+            <button
+              className={activeTab === "shop" ? "nav-active" : ""}
+              onClick={() => setActiveTab("shop")}
+            >
+              Shop
+            </button>
+
+            <button
+              className={activeTab === "orders" ? "nav-active" : ""}
+              onClick={() => setActiveTab("orders")}
+            >
+              Orders
+            </button>
+
+            <button
+              className={activeTab === "profile" ? "nav-active" : ""}
+              onClick={() => setActiveTab("profile")}
+            >
+              Profile
+            </button>
+          </nav>
 
           <div className="store-icons">
 
@@ -197,9 +230,8 @@ function ConsumerDashboard() {
 
               {showProfileMenu && (
                 <div className="profile-dropdown">
-                  <button onClick={() => setEditingPassword(true)}>
-                    Change Password
-                  </button>
+                  <button>Change Password</button>
+
                   <button
                     className="logout-btn"
                     onClick={() => {
@@ -214,16 +246,64 @@ function ConsumerDashboard() {
             </div>
 
           </div>
+
         </div>
-{/* 
-        <div className="store-search">
-          <input placeholder="Search products..." />
-        </div> */}
+
       </header>
 
       <section className="store-hero">
-        <h1>Everything Your Pet Needs</h1>
-        <p>Premium food, treats & accessories</p>
+
+        <div className="hero-left">
+          <h1>Everything Your Pet Needs</h1>
+          <p>Premium food, treats, vitamins & accessories</p>
+
+          <div className="hero-buttons">
+            <button onClick={() => setActiveTab("shop")}>
+              Shop Now
+            </button>
+
+            <button
+              className="secondary-btn"
+              onClick={() => setActiveTab("orders")}
+            >
+              Track Orders
+            </button>
+          </div>
+        </div>
+
+        <div className="hero-right">
+          <div className="hero-card">
+            <h3>Free Delivery</h3>
+            <p>Orders over ₱1500</p>
+          </div>
+        </div>
+
+      </section>
+
+      <section className="pet-categories">
+
+        <h2>Our Pet Categories</h2>
+
+        <div className="category-grid">
+
+          <div className="category-card">
+            <h3>Dog Supplies</h3>
+          </div>
+
+          <div className="category-card">
+            <h3>Cat Supplies</h3>
+          </div>
+
+          <div className="category-card">
+            <h3>Fish Supplies</h3>
+          </div>
+
+          <div className="category-card">
+            <h3>Small Pets</h3>
+          </div>
+
+        </div>
+
       </section>
 
       <div className="store-content">
