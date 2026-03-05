@@ -59,12 +59,12 @@ function Header() {
   };
 
   const handleBellClick = () => {
-    // When admin clicks bell, mark as "seen"
+    // mark notifications as seen
     setSinceNow();
     setNewOrdersCount(0);
 
-    // Optional: navigate to orders page (if you have it)
-    // navigate("/dashboard/admin/orders");
+    // go to sales page and open Processing tab
+    navigate("/dashboard/sales", { state: { status: "processing" } });
   };
 
   return (
@@ -83,11 +83,8 @@ function Header() {
             onClick={handleBellClick}
           >
             <Bell size={18} />
-
             {newOrdersCount > 0 && (
-              <span className="notif-badge">
-                {newOrdersCount > 99 ? "99+" : newOrdersCount}
-              </span>
+              <span className="notif-badge">{newOrdersCount > 99 ? "99+" : newOrdersCount}</span>
             )}
           </button>
         )}

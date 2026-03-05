@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './sales.css';
 import Header from '../Header/Header';
+import { useLocation } from "react-router-dom";
 
 function SalesDashboard() {
   const [sales, setSales] = useState([]);
@@ -23,11 +24,22 @@ function SalesDashboard() {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(''), 2000);
   };
+  const location = useLocation();
 
   useEffect(() => {
     fetchSales();
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    if (location.state?.status) {
+      setStatusTab(location.state.status);
+      setCurrentPage(1);
+
+      // clear state after using it
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     const handleStatusChanged = () => fetchSales();
