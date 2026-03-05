@@ -233,324 +233,270 @@ function ProductDashboard() {
   return (
     <div className="product-dashboard">
       <Header title="🛍️ Product Dashboard" />
-
-      <button
-        className="add-product-btn"
-        onClick={() => {
-          setForm({
-            name: "",
-            price: "",
-            image: "",
-            category: "",
-            variants: [],
-          });
-          setEditingId(null);
-          setShowModal(true);
-        }}
-      >
-        ➕ Add Product
-      </button>
-
-      {/* MODAL */}
-      {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div
-            className="modal-content"
-            onClick={(e) => e.stopPropagation()}
+      <div className="page-container">
+        <button
+            className="add-product-btn"
+            onClick={() => {
+              setForm({
+                name: "",
+                price: "",
+                image: "",
+                category: "",
+                variants: [],
+              });
+              setEditingId(null);
+              setShowModal(true);
+            }}
           >
-            <button
-              className="modal-close-btn"
-              onClick={() => setShowModal(false)}
-            >
-              ×
-            </button>
-            <h3>{editingId !== null ? "Update Product" : "Add New Product"}</h3>
-            <form onSubmit={handleSubmit} className="modal-form">
-              <label>Product Name *</label>
-              <input
-                type="text"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                required
-              />
+            ➕ Add Product
+          </button>
 
-              <label>Category</label>
-              <input
-                type="text"
-                name="category"
-                value={form.category}
-                onChange={handleChange}
-              />
-
-              <label>Price *</label>
-              <input
-                type="number"
-                name="price"
-                value={form.price}
-                onChange={handleChange}
-                required
-                step="0.01"
-                min="0"
-              />
-
-              <label>Display Image</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleMainImageChange}
-              />
-              {form.image && (
-                <div
-                  style={{
-                    width: "100%",
-                    height: "180px",
-                    marginTop: "8px",
-                    borderRadius: "8px",
-                    overflow: "hidden",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    background: "#fafafa",
-                  }}
-                >
-                  <img
-                    src={form.image}
-                    alt="Main product"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain", // ✅ keeps proportions
-                    }}
-                  />
-                </div>
-              )}
+          {/* MODAL */}
+          {showModal && (
+            <div className="modal-overlay" onClick={() => setShowModal(false)}>
               <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
+                className="modal-content"
+                onClick={(e) => e.stopPropagation()}
               >
-                <h4>Variants</h4>
                 <button
-                  type="button"
-                  className="add-product-btn"
-                  onClick={addVariant}
+                  className="modal-close-btn"
+                  onClick={() => setShowModal(false)}
                 >
-                  + Add Variant
+                  ×
                 </button>
-              </div>
-
-              {form.variants.length === 0 && <p>No variants added.</p>}
-              {form.variants.map((variant, idx) => (
-                <div
-                  key={variant.id || idx}
-                  style={{
-                    border: "1px solid #ddd",
-                    padding: "15px",
-                    marginBottom: "10px",
-                    borderRadius: "8px",
-                    background: "#fafafa",
-                  }}
-                >
-                  <label>Variant Name</label>
+                <h3>{editingId !== null ? "Update Product" : "Add New Product"}</h3>
+                <form onSubmit={handleSubmit} className="modal-form">
+                  <label>Product Name *</label>
                   <input
                     type="text"
-                    value={variant.variantName}
-                    onChange={(e) =>
-                      handleVariantNameChange(idx, e.target.value)
-                    }
+                    name="name"
+                    value={form.name}
+                    onChange={handleChange}
                     required
                   />
 
-                  <label>Variant Stock</label>
+                  <label>Category</label>
+                  <input
+                    type="text"
+                    name="category"
+                    value={form.category}
+                    onChange={handleChange}
+                  />
+
+                  <label>Price *</label>
                   <input
                     type="number"
-                    value={variant.qty || 0}
+                    name="price"
+                    value={form.price}
+                    onChange={handleChange}
+                    required
+                    step="0.01"
                     min="0"
-                    onChange={(e) =>
-                      handleVariantQtyChange(idx, e.target.value)
-                    }
                   />
-                  <p
-                    style={{
-                      fontSize: "0.9em",
-                      color: variant.qty <= 0 ? "red" : "green",
-                    }}
-                  >
-                    {variant.qty > 0
-                      ? `${variant.qty} in stock`
-                      : "Out of Stock"}
-                  </p>
 
-                  <label>Variant Images</label>
+                  <label>Display Image</label>
                   <input
                     type="file"
-                    multiple
                     accept="image/*"
-                    onChange={(e) =>
-                      handleVariantImagesChange(idx, e.target.files)
-                    }
+                    onChange={handleMainImageChange}
                   />
+                  {form.image && (
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "180px",
+                        marginTop: "8px",
+                        borderRadius: "8px",
+                        overflow: "hidden",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        background: "#fafafa",
+                      }}
+                    >
+                      <img
+                        src={form.image}
+                        alt="Main product"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain", // ✅ keeps proportions
+                        }}
+                      />
+                    </div>
+                  )}
                   <div
                     style={{
                       display: "flex",
-                      gap: "8px",
-                      flexWrap: "wrap",
-                      marginTop: "8px",
+                      justifyContent: "space-between",
+                      alignItems: "center",
                     }}
                   >
-                    {variant.images &&
-                      variant.images.map((img, i) => (
-                        <div key={i} style={{ position: "relative" }}>
-                          <img
-                            src={img}
-                            alt=""
-                            style={{
-                              width: "60px",
-                              height: "60px",
-                              objectFit: "cover",
-                              borderRadius: "6px",
-                            }}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => removeVariantImage(idx, i)}
-                            style={{
-                              position: "absolute",
-                              top: "-5px",
-                              right: "-5px",
-                              background: "#e74c3c",
-                              border: "none",
-                              borderRadius: "50%",
-                              color: "white",
-                              width: "20px",
-                              height: "20px",
-                              cursor: "pointer",
-                            }}
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ))}
+                    <h4>Variants</h4>
+                    <button
+                      type="button"
+                      className="add-product-btn"
+                      onClick={addVariant}
+                    >
+                      + Add Variant
+                    </button>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => removeVariant(idx)}
-                    style={{
-                      marginTop: "10px",
-                      backgroundColor: "#e74c3c",
-                      color: "white",
-                      border: "none",
-                      padding: "6px 12px",
-                      borderRadius: "6px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Remove Variant
-                  </button>
-                </div>
-              ))}
+                  {form.variants.length === 0 && <p>No variants added.</p>}
+                  
+                  {form.variants.map((variant, idx) => (
+                    <div key={variant.id || idx} className="variant-card">
+                      <label>Variant Name</label>
+                      <input
+                        type="text"
+                        value={variant.variantName}
+                        onChange={(e) => handleVariantNameChange(idx, e.target.value)}
+                        required
+                      />
 
-              <div className="modal-actions">
-                <button type="submit">
-                  {editingId !== null ? "Update" : "Add"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+                      <label>Variant Stock</label>
+                      <input
+                        type="number"
+                        value={variant.qty || 0}
+                        min="0"
+                        onChange={(e) => handleVariantQtyChange(idx, e.target.value)}
+                      />
 
-      {/* Product Grid */}
-      <div className="product-grid">
-        {products.length === 0 ? (
-          <p className="empty-message">No products yet.</p>
-        ) : (
-          paginatedProducts.map((p) => (
-            <div key={p.id} className="product-card">
-              <div className="product-image">
-                {p.image ? (
-                  <img
-                    src={p.image}
-                    alt={p.name}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain", // ✅ fix stretch here too
-                    }}
-                  />
-                ) : (
-                  <div className="no-image">No Image</div>
-                )}
-              </div>
-              <div className="product-info">
-                <h4>{p.name}</h4>
-                <p>₱{parseFloat(p.price).toFixed(2)}</p>
+                      <p className={`stock-text ${variant.qty > 0 ? "in" : "out"}`}>
+                        {variant.qty > 0 ? `${variant.qty} in stock` : "Out of Stock"}
+                      </p>
 
-                {p.variants && p.variants.length > 0 && (
-                  <div style={{ marginTop: "6px" }}>
-                    <strong>Variants:</strong>
-                    <ul style={{ margin: 0, paddingLeft: "18px" }}>
-                      {p.variants.map((v, i) => (
-                        <li key={i}>
-                          {v.variantName} –{" "}
-                          {v.qty > 0 ? (
-                            <span style={{ color: "green" }}>
-                              {v.qty} in stock
-                            </span>
-                          ) : (
-                            <span style={{ color: "red" }}>
-                              Out of Stock
-                            </span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
+                      <label>Variant Images</label>
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={(e) => handleVariantImagesChange(idx, e.target.files)}
+                      />
+
+                      <div className="variant-thumb-grid">
+                        {variant.images?.map((img, i) => (
+                          <div key={i} className="variant-thumb">
+                            <img src={img} alt="" />
+                            <button
+                              type="button"
+                              className="variant-thumb-remove"
+                              onClick={() => removeVariantImage(idx, i)}
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+
+                      <button
+                        type="button"
+                        className="variant-remove-btn"
+                        onClick={() => removeVariant(idx)}
+                      >
+                        Remove Variant
+                      </button>
+                    </div>
+                  ))}
+
+                  <div className="modal-actions">
+                    <button type="submit">
+                      {editingId !== null ? "Update" : "Add"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowModal(false)}
+                    >
+                      Cancel
+                    </button>
                   </div>
-                )}
-              </div>
-              <div className="product-actions">
-                <button
-                  className="edit-btn"
-                  onClick={() => handleEdit(p)}
-                >
-                  ✏️ Edit
-                </button>
-                <button
-                  className="delete-btn"
-                  onClick={() => handleDelete(p.id)}
-                >
-                  🗑️ Delete
-                </button>
+                </form>
               </div>
             </div>
-          ))
-        )}
-      </div>
+          )}
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="pagination">
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i + 1}
-              className={currentPage === i + 1 ? "active" : ""}
-              onClick={() => handleChangePage(i + 1)}
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
-      )}
+          {/* Product Grid */}
+          <div className="product-grid">
+            {products.length === 0 ? (
+              <p className="empty-message">No products yet.</p>
+            ) : (
+              paginatedProducts.map((p) => (
+                <div key={p.id} className="product-card">
+                  <div className="product-image">
+                    {p.image ? (
+                      <img
+                        src={p.image}
+                        alt={p.name}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain", // ✅ fix stretch here too
+                        }}
+                      />
+                    ) : (
+                      <div className="no-image">No Image</div>
+                    )}
+                  </div>
+                  <div className="product-info">
+                    <h4>{p.name}</h4>
+                    <p>₱{parseFloat(p.price).toFixed(2)}</p>
+
+                    {p.variants && p.variants.length > 0 && (
+                      <div style={{ marginTop: "6px" }}>
+                        <strong>Variants:</strong>
+                        <ul style={{ margin: 0, paddingLeft: "18px" }}>
+                          {p.variants.map((v, i) => (
+                            <li key={i}>
+                              {v.variantName} –{" "}
+                              {v.qty > 0 ? (
+                                <span style={{ color: "green" }}>
+                                  {v.qty} in stock
+                                </span>
+                              ) : (
+                                <span style={{ color: "red" }}>
+                                  Out of Stock
+                                </span>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                  <div className="product-actions">
+                    <button
+                      className="edit-btn"
+                      onClick={() => handleEdit(p)}
+                    >
+                      ✏️ Edit
+                    </button>
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDelete(p.id)}
+                    >
+                      🗑️ Delete
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="pagination">
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i + 1}
+                  className={currentPage === i + 1 ? "active" : ""}
+                  onClick={() => handleChangePage(i + 1)}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
+          )}
+      </div>
     </div>
   );
 }
