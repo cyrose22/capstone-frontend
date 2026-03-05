@@ -282,6 +282,47 @@ button {
   .category-card h3 {
     font-size: 14px;
   }
+
+  /* ✅ HEADER LAYOUT FIX (icons side-by-side) */
+  .store-header-main{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+
+  /* logo stays left */
+  .store-logo-section{
+    flex:0 0 auto;
+  }
+
+  /* nav uses remaining space */
+  .store-nav{
+    flex:1 1 auto;
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  /* ✅ icons always stay in ONE ROW on the right */
+  .store-icons{
+    flex:0 0 auto;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    white-space:nowrap;
+  }
+
+  /* ensure icon buttons don't shrink */
+  .store-icons .icon-btn{
+    min-width:36px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    border-radius:50%;
+  }
 }
 
 /* ================= ENHANCED SEARCH ================= */
