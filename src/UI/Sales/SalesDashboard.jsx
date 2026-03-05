@@ -294,19 +294,19 @@ function SalesDashboard() {
 
                 <div className="card-body stylish-body sd__cardBody">
                   <div className="info-row sd__row">
-                    <span className="label sd__label">💰 Total</span>
+                    <span className="label sd__label">💰 Total: </span>
                     <span className="value sd__value">
                       ₱{Number(sale.total).toLocaleString("en-PH", { minimumFractionDigits: 2 })}
                     </span>
                   </div>
 
                   <div className="info-row sd__row">
-                    <span className="label sd__label">💳 Payment</span>
+                    <span className="label sd__label">💳 Payment: </span>
                     <span className="value sd__value">{sale.payment_method || "N/A"}</span>
                   </div>
 
                   <div className="items-section sd__items">
-                    <strong className="sd__itemsTitle">🛍️ Items</strong>
+                    <strong className="sd__itemsTitle">🛍️ Items: </strong>
 
                     <ul className="items-list sd__itemsList">
                       {sale.items?.length ? (
