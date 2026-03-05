@@ -47,6 +47,12 @@ button {
   object-fit: contain;
 }
 
+.hero-logo {
+  width:200px;
+  max-width:80%;
+  margin-bottom:10px;
+}
+
 /* ================= HEADER ICONS ================= */
 
 .store-icons {
@@ -225,9 +231,8 @@ button {
     gap: 14px;
   }
 
-  .hero-left h1 {
-    font-size: 28px;
-    line-height: 1.15;
+  .hero-logo{
+    width:160px;
   }
 
   .hero-buttons {

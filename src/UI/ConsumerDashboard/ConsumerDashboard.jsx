@@ -265,7 +265,11 @@ function ConsumerDashboard() {
       <section className="store-hero">
 
         <div className="hero-left">
-          <h1>Everything Your Pet Needs</h1>
+          <img
+            src="/logo.png"
+            alt="Pet Store"
+            className="hero-logo"
+          />
           <p>Premium food, treats, vitamins & accessories</p>
 
           <div className="hero-buttons">
