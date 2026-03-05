@@ -209,153 +209,323 @@ function SalesDashboard() {
 
 
   return (
-    <div className="sales-dashboard">
+    <div className="sales-dashboard sd">
       <Header title="💰 Sales Dashboard" />
-      <br/>
 
-      <div style={{ marginBottom: '1rem', textAlign: 'left' }}>
-        <button className="register-staff-btn" onClick={handleGenerateReport} style={{ marginLeft: '10px' }}>📑 Generate Report</button>
-      </div>
+      <div className="sd__container">
+        {/* Top actions */}
+        <div className="sd__topbar">
+          <div className="sd__topbarLeft">
+            <h2 className="sd__title">Sales Overview</h2>
+            <p className="sd__subtitle">Monitor orders, update statuses, and print receipts.</p>
+          </div>
 
-      {/* === SALES SUMMARY === */}
-      <div className="sales-summary">
-        <div className="summary-box"><h4>₱{totalSalesAmount.toLocaleString()}</h4><span>Total Sales</span></div>
-        <div className="summary-box"><h4>{totalItemsSold}</h4><span>Items Sold</span></div>
-        <div className="summary-box"><h4>{totalItemsLeft}</h4><span>Items Left</span></div>
-      </div>
+          <div className="sd__topbarRight">
+            <button className="sd__btn sd__btn--primary" onClick={handleGenerateReport}>
+              📑 Generate Report
+            </button>
+          </div>
+        </div>
 
-      {/* === STATUS TABS === */}
-      <div className="order-status-tabs">
-        {['processing', 'to receive', 'completed','cancelled'].map((status) => (
-          <button key={status} className={statusTab === status ? 'active' : ''} onClick={() => { setStatusTab(status); setCurrentPage(1); fetchSales(); }}>
-            {status === 'processing' && '⏳ Processing'}
-            {status === 'to receive' && '📦 To Receive'}
-            {status === 'completed' && '✅ Completed'}
-            {status === 'cancelled' && '❌ Cancel'}
-          </button>
-        ))}
-      </div>
+        {/* Summary */}
+        <div className="sales-summary sd__summary">
+          <div className="summary-box sd__summaryCard">
+            <div className="sd__summaryMeta">
+              <span className="sd__summaryLabel">Total Sales</span>
+              <span className="sd__summaryValue">₱{totalSalesAmount.toLocaleString()}</span>
+            </div>
+          </div>
 
-      {/* === SALES LIST === */}
-      {filteredSales.length === 0 ? (
-        <p>No sales in this status.</p>
-      ) : (
-        <div className="sales-card-list">
-          {paginatedSales.map((sale) => (
-            <div key={sale.id} className="sales-card">
-              <div className="card-header">
-                <span><strong>Order ID:</strong> #{sale.id}</span>
-                <span className={`status-tag status-${sale.status.replace(' ', '-')}`}>{sale.status === 'cancelled' ? '❌ Cancelled' : sale.status}</span>
-              </div>
-              <div className="card-body stylish-body">
-                <div className="info-row"><span className="label">📅 Date:</span><span className="value">{new Date(sale.created_at).toLocaleString()}</span></div>
-                <div className="info-row"><span className="label">💰 Total:</span><span className="value">₱{Number(sale.total).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span></div>
-                <div className="info-row"><span className="label">💳 Payment Method:</span><span className="value">{sale.payment_method || 'N/A'}</span></div>
-                <div className="items-section">
-                  <strong>🛍️ Items:</strong>
-                  <ul className="items-list">
-                    {sale.items?.length ? sale.items.map((item, idx) => (
-                      <li key={idx}>
-                        <img src={item.variant_image || item.product_image} alt={item.variant_name || item.product_name} style={{ width: '40px', height: '40px', marginRight: '6px', objectFit: 'cover', verticalAlign: 'middle' }} />
-                        <span className="item-name">{item.variant_name || item.product_name}</span> × {item.quantity} pcs.
-                      </li>
-                    )) : <li>No items</li>}
-                  </ul>
-                  {sale.status === 'cancelled' && (
-                    <div className="cancel-reason">
-                      <div><strong>❌ Reason:</strong> {sale.cancel_description || 'No reason provided.'}</div>
-                      {sale.cancelled_by_name && (<div><strong>🧍 Cancelled by:</strong> {sale.cancelled_by_role === 'admin' ? 'Admin' : sale.cancelled_by_name}</div>)}
-                    </div>
+          <div className="summary-box sd__summaryCard">
+            <div className="sd__summaryMeta">
+              <span className="sd__summaryLabel">Items Sold</span>
+              <span className="sd__summaryValue">{totalItemsSold}</span>
+            </div>
+          </div>
+
+          <div className="summary-box sd__summaryCard">
+            <div className="sd__summaryMeta">
+              <span className="sd__summaryLabel">Items Left</span>
+              <span className="sd__summaryValue">{totalItemsLeft}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Status tabs */}
+        <div className="order-status-tabs sd__tabs">
+          {["processing", "to receive", "completed", "cancelled"].map((status) => (
+            <button
+              key={status}
+              className={`sd__tab ${statusTab === status ? "sd__tab--active" : ""}`}
+              onClick={() => {
+                setStatusTab(status);
+                setCurrentPage(1);
+                fetchSales();
+              }}
+            >
+              {status === "processing" && "⏳ Processing"}
+              {status === "to receive" && "📦 To Receive"}
+              {status === "completed" && "✅ Completed"}
+              {status === "cancelled" && "❌ Cancelled"}
+            </button>
+          ))}
+        </div>
+
+        {/* Sales list */}
+        {filteredSales.length === 0 ? (
+          <div className="sd__empty">
+            <div className="sd__emptyTitle">No sales in this status.</div>
+            <div className="sd__emptySub">Try selecting another tab above.</div>
+          </div>
+        ) : (
+          <div className="sales-card-list sd__grid">
+            {paginatedSales.map((sale) => (
+              <div key={sale.id} className="sales-card sd__card">
+                <div className="card-header sd__cardHeader">
+                  <div className="sd__orderMeta">
+                    <div className="sd__orderId">Order #{sale.id}</div>
+                    <div className="sd__orderDate">{new Date(sale.created_at).toLocaleString()}</div>
+                  </div>
+
+                  <span className={`status-tag sd__status status-${sale.status.replace(" ", "-")}`}>
+                    {sale.status === "cancelled" ? "❌ Cancelled" : sale.status}
+                  </span>
+                </div>
+
+                <div className="card-body stylish-body sd__cardBody">
+                  <div className="info-row sd__row">
+                    <span className="label sd__label">💰 Total</span>
+                    <span className="value sd__value">
+                      ₱{Number(sale.total).toLocaleString("en-PH", { minimumFractionDigits: 2 })}
+                    </span>
+                  </div>
+
+                  <div className="info-row sd__row">
+                    <span className="label sd__label">💳 Payment</span>
+                    <span className="value sd__value">{sale.payment_method || "N/A"}</span>
+                  </div>
+
+                  <div className="items-section sd__items">
+                    <strong className="sd__itemsTitle">🛍️ Items</strong>
+
+                    <ul className="items-list sd__itemsList">
+                      {sale.items?.length ? (
+                        sale.items.map((item, idx) => (
+                          <li key={idx} className="sd__item">
+                            <img
+                              src={item.variant_image || item.product_image}
+                              alt={item.variant_name || item.product_name}
+                              className="sd__itemImg"
+                            />
+                            <div className="sd__itemInfo">
+                              <div className="sd__itemName">
+                                {item.variant_name || item.product_name}
+                              </div>
+                              <div className="sd__itemSub">Qty: {item.quantity} pcs.</div>
+                            </div>
+                          </li>
+                        ))
+                      ) : (
+                        <li className="sd__item sd__item--empty">No items</li>
+                      )}
+                    </ul>
+
+                    {sale.status === "cancelled" && (
+                      <div className="cancel-reason sd__cancelBox">
+                        <div>
+                          <strong>❌ Reason:</strong> {sale.cancel_description || "No reason provided."}
+                        </div>
+                        {sale.cancelled_by_name && (
+                          <div>
+                            <strong>🧍 Cancelled by:</strong>{" "}
+                            {sale.cancelled_by_role === "admin" ? "Admin" : sale.cancelled_by_name}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="card-actions sd__actions">
+                  <button
+                    className="sd__iconBtn"
+                    title="View Receipt"
+                    onClick={() => {
+                      setSelectedSale(sale);
+                      showToast("Viewing Receipt");
+                    }}
+                  >
+                    🧾
+                  </button>
+
+                  {sale.status === "processing" && (
+                    <>
+                      <button
+                        className="sd__iconBtn sd__iconBtn--blue"
+                        title="Move to To Receive"
+                        onClick={async () => {
+                          await updateStatus(sale.id, "to receive");
+                          window.dispatchEvent(new Event("order-status-updated"));
+                          showToast("Moved to To Receive");
+                        }}
+                      >
+                        📦
+                      </button>
+
+                      <button
+                        className="sd__iconBtn sd__iconBtn--red"
+                        title="Cancel Order"
+                        onClick={() => {
+                          setCancelingSaleId(sale.id);
+                          setShowCancelModal(true);
+                          showToast("Cancel Order");
+                        }}
+                      >
+                        ❌
+                      </button>
+                    </>
+                  )}
+
+                  {sale.status === "to receive" && (
+                    <button
+                      className="sd__iconBtn sd__iconBtn--green"
+                      title="Mark as Completed"
+                      onClick={async () => {
+                        await updateStatus(sale.id, "completed");
+                        window.dispatchEvent(new Event("order-status-updated"));
+                        setStatusTab("completed");
+                        showToast("Marked as Completed");
+                      }}
+                    >
+                      ✅
+                    </button>
                   )}
                 </div>
               </div>
-              <div className="card-actions">
-                <button className="icon-btn" title="View Receipt" onClick={() => { setSelectedSale(sale); showToast('Viewing Receipt'); }}>🧾</button>
-                {sale.status === 'processing' && (
-                  <>
-                    <button className="icon-btn" title="Move to To Receive" onClick={async () => { await updateStatus(sale.id, 'to receive'); window.dispatchEvent(new Event('order-status-updated')); showToast('Moved to To Receive'); }}>📦</button>
-                    <button className="icon-btn" title="Cancel Order" onClick={() => { setCancelingSaleId(sale.id); setShowCancelModal(true); showToast('Cancel Order'); }}>❌</button>
-                  </>
-                )}
-                {sale.status === 'to receive' && (
-                  <button className="icon-btn" title="Mark as Completed" onClick={async () => { await updateStatus(sale.id, 'completed'); window.dispatchEvent(new Event('order-status-updated')); setStatusTab('completed'); showToast('Marked as Completed'); }}>✅</button>
-                )}
+            ))}
+          </div>
+        )}
+
+        {/* Cancel Modal */}
+        {showCancelModal && (
+          <div className="modal-overlay sd__modalOverlay" onClick={() => setShowCancelModal(false)}>
+            <div className="modal-content sd__modal" onClick={(e) => e.stopPropagation()}>
+              <div className="sd__modalHeader">
+                <h3>Cancel Order</h3>
+                <button className="sd__modalX" onClick={() => setShowCancelModal(false)} aria-label="Close">
+                  ×
+                </button>
+              </div>
+
+              <textarea
+                className="sd__textarea"
+                placeholder="Reason for cancellation"
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+              />
+
+              <div className="modal-actions sd__modalActions">
+                <button className="sd__btn" onClick={() => setShowCancelModal(false)}>
+                  Close
+                </button>
+
+                <button
+                  className="sd__btn sd__btn--danger"
+                  onClick={async () => {
+                    if (!cancelReason.trim()) return alert("Please enter a reason");
+                    try {
+                      await axios.put(
+                        `https://capstone-backend-kiax.onrender.com/sales/${cancelingSaleId}/status`,
+                        { status: "cancelled", reason: cancelReason, cancelled_by: user.id }
+                      );
+                      setShowCancelModal(false);
+                      setCancelReason("");
+                      setCancelingSaleId(null);
+                      fetchSales();
+                    } catch {
+                      alert("Failed to cancel order");
+                    }
+                  }}
+                >
+                  Confirm
+                </button>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        )}
 
-      {/* === Cancel Modal === */}
-      {showCancelModal && (
-        <div className="modal-overlay" onClick={() => setShowCancelModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>❌ Cancel Order</h3>
-            <textarea placeholder="Reason for cancellation" value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} />
-            <div className="modal-actions">
-              <button onClick={() => setShowCancelModal(false)}>Close</button>
-              <button className="checkout-button cancel" onClick={async () => {
-                if (!cancelReason.trim()) return alert('Please enter a reason');
-                try {
-                  await axios.put(`https://capstone-backend-kiax.onrender.com/sales/${cancelingSaleId}/status`, { status: 'cancelled', reason: cancelReason, cancelled_by: user.id });
-                  setShowCancelModal(false); setCancelReason(''); setCancelingSaleId(null); fetchSales();
-                } catch { alert('Failed to cancel order'); }
-              }}>Confirm</button>
+        {/* Receipt Popup */}
+        {selectedSale && (
+          <div className="modal-overlay sd__modalOverlay" onClick={() => setSelectedSale(null)}>
+            <div className="modal-content fancy-receipt sd__modal sd__modal--wide" onClick={(e) => e.stopPropagation()}>
+              <div className="sd__modalHeader">
+                <h3>Receipt</h3>
+                <button className="sd__modalX" onClick={() => setSelectedSale(null)} aria-label="Close">
+                  ×
+                </button>
+              </div>
+
+              <div id="receipt-content" className="sd__receipt">
+                <h2>Oscar D’Gr8 Sales Receipt</h2>
+                <p><strong>Receipt ID:</strong> #{selectedSale.id}</p>
+                <p><strong>Customer:</strong> {selectedSale.customer_name || "N/A"}</p>
+                <p><strong>Contact:</strong> {selectedSale.contact || "N/A"}</p>
+                <p><strong>Payment:</strong> {selectedSale.payment_method}</p>
+                <p><strong>Status:</strong> {selectedSale.status}</p>
+                <p><strong>Date:</strong> {new Date(selectedSale.created_at).toLocaleString()}</p>
+
+                <table className="receipt-items">
+                  <thead>
+                    <tr><th>Item</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr>
+                  </thead>
+                  <tbody>
+                    {selectedSale.items.map((item, idx) => (
+                      <tr key={idx}>
+                        <td>
+                          <img
+                            src={item.variant_image || item.product_image}
+                            alt={item.variant_name || item.product_name}
+                            style={{ width: "40px", height: "40px", marginRight: "6px", objectFit: "cover", verticalAlign: "middle", borderRadius: 8 }}
+                          />
+                          {item.variant_name || item.product_name}
+                        </td>
+                        <td>{item.quantity}</td>
+                        <td>₱{Number(item.price).toLocaleString("en-PH", { minimumFractionDigits: 2 })}</td>
+                        <td>₱{(item.quantity * item.price).toLocaleString("en-PH", { minimumFractionDigits: 2 })}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr><td colSpan="3">Total</td><td>₱{Number(selectedSale.total).toLocaleString("en-PH", { minimumFractionDigits: 2 })}</td></tr>
+                  </tfoot>
+                </table>
+              </div>
+
+              <div className="modal-actions sd__modalActions">
+                <button className="sd__btn sd__btn--primary" onClick={handlePrint}>🖨️ Print</button>
+                <button className="sd__btn" onClick={() => setSelectedSale(null)}>Close</button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* === Receipt Popup === */}
-      {selectedSale && (
-        <div className="modal-overlay" onClick={() => setSelectedSale(null)}>
-          <div className="modal-content fancy-receipt" onClick={(e) => e.stopPropagation()}>
-            <div id="receipt-content">
-              <h2>Oscar D’Gr8 Sales Receipt</h2>
-              <p><strong>Receipt ID:</strong> #{selectedSale.id}</p>
-              <p><strong>Customer:</strong> {selectedSale.customer_name || 'N/A'}</p>
-              <p><strong>Contact:</strong> {selectedSale.contact || 'N/A'}</p>
-              <p><strong>Payment:</strong> {selectedSale.payment_method}</p>
-              <p><strong>Status:</strong> {selectedSale.status}</p>
-              <p><strong>Date:</strong> {new Date(selectedSale.created_at).toLocaleString()}</p>
-              <table className="receipt-items">
-                <thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr></thead>
-                <tbody>
-                  {selectedSale.items.map((item, idx) => (
-                    <tr key={idx}>
-                      <td>
-                        <img src={item.variant_image || item.product_image} alt={item.variant_name || item.product_name} style={{ width: '40px', height: '40px', marginRight: '6px', objectFit: 'cover', verticalAlign: 'middle' }} />
-                        {item.variant_name || item.product_name}
-                      </td>
-                      <td>{item.quantity}</td>
-                      <td>₱{Number(item.price).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
-                      <td>₱{(item.quantity * item.price).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot><tr><td colSpan="3">Total</td><td>₱{Number(selectedSale.total).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td></tr></tfoot>
-              </table>
-            </div>
-            <div className="modal-actions">
-              <button className="print-btn" onClick={handlePrint}>🖨️ Print</button>
-              <button className="close-btn" onClick={() => setSelectedSale(null)}>❌ Close</button>
+        {/* Receipt Image Popup */}
+        {showReceiptPopup && (
+          <div className="modal-overlay sd__modalOverlay" onClick={() => setShowReceiptPopup(false)}>
+            <div className="modal-content sd__modal" onClick={(e) => e.stopPropagation()}>
+              <div className="sd__modalHeader">
+                <h3>Receipt Image</h3>
+                <button className="sd__modalX" onClick={() => setShowReceiptPopup(false)} aria-label="Close">
+                  ×
+                </button>
+              </div>
+              <img src={selectedReceiptUrl} alt="Attached Receipt" className="sd__receiptImg" />
             </div>
           </div>
-        </div>
-      )}
-
-      {/* === Receipt Image Popup === */}
-      {showReceiptPopup && (
-        <div className="modal-overlay" onClick={() => setShowReceiptPopup(false)}>
-          <div className="modal-content">
-            <button onClick={() => setShowReceiptPopup(false)}>❌</button>
-            <img src={selectedReceiptUrl} alt="Attached Receipt" />
-          </div>
-        </div>
-      )}
-
-      {/* === Toast === */}
-      {toastMsg && <div className="quick-toast">{toastMsg}...</div>}
+        )}
+        {/* Toast */}
+        {toastMsg && <div className="quick-toast sd__toast">{toastMsg}...</div>}
+      </div>
     </div>
   );
 }
