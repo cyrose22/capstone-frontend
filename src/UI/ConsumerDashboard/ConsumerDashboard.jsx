@@ -272,7 +272,8 @@ function ConsumerDashboard() {
       </header>
 
       <section className="store-hero">
-        <div className="hero-left">
+        <div className="store-hero-inner">
+          <div className="hero-left">
           {/* small badge */}
           <div className="hero-badge">🐾 Trusted Pet Supplies</div>
 
@@ -315,6 +316,8 @@ function ConsumerDashboard() {
               <span>📍 Local Store</span>
             </div>
           </div>
+        </div>
+          
         </div>
       </section>
 
