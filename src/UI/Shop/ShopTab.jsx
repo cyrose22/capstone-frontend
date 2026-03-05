@@ -165,75 +165,189 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
           return groups;
         }, {})
       ).map(([category, items]) => (
-        <div key={category} className="shop-section">
-          <div className="shop-section-header">
-            <h3>{category}</h3>
-            <div className="shop-section-line" />
-          </div>
+        <div key={category} style={{ marginBottom: "2rem" }}>
+          <h3
+            style={{
+              borderBottom: "2px solid #eee",
+              paddingBottom: "0.5rem",
+            }}
+          >
+            {category}
+          </h3>
 
           <div className="shop-grid">
-            {items.map((p) => {
-              const img =
-                p?.variants?.[0]?.images?.[0] ? p.variants[0].images[0] : p.image ?? "";
+            {items.map((p) => (
+              <div
+                key={p.id}
+                style={{
+                  position: "relative",
+                  backgroundColor: "#fff",
+                  border: "1px solid #f0f0f0",
+                  borderRadius: "12px",
+                  padding: "0.75rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  textAlign: "center",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                  transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                  cursor: "pointer",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-4px) scale(1.02)";
+                  e.currentTarget.style.boxShadow = "0 6px 16px rgba(0,0,0,0.15)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0) scale(1)";
+                  e.currentTarget.style.boxShadow = "0 2px 6px rgba(0,0,0,0.08)";
+                }}
+              >
+                {/* 🏷 Badge */}
+                {p.displayQuantity <= 0 && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: "10px",
+                      left: "10px",
+                      background: "#e74c3c",
+                      color: "#fff",
+                      padding: "2px 8px",
+                      borderRadius: "6px",
+                      fontSize: "0.75rem",
+                      fontWeight: "bold",
+                      zIndex: 2,
+                    }}
+                  >
+                    Out of Stock
+                  </span>
+                )}
 
-              return (
-                <div key={p.id} className="product-card">
-                  {/* Badge */}
-                  {p.displayQuantity <= 0 && (
-                    <span className="product-badge">Sold out</span>
-                  )}
+                {/* 📸 Product Image */}
+                {p.image && (
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "180px",
+                      overflow: "hidden",
+                      borderRadius: "8px",
+                      marginBottom: "0.5rem",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: "#fafafa",
+                    }}
+                  >
+                    <img
+                      src={
+                        p.variants && p.variants[0] && p.variants[0].images[0]
+                          ? p.variants[0].images[0]
+                          : p.image ?? ""
+                      }
+                      alt={p.name}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
+                        transition: "transform 0.3s ease",
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.08)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                    />
+                  </div>
+                )}
 
-                  {/* Image */}
-                  <div className="product-image-wrap">
-                    {img ? <img src={img} alt={p.name} className="product-image" /> : null}
+                {/* 🏷 Product Info */}
+                <h4 style={{ margin: "0.25rem 0", fontSize: "1rem", fontWeight: "600" }}>
+                  {p.name}
+                </h4>
+                <p style={{ margin: "0", color: "#e74c3c", fontWeight: "bold", fontSize: "1.1rem" }}>
+                  {formatCurrency(p.displayPrice)}
+                </p>
+
+                {/* 📊 Stock bar */}
+                <div style={{ width: "100%", marginTop: "0.5rem" }}>
+                  <div
+                    style={{
+                      height: "6px",
+                      borderRadius: "4px",
+                      background: "#f0f0f0",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: `${
+                          p.displayQuantity > 0
+                            ? Math.min(100, (p.displayQuantity / 20) * 100)
+                            : 5
+                        }%`,
+                        background: p.displayQuantity > 0 ? "#27ae60" : "#e74c3c",
+                        height: "100%",
+                        transition: "width 0.4s ease",
+                      }}
+                    />
                   </div>
 
-                  {/* Info */}
-                  <div className="product-info">
-                    <h4 className="product-title">{p.name}</h4>
-                    <div className="product-price">{formatCurrency(p.displayPrice)}</div>
-
-                    {/* Stock bar */}
-                    <div className="stock-wrap">
-                      <div className="stock-bar">
-                        <div
-                          className={`stock-fill ${p.displayQuantity > 0 ? "in" : "out"}`}
-                          style={{
-                            width: `${
-                              p.displayQuantity > 0
-                                ? Math.min(100, (p.displayQuantity / 20) * 100)
-                                : 8
-                            }%`,
-                          }}
-                        />
-                      </div>
-                      <div className={`stock-text ${p.displayQuantity > 0 ? "in" : "out"}`}>
-                        {p.displayQuantity > 0 ? `Stock: ${p.displayQuantity}` : "Out of stock"}
-                      </div>
-                    </div>
-
-                    {/* Buttons */}
-                    {p.hasVariants ? (
-                      <button
-                        className="product-btn"
-                        disabled={p.displayQuantity <= 0}
-                        onClick={() => openVariantModal(p, 0)}
-                      >
-                        View Variants
-                      </button>
-                    ) : (
-                      <button
-                        className="product-btn"
-                        disabled={p.displayQuantity <= 0}
-                        onClick={() => handleAddToCart(p)}
-                      >
-                        Add to Cart
-                      </button>
-                    )}
-                  </div>
+                  <p
+                    style={{
+                      margin: "0.25rem 0",
+                      fontSize: "0.85rem",
+                      fontWeight: "bold",
+                      color: p.displayQuantity > 0 ? "#27ae60" : "#e74c3c",
+                    }}
+                  >
+                    {p.displayQuantity > 0
+                      ? `Stock: ${p.displayQuantity}`
+                      : "Out of stock"}
+                  </p>
                 </div>
-              );
-            })}
+                {/* 🛒 Add-to-Cart or View Variants */}
+                {p.hasVariants ? (
+                  <button
+                    onClick={() => openVariantModal(p, 0)}
+                    style={{
+                      marginTop: "0.75rem",
+                      padding: "0.5rem 0.75rem",
+                      background:
+                        p.displayQuantity > 0
+                          ? "linear-gradient(45deg, #ff4e50, #f9d423)"
+                          : "#ccc",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "8px",
+                      fontWeight: "600",
+                      fontSize: "0.9rem",
+                      cursor: p.displayQuantity > 0 ? "pointer" : "not-allowed",
+                      transition: "opacity 0.2s ease",
+                    }}
+                  >
+                    View Variants
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleAddToCart(p)}
+                    disabled={p.displayQuantity <= 0}
+                    style={{
+                      marginTop: "0.75rem",
+                      padding: "0.5rem 0.75rem",
+                      background:
+                        p.displayQuantity > 0
+                          ? "linear-gradient(45deg, #ff4e50, #f9d423)"
+                          : "#ccc",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "8px",
+                      fontWeight: "600",
+                      fontSize: "0.9rem",
+                      cursor: p.displayQuantity > 0 ? "pointer" : "not-allowed",
+                      transition: "opacity 0.2s ease",
+                    }}
+                  >
+                    🛒 Add to Cart
+                  </button>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       ))}
