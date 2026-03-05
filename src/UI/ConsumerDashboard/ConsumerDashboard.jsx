@@ -266,7 +266,7 @@ function ConsumerDashboard() {
 
         <div className="hero-left">
           <img
-            src="/logo.png"
+            src={logo}
             alt="Pet Store"
             className="hero-logo"
           />
