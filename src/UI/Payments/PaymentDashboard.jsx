@@ -346,87 +346,108 @@ function FakeGCashModal({ total, user, onSuccess, onCancel }) {
       setLoading(false);
       const reference = `GCASH-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       onSuccess(reference, normalized);
-    }, 2000);
+    }, 1500);
   };
 
   return (
     <div
       style={{
-        position: "fixed", top: 0, left: 0,
-        width: "100vw", height: "100vh",
-        backgroundColor: "rgba(0,0,0,0.6)",
-        display: "flex", justifyContent: "center", alignItems: "center",
-        zIndex: 9999,
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.65)",
+        display: "grid",
+        placeItems: "center",
+        padding: 16,
+        zIndex: 30000,
       }}
     >
       <div
         style={{
-          background: "#fff",
-          borderRadius: "14px",
-          padding: "1.8rem",
-          width: "400px",
-          textAlign: "center",
-          boxShadow: "0 8px 18px rgba(0,0,0,0.25)",
+          width: "min(420px, 96vw)",
+          borderRadius: 18,
+          background: "rgba(255,255,255,0.95)",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(255,255,255,0.6)",
+          boxShadow: "0 24px 80px rgba(0,0,0,0.35)",
+          padding: 18,
         }}
       >
-        <h2 style={{ color: "#0072CE", marginBottom: "1rem" }}>💳 GCash Payment</h2>
-        <p style={{ fontSize: "1.1rem", marginBottom: "1.2rem" }}>
-          You are paying: <strong>₱{total.toLocaleString()}</strong>
-        </p>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          <div style={{ fontWeight: 950, fontSize: 16, color: "#0f172a" }}>💳 GCash Payment</div>
+          <button
+            onClick={onCancel}
+            style={{
+              width: 38,
+              height: 38,
+              borderRadius: 14,
+              border: "1px solid rgba(0,0,0,0.10)",
+              background: "rgba(255,255,255,0.9)",
+              cursor: "pointer",
+              fontSize: 18,
+            }}
+          >
+            ×
+          </button>
+        </div>
 
-        <input
-          type="text"
-          value={contact}
-          placeholder="Enter GCash number"
-          onChange={(e) => setContact(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "0.7rem",
-            border: "1px solid #ccc",
-            borderRadius: "8px",
-            marginBottom: "0.5rem",
-            outline: "none",
-            transition: "0.2s",
-          }}
-          onFocus={(e) => (e.target.style.border = "1px solid #0072CE")}
-          onBlur={(e) => (e.target.style.border = "1px solid #ccc")}
-        />
-        {error && <p style={{ color: "red", fontSize: "0.9rem" }}>{error}</p>}
+        <div style={{ marginTop: 10, color: "#64748b", fontWeight: 700 }}>
+          Amount to pay: <span style={{ color: "#0f172a", fontWeight: 950 }}>₱{total.toLocaleString()}</span>
+        </div>
 
-        <button
-          onClick={handlePay}
-          disabled={loading}
-          style={{
-            width: "100%",
-            padding: "0.75rem",
-            backgroundColor: loading ? "#ccc" : "#0072CE",
-            color: "#fff",
-            fontSize: "1rem",
-            fontWeight: "bold",
-            border: "none",
-            borderRadius: "8px",
-            cursor: loading ? "not-allowed" : "pointer",
-            marginBottom: "0.75rem",
-            transition: "0.2s",
-          }}
-        >
-          {loading ? "⏳ Processing..." : "Pay with GCash"}
-        </button>
+        <div style={{ marginTop: 14 }}>
+          <label style={{ fontSize: 12, fontWeight: 900, color: "#334155" }}>GCash number</label>
+          <input
+            value={contact}
+            onChange={(e) => setContact(e.target.value)}
+            placeholder="09XXXXXXXXX / 639XXXXXXXXX"
+            style={{
+              width: "100%",
+              marginTop: 6,
+              padding: "12px 12px",
+              borderRadius: 14,
+              border: "1px solid rgba(0,0,0,0.12)",
+              outline: "none",
+              fontWeight: 800,
+              background: "#fff",
+            }}
+          />
+          {error && <div style={{ marginTop: 8, color: "#ef4444", fontWeight: 800, fontSize: 12 }}>{error}</div>}
+        </div>
 
-        <button
-          onClick={onCancel}
-          style={{
-            width: "100%",
-            padding: "0.65rem",
-            backgroundColor: "#eee",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontWeight: "500",
-          }}
-        >
-          ❌ Cancel
-        </button>
+        <div style={{ marginTop: 16, display: "flex", gap: 10 }}>
+          <button
+            onClick={handlePay}
+            disabled={loading}
+            style={{
+              flex: 1,
+              padding: "12px 14px",
+              borderRadius: 14,
+              border: "none",
+              cursor: loading ? "not-allowed" : "pointer",
+              color: "#fff",
+              fontWeight: 950,
+              background: loading ? "#94a3b8" : "linear-gradient(135deg, #2563eb, #0ea5e9)",
+              boxShadow: "0 16px 30px rgba(37,99,235,0.25)",
+            }}
+          >
+            {loading ? "⏳ Processing..." : "Pay with GCash"}
+          </button>
+
+          <button
+            onClick={onCancel}
+            style={{
+              padding: "12px 14px",
+              borderRadius: 14,
+              border: "1px solid rgba(0,0,0,0.10)",
+              background: "rgba(15,23,42,0.04)",
+              cursor: "pointer",
+              fontWeight: 900,
+              color: "#0f172a",
+            }}
+          >
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -463,7 +484,10 @@ const PaymentDashboard = ({
       customer_name: user.fullname,
     };
 
-    const createdSale = await axios.post("https://capstone-backend-kiax.onrender.com/sales", salePayload);
+    const createdSale = await axios.post(
+      "https://capstone-backend-kiax.onrender.com/sales",
+      salePayload
+    );
 
     localStorage.setItem("orderSuccess", "true");
     localStorage.setItem("recentOrderId", String(createdSale.data.saleId));
@@ -500,112 +524,212 @@ const PaymentDashboard = ({
     }
   };
 
+  const OptionCard = ({ value, title, subtitle, icon, accent }) => {
+    const selected = paymentMethod === value;
+
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          setPaymentMethod(value);
+          setHasSelectedPayment(true);
+        }}
+        style={{
+          width: "100%",
+          textAlign: "left",
+          borderRadius: 16,
+          padding: 14,
+          border: selected ? `2px solid ${accent}` : "1px solid rgba(0,0,0,0.10)",
+          background: selected ? "rgba(255,255,255,1)" : "rgba(255,255,255,0.85)",
+          boxShadow: selected
+            ? "0 16px 40px rgba(15,23,42,0.12)"
+            : "0 10px 26px rgba(15,23,42,0.06)",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 14,
+          transition: "0.18s ease",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+          <div
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 14,
+              display: "grid",
+              placeItems: "center",
+              background: selected ? `${accent}1A` : "rgba(15,23,42,0.05)",
+              border: "1px solid rgba(0,0,0,0.06)",
+              fontSize: 18,
+              flexShrink: 0,
+            }}
+          >
+            {icon}
+          </div>
+
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontWeight: 950, color: "#0f172a", fontSize: 14 }}>
+              {title}
+            </div>
+            <div style={{ fontSize: 12, fontWeight: 800, color: "#64748b", marginTop: 3 }}>
+              {subtitle}
+            </div>
+          </div>
+        </div>
+
+        {/* Custom radio */}
+        <div
+          style={{
+            width: 22,
+            height: 22,
+            borderRadius: 999,
+            border: selected ? `6px solid ${accent}` : "2px solid rgba(100,116,139,0.7)",
+            background: "#fff",
+            flexShrink: 0,
+          }}
+        />
+      </button>
+    );
+  };
+
   return (
     <>
       <div
         style={{
-          backgroundColor: "#fff",
-          borderRadius: "14px",
-          padding: "1.8rem",
-          width: "90%",
-          maxWidth: "440px",
+          width: "min(520px, 96vw)",
           margin: "0 auto",
-          boxShadow: "0 8px 18px rgba(0,0,0,0.25)",
-          position: "relative",
+          borderRadius: 20,
+          background: "rgba(255,255,255,0.92)",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(255,255,255,0.6)",
+          boxShadow: "0 24px 80px rgba(0,0,0,0.25)",
+          overflow: "hidden",
         }}
       >
-        <h2 style={{ color: "#f23030", fontSize: "20px", fontWeight: "700", marginBottom: "1rem" }}>
-          🧾 Select Payment Method
-        </h2>
-
-        {/* Payment options as styled cards */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "1rem" }}>
-          <label
-            style={{
-              padding: "0.8rem",
-              border: paymentMethod === "COD" ? "2px solid #f23030" : "1px solid #ccc",
-              borderRadius: "8px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              transition: "0.2s",
-            }}
-          >
-            <input
-              type="radio"
-              value="COD"
-              checked={paymentMethod === "COD"}
-              onChange={() => {
-                setPaymentMethod("COD");
-                setHasSelectedPayment(true);
+        {/* Header */}
+        <div
+          style={{
+            padding: 16,
+            borderBottom: "1px solid rgba(0,0,0,0.06)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            background: "linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.80))",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 14,
+                background: "rgba(239,68,68,0.10)",
+                display: "grid",
+                placeItems: "center",
               }}
-            />
-            🚚 Cash on Delivery
-          </label>
-
-          <label
-            style={{
-              padding: "0.8rem",
-              border: paymentMethod === "GCash" ? "2px solid #0072CE" : "1px solid #ccc",
-              borderRadius: "8px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              transition: "0.2s",
-            }}
-          >
-            <input
-              type="radio"
-              value="GCash"
-              checked={paymentMethod === "GCash"}
-              onChange={() => {
-                setPaymentMethod("GCash");
-                setHasSelectedPayment(true);
-              }}
-            />
-            💳 Pay via GCash
-          </label>
-        </div>
-
-        <p style={{ fontSize: "20px", marginTop: "20px", textAlign: "right" }}>
-          Total: <strong>₱{total.toLocaleString()}</strong>
-        </p>
-
-        {/* Action buttons */}
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "24px" }}>
-          <button
-            onClick={handleSubmitPayment}
-            disabled={submitting}
-            style={{
-              backgroundColor: submitting ? "#ccc" : "#4CAF50",
-              color: "white",
-              padding: "10px 20px",
-              fontSize: "14px",
-              fontWeight: "600",
-              border: "none",
-              borderRadius: "8px",
-              cursor: submitting ? "not-allowed" : "pointer",
-              transition: "0.2s",
-            }}
-          >
-            {submitting ? "⏳ Processing..." : "✅ Confirm"}
-          </button>
+            >
+              🧾
+            </div>
+            <div>
+              <div style={{ fontWeight: 950, color: "#0f172a" }}>Select Payment Method</div>
+              <div style={{ fontSize: 12, fontWeight: 800, color: "#64748b", marginTop: 2 }}>
+                Choose how you want to pay
+              </div>
+            </div>
+          </div>
 
           <button
             onClick={onClose}
+            aria-label="Close"
             style={{
-              backgroundColor: "#eee",
-              color: "#333",
-              padding: "10px 20px",
-              borderRadius: "8px",
-              border: "none",
+              width: 38,
+              height: 38,
+              borderRadius: 14,
+              border: "1px solid rgba(0,0,0,0.10)",
+              background: "rgba(255,255,255,0.9)",
               cursor: "pointer",
+              fontSize: 18,
             }}
           >
-            ❌ Cancel
+            ×
           </button>
+        </div>
+
+        {/* Body */}
+        <div style={{ padding: 16 }}>
+          <div style={{ display: "grid", gap: 12 }}>
+            <OptionCard
+              value="COD"
+              title="Cash on Delivery"
+              subtitle="Pay when your order arrives"
+              icon="🚚"
+              accent="#ef4444"
+            />
+            <OptionCard
+              value="GCash"
+              title="Pay via GCash"
+              subtitle="Fast & convenient e-wallet payment"
+              icon="💳"
+              accent="#2563eb"
+            />
+          </div>
+
+          <div
+            style={{
+              marginTop: 16,
+              paddingTop: 14,
+              borderTop: "1px solid rgba(0,0,0,0.06)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 12,
+            }}
+          >
+            <div style={{ color: "#64748b", fontWeight: 900 }}>Total</div>
+            <div style={{ fontSize: 18, fontWeight: 950, color: "#0f172a" }}>
+              ₱{Number(total).toLocaleString()}
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div style={{ marginTop: 16, display: "flex", justifyContent: "flex-end", gap: 10, flexWrap: "wrap" }}>
+            <button
+              onClick={onClose}
+              style={{
+                padding: "12px 14px",
+                borderRadius: 14,
+                border: "1px solid rgba(0,0,0,0.10)",
+                background: "rgba(15,23,42,0.04)",
+                cursor: "pointer",
+                fontWeight: 900,
+                color: "#0f172a",
+              }}
+            >
+              ❌ Cancel
+            </button>
+
+            <button
+              onClick={handleSubmitPayment}
+              disabled={submitting}
+              style={{
+                padding: "12px 16px",
+                borderRadius: 14,
+                border: "none",
+                cursor: submitting ? "not-allowed" : "pointer",
+                color: "#fff",
+                fontWeight: 950,
+                background: submitting
+                  ? "#94a3b8"
+                  : "linear-gradient(135deg, #22c55e, #16a34a)",
+                boxShadow: "0 16px 30px rgba(34,197,94,0.22)",
+              }}
+            >
+              {submitting ? "⏳ Processing..." : "✅ Confirm"}
+            </button>
+          </div>
         </div>
       </div>
 
