@@ -1,58 +1,104 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogOut, Bell, ShoppingCart } from "lucide-react";
+import { LogOut, Bell } from "lucide-react";
+import axios from "axios";
 import "./header.css";
 
 function Header() {
   const navigate = useNavigate();
 
-  // Get user safely
   const storedUser = localStorage.getItem("user");
   const user = storedUser ? JSON.parse(storedUser) : null;
 
-  const fullname =
-    user?.fullname ||
-    user?.name ||
-    user?.username ||
-    "User";
+  const fullname = user?.fullname || user?.name || user?.username || "User";
+  const role = user?.role;
+
+  const [newOrdersCount, setNewOrdersCount] = useState(0);
+
+  // Store last time admin checked notifications
+  const getSince = () =>
+    localStorage.getItem("admin_last_seen_orders") ||
+    new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+  const setSinceNow = () =>
+    localStorage.setItem("admin_last_seen_orders", new Date().toISOString());
+
+  useEffect(() => {
+    if (role !== "admin") return;
+
+    let isMounted = true;
+
+    const fetchCount = async () => {
+      try {
+        const since = getSince();
+        const res = await axios.get(
+          `https://capstone-backend-kiax.onrender.com/admin/new-orders-count?since=${encodeURIComponent(
+            since
+          )}`
+        );
+        if (!isMounted) return;
+        setNewOrdersCount(res.data.count || 0);
+      } catch (err) {
+        // keep silent (optional)
+        console.error("Failed to fetch new orders count", err);
+      }
+    };
+
+    fetchCount();
+    const interval = setInterval(fetchCount, 15000); // every 15s
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [role]);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
     navigate("/");
   };
 
+  const handleBellClick = () => {
+    // When admin clicks bell, mark as "seen"
+    setSinceNow();
+    setNewOrdersCount(0);
+
+    // Optional: navigate to orders page (if you have it)
+    // navigate("/dashboard/admin/orders");
+  };
+
   return (
     <header className="modern-header">
-      
-      {/* LEFT */}
       <div className="header-left">
         <h1 className="header-title">
           👋 Welcome back, <span>{fullname}</span>
         </h1>
       </div>
 
-      {/* RIGHT */}
       <div className="header-right">
+        {/* Bell ONLY for admin */}
+        {role === "admin" && (
+          <button
+            className={`icon-btn notification-btn ${newOrdersCount > 0 ? "has-new" : ""}`}
+            onClick={handleBellClick}
+          >
+            <Bell size={18} />
 
-        <button className="icon-btn">
-          <Bell size={18} />
-        </button>
+            {newOrdersCount > 0 && (
+              <span className="notif-badge">
+                {newOrdersCount > 99 ? "99+" : newOrdersCount}
+              </span>
+            )}
+          </button>
+        )}
 
-        <button className="icon-btn">
-          <ShoppingCart size={18} />
-        </button>
-
-        <div className="avatar">
-          {fullname?.charAt(0)?.toUpperCase()}
-        </div>
+        <div className="avatar">{fullname?.charAt(0)?.toUpperCase()}</div>
 
         <button className="logout-btn" onClick={handleLogout}>
           <LogOut size={16} />
           <span>Logout</span>
         </button>
-
       </div>
-
     </header>
   );
 }
