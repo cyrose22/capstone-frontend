@@ -381,6 +381,16 @@ function ConsumerDashboard() {
         {activeTab === "orders" && (
           <OrdersTab
             salesHistory={salesHistory}
+            products={products}
+            cart={cart}
+            setCart={setCart}
+            setActiveTab={setActiveTab}
+            setShowCartModal={setShowCartModal}
+            setCancelModalVisible={setCancelModalVisible}
+            setSaleToCancel={setSaleToCancel}
+            setCancelReason={() => {}}  // or your real state if you have it
+            enrichSalesWithImages={(x) => x} // or your real function if you have it
+            setSalesHistory={setSalesHistory}
             user={user}
           />
         )}

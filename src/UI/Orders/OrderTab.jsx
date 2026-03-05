@@ -40,8 +40,10 @@ function OrdersTab({
     <div style={{ padding: "1rem" }}>
       <h3 style={{ marginBottom: "1rem" }}>📜 Order History</h3>
 
-      {salesHistory.map((sale) => {
-        const total = sale.items.reduce(
+      {(salesHistory || []).map((sale) => {
+        const items = sale.items || [];
+
+        const total = items.reduce(
           (sum, item) => sum + Number(item.price) * Number(item.quantity),
           0
         );
@@ -103,9 +105,9 @@ function OrdersTab({
 
             {/* Items List */}
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              {sale.items.map((item, i) => {
-                const product = products.find(
-                  (p) => p?.name?.toLowerCase() === item?.name?.toLowerCase()
+              {items.map((item, i) => {
+                const product = (products || []).find(
+                  (p) => p?.name?.toLowerCase() === (item?.product_name || "").toLowerCase()
                 );
                 const variant =
                   product?.variants?.find(
@@ -274,8 +276,8 @@ function OrdersTab({
 
                     sale.items.forEach((item) => {
                       const cartItem = {
-                        id: item.productId || item.id,
-                        name: item.name,
+                        id: item.product_id,
+                        name: item.product_name,
                         price: Number(item.price) || 0,
                         quantity: Number(item.quantity) || 1,
                         variantId: item.variantId || item.variant_id || null,
