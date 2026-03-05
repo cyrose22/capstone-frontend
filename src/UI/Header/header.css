@@ -139,3 +139,45 @@
 .notification-btn.has-new {
   animation: pop 0.35s ease;
 }
+
+/* Modern Logout Button */
+.logout-modern {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.85);
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  backdrop-filter: blur(8px);
+}
+
+.logout-modern:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.logout-modern:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.logout-modern svg {
+  color: #ef4444; /* red logout icon */
+}
+
+/* Mobile: hide text, keep icon */
+@media (max-width: 768px) {
+  .logout-modern span {
+    display: none;
+  }
+  .logout-modern {
+    padding: 10px;
+  }
+}

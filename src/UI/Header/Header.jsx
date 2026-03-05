@@ -81,17 +81,21 @@ function Header() {
           <button
             className={`icon-btn notification-btn ${newOrdersCount > 0 ? "has-new" : ""}`}
             onClick={handleBellClick}
+            aria-label="Notifications"
+            title="New Orders"
           >
             <Bell size={18} />
             {newOrdersCount > 0 && (
-              <span className="notif-badge">{newOrdersCount > 99 ? "99+" : newOrdersCount}</span>
+              <span className="notif-badge">
+                {newOrdersCount > 99 ? "99+" : newOrdersCount}
+              </span>
             )}
           </button>
         )}
 
-        <div className="avatar">{fullname?.charAt(0)?.toUpperCase()}</div>
+        {/* ✅ removed avatar */}
 
-        <button className="logout-btn" onClick={handleLogout}>
+        <button className="logout-modern" onClick={handleLogout}>
           <LogOut size={16} />
           <span>Logout</span>
         </button>
