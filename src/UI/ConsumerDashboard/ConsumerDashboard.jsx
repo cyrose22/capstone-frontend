@@ -272,22 +272,32 @@ function ConsumerDashboard() {
       </header>
 
       <section className="store-hero">
-
         <div className="hero-left">
-          <img
-            src={logo}
-            alt="Pet Store"
-            className="hero-logo"
-          />
-          <p>Premium food, treats, vitamins & accessories</p>
+          {/* small badge */}
+          <div className="hero-badge">🐾 Trusted Pet Supplies</div>
+
+          {/* logo */}
+          <img src={logo} alt="Pet Store" className="hero-logo" />
+
+          {/* subtitle */}
+          <p className="hero-subtitle">
+            Premium food, treats, vitamins & accessories
+          </p>
+
+          {/* little feature chips */}
+          <div className="hero-features">
+            <span>✅ Fast Delivery</span>
+            <span>✅ Quality Products</span>
+            <span>✅ Easy Ordering</span>
+          </div>
 
           <div className="hero-buttons">
-            <button onClick={goToProducts}>
+            <button className="hero-primary-btn" onClick={goToProducts}>
               Shop Now
             </button>
 
             <button
-              className="secondary-btn"
+              className="hero-secondary-btn"
               onClick={() => setActiveTab("orders")}
             >
               Track Orders
@@ -299,9 +309,13 @@ function ConsumerDashboard() {
           <div className="hero-card">
             <h3>Free Delivery</h3>
             <p>Orders over ₱1500</p>
+
+            <div className="hero-mini">
+              <span>🕒 8AM–6PM</span>
+              <span>📍 Local Store</span>
+            </div>
           </div>
         </div>
-
       </section>
 
       <section className="pet-categories">
