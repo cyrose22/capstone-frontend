@@ -97,8 +97,10 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
       const matchesSearch = (p.name || "")
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
+
       const matchesCategory =
         selectedCategory === "All" || p.category === selectedCategory;
+
       return matchesSearch && matchesCategory;
     });
   }, [products, searchTerm, selectedCategory]);
@@ -152,37 +154,6 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
             outline: "none",
           }}
         />
-      </div>
-
-      {/* 📌 Category filter */}
-      <div
-        style={{
-          marginBottom: "1rem",
-          display: "flex",
-          gap: "0.5rem",
-          flexWrap: "wrap",
-        }}
-      >
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => {
-              setSelectedCategory(cat);
-              setCurrentPage(1);
-            }}
-            style={{
-              padding: "0.5rem 0.75rem",
-              border: "1px solid #ddd",
-              borderRadius: "4px",
-              backgroundColor: selectedCategory === cat ? "#fce4e4" : "#fff",
-              color: selectedCategory === cat ? "#e74c3c" : "#333",
-              fontWeight: selectedCategory === cat ? "bold" : "normal",
-              cursor: "pointer",
-            }}
-          >
-            {cat}
-          </button>
-        ))}
       </div>
 
       {/* 🛍 Product grid */}
