@@ -52,11 +52,22 @@ function ConsumerDashboard() {
   const [editingPassword, setEditingPassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [savingPassword, setSavingPassword] = useState(false);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     const stored = localStorage.getItem("user");
     if (stored) setUser(JSON.parse(stored));
   }, []);
+
+  useEffect(() => {
+    if (products.length > 0) {
+      const uniqueCategories = [
+        "All",
+        ...new Set(products.map((p) => p.category || "Others")),
+      ];
+      setCategories(uniqueCategories);
+    }
+  }, [products]);
 
   useEffect(() => {
     fetchProducts();
@@ -286,21 +297,19 @@ function ConsumerDashboard() {
 
         <div className="category-grid">
 
-          <div className="category-card">
-            <h3>Dog Supplies</h3>
-          </div>
+          {categories
+            .filter((cat) => cat !== "All")
+            .map((cat) => (
 
-          <div className="category-card">
-            <h3>Cat Supplies</h3>
-          </div>
+              <div
+                key={cat}
+                className="category-card"
+                onClick={() => setActiveTab("shop")}
+              >
+                <h3>{cat}</h3>
+              </div>
 
-          <div className="category-card">
-            <h3>Fish Supplies</h3>
-          </div>
-
-          <div className="category-card">
-            <h3>Small Pets</h3>
-          </div>
+          ))}
 
         </div>
 
