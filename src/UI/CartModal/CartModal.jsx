@@ -16,6 +16,8 @@ function CartModal({
     0
   );
 
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
   const handleCheckout = () => {
     const payload = {
       userId,
@@ -35,230 +37,329 @@ function CartModal({
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      onClick={() => setShowCartModal(false)}
       style={{
         position: "fixed",
-        top: 0, left: 0,
-        width: "100%", height: "100%",
-        backgroundColor: "rgba(0,0,0,0.5)",
-        display: "flex", justifyContent: "center", alignItems: "center",
+        inset: 0,
+        background: "rgba(0,0,0,0.55)",
+        display: "grid",
+        placeItems: "center",
+        padding: 16,
         zIndex: 9999,
       }}
     >
       <div
+        onClick={(e) => e.stopPropagation()}
         style={{
-          backgroundColor: "#fff",
-          borderRadius: "12px",
-          padding: "1rem",
-          width: "90%",
-          maxWidth: "520px",
-          maxHeight: "90%",
-          overflowY: "auto",
-          position: "relative",
-          boxShadow: "0 6px 14px rgba(0,0,0,0.15)",
+          width: "min(720px, 96vw)",
+          maxHeight: "88vh",
+          borderRadius: 18,
+          overflow: "hidden",
+          background: "rgba(255,255,255,0.92)",
+          backdropFilter: "blur(10px)",
+          boxShadow: "0 22px 70px rgba(0,0,0,0.35)",
+          border: "1px solid rgba(255,255,255,0.6)",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
-        {/* Close button */}
-        <span
+        {/* Header */}
+        <div
           style={{
-            position: "absolute",
-            top: "0.75rem", right: "1rem",
-            fontSize: "1.5rem",
-            fontWeight: "bold",
-            cursor: "pointer",
-            color: "#555",
+            padding: "14px 16px",
+            background: "linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.75))",
+            borderBottom: "1px solid rgba(0,0,0,0.06)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
           }}
-          onClick={() => setShowCartModal(false)}
         >
-          ×
-        </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div
+              style={{
+                width: 38,
+                height: 38,
+                borderRadius: 12,
+                background: "rgba(59,130,246,0.12)",
+                display: "grid",
+                placeItems: "center",
+                fontSize: 18,
+              }}
+            >
+              🛒
+            </div>
 
-        <h3 style={{ marginBottom: "1.2rem" }}>
-          🛒 Shopping Cart ({cart.reduce((sum, item) => sum + item.quantity, 0)})
-        </h3>
+            <div style={{ lineHeight: 1.1 }}>
+              <div style={{ fontWeight: 900, color: "#0f172a", fontSize: 16 }}>
+                Shopping Cart
+              </div>
+              <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>
+                {totalItems} item{totalItems !== 1 ? "s" : ""} • {formatCurrency(cartTotal)}
+              </div>
+            </div>
+          </div>
 
-        {cart.length === 0 ? (
-          <p style={{ textAlign: "center", color: "#777" }}>No items in cart.</p>
-        ) : (
-          <>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          <button
+            onClick={() => setShowCartModal(false)}
+            aria-label="Close cart"
+            style={{
+              width: 38,
+              height: 38,
+              borderRadius: 12,
+              border: "1px solid rgba(0,0,0,0.08)",
+              background: "rgba(255,255,255,0.9)",
+              cursor: "pointer",
+              fontSize: 20,
+              lineHeight: "20px",
+              color: "#0f172a",
+            }}
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Body */}
+        <div
+          style={{
+            padding: 16,
+            overflowY: "auto",
+            background: "linear-gradient(180deg, rgba(248,250,252,0.9), rgba(255,255,255,0.9))",
+          }}
+        >
+          {cart.length === 0 ? (
+            <div
+              style={{
+                padding: 18,
+                borderRadius: 16,
+                background: "rgba(255,255,255,0.8)",
+                border: "1px dashed rgba(0,0,0,0.12)",
+                textAlign: "center",
+                color: "#64748b",
+                fontWeight: 700,
+              }}
+            >
+              No items in cart.
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {cart.map((item) => (
                 <div
                   key={`${item.id}-${item.variantId || "default"}`}
                   style={{
                     display: "flex",
+                    gap: 12,
                     alignItems: "center",
-                    gap: "0.75rem",
-                    border: "1px solid #eee",
-                    borderRadius: "10px",
-                    padding: "0.75rem",
-                    transition: "transform 0.2s, box-shadow 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "scale(1.02)";
-                    e.currentTarget.style.boxShadow = "0 3px 10px rgba(0,0,0,0.1)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "scale(1)";
-                    e.currentTarget.style.boxShadow = "none";
+                    padding: 12,
+                    borderRadius: 16,
+                    background: "rgba(255,255,255,0.9)",
+                    border: "1px solid rgba(15,23,42,0.06)",
+                    boxShadow: "0 8px 20px rgba(15,23,42,0.06)",
                   }}
                 >
-                  {/* Product/variant image */}
-                  <div style={{ width: "60px", height: "60px", flexShrink: 0 }}>
+                  {/* Image */}
+                  <div
+                    style={{
+                      width: 72,
+                      height: 72,
+                      borderRadius: 16,
+                      overflow: "hidden",
+                      background: "#f1f5f9",
+                      border: "1px solid rgba(0,0,0,0.06)",
+                      flexShrink: 0,
+                      display: "grid",
+                      placeItems: "center",
+                    }}
+                  >
                     {item.variantImage || item.image ? (
                       <img
                         src={item.variantImage || item.image}
                         alt={item.variantName || item.name}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          borderRadius: "8px",
-                        }}
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
                       />
                     ) : (
-                      <div
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          backgroundColor: "#f7f7f7",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          fontSize: "0.75rem",
-                          color: "#999",
-                          borderRadius: "8px",
-                        }}
-                      >
-                        No Image
-                      </div>
+                      <span style={{ fontSize: 12, color: "#94a3b8" }}>No image</span>
                     )}
                   </div>
 
-                  {/* Item details */}
-                  <div style={{ flex: 1 }}>
-                    <h4 style={{ margin: "0 0 0.3rem 0", fontSize: "1rem" }}>
+                  {/* Info */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div
+                      style={{
+                        fontWeight: 900,
+                        color: "#0f172a",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
                       {item.name}{" "}
-                      {item.variantName ? `(${item.variantName})` : ""}
-                    </h4>
-                    <p style={{ margin: "0 0 0.5rem 0", color: "#e74c3c", fontWeight: "bold" }}>
-                      {formatCurrency(item.price)} x {item.quantity}
-                    </p>
+                      <span style={{ color: "#64748b", fontWeight: 800 }}>
+                        {item.variantName ? `(${item.variantName})` : ""}
+                      </span>
+                    </div>
 
-                    {/* Quantity controls */}
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                      <button
-                        onClick={() =>
-                          updateCartQuantity(item.id, item.quantity - 1, item.variantId, item.variantName)
-                        }
+                    <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                      <div style={{ fontWeight: 900, color: "#ef4444" }}>
+                        {formatCurrency(item.price)}
+                      </div>
+
+                      <div style={{ color: "#94a3b8", fontWeight: 800 }}>•</div>
+
+                      <div style={{ fontSize: 12, color: "#64748b", fontWeight: 800 }}>
+                        Subtotal: {formatCurrency(Number(item.price) * item.quantity)}
+                      </div>
+                    </div>
+
+                    {/* Qty */}
+                    <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 10 }}>
+                      <div
                         style={{
-                          padding: "0.3rem 0.6rem",
-                          border: "1px solid #ccc",
-                          backgroundColor: "#fff",
-                          borderRadius: "6px",
-                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          padding: 6,
+                          borderRadius: 14,
+                          background: "rgba(241,245,249,0.9)",
+                          border: "1px solid rgba(0,0,0,0.06)",
                         }}
                       >
-                        −
-                      </button>
-                      <input
-                        type="number"
-                        min="1"
-                        value={item.quantity}
-                        onChange={(e) =>
-                          updateCartQuantity(
-                            item.id,
-                            parseInt(e.target.value),
-                            item.variantId,
-                            item.variantName
-                          )
-                        }
-                        style={{
-                          width: "50px",
-                          textAlign: "center",
-                          border: "1px solid #ccc",
-                          borderRadius: "6px",
-                          padding: "0.25rem",
-                        }}
-                      />
-                      <button
-                        onClick={() =>
-                          updateCartQuantity(item.id, item.quantity + 1, item.variantId, item.variantName)
-                        }
-                        style={{
-                          padding: "0.3rem 0.6rem",
-                          border: "1px solid #ccc",
-                          backgroundColor: "#fff",
-                          borderRadius: "6px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        +
-                      </button>
+                        <button
+                          onClick={() => updateCartQuantity(item.id, item.quantity - 1, item.variantId, item.variantName)}
+                          style={{
+                            width: 34,
+                            height: 34,
+                            borderRadius: 12,
+                            border: "1px solid rgba(0,0,0,0.08)",
+                            background: "#fff",
+                            cursor: "pointer",
+                            fontWeight: 900,
+                            color: "#0f172a",
+                          }}
+                        >
+                          −
+                        </button>
+
+                        <input
+                          type="number"
+                          min="1"
+                          value={item.quantity}
+                          onChange={(e) =>
+                            updateCartQuantity(
+                              item.id,
+                              parseInt(e.target.value, 10),
+                              item.variantId,
+                              item.variantName
+                            )
+                          }
+                          style={{
+                            width: 56,
+                            height: 34,
+                            borderRadius: 12,
+                            border: "1px solid rgba(0,0,0,0.08)",
+                            textAlign: "center",
+                            fontWeight: 900,
+                            outline: "none",
+                            background: "#fff",
+                          }}
+                        />
+
+                        <button
+                          onClick={() => updateCartQuantity(item.id, item.quantity + 1, item.variantId, item.variantName)}
+                          style={{
+                            width: 34,
+                            height: 34,
+                            borderRadius: 12,
+                            border: "1px solid rgba(0,0,0,0.08)",
+                            background: "#fff",
+                            cursor: "pointer",
+                            fontWeight: 900,
+                            color: "#0f172a",
+                          }}
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Remove button */}
+                  {/* Remove */}
                   <button
                     onClick={() => removeFromCart(item.id, item.variantId, item.variantName)}
                     style={{
-                      background: "none",
-                      border: "none",
+                      width: 42,
+                      height: 42,
+                      borderRadius: 14,
+                      border: "1px solid rgba(239,68,68,0.25)",
+                      background: "rgba(239,68,68,0.10)",
                       cursor: "pointer",
+                      display: "grid",
+                      placeItems: "center",
                     }}
+                    title="Remove"
+                    aria-label="Remove item"
                   >
-                    <FaTrashAlt color="#f44336" size={16} />
+                    <FaTrashAlt color="#ef4444" size={16} />
                   </button>
                 </div>
               ))}
             </div>
+          )}
+        </div>
 
-            {/* Payment + Checkout */}
-            <div style={{ marginTop: "1.5rem" }}>
+        {/* Footer (sticky) */}
+        {cart.length > 0 && (
+          <div
+            style={{
+              padding: 16,
+              borderTop: "1px solid rgba(0,0,0,0.06)",
+              background: "rgba(255,255,255,0.92)",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 12,
+              flexWrap: "wrap",
+            }}
+          >
+            <div style={{ fontWeight: 950, color: "#0f172a" }}>
+              Total: <span style={{ color: "#0f172a" }}>{formatCurrency(cartTotal)}</span>
+            </div>
+
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               <button
                 onClick={() => setShowPaymentModal(true)}
                 style={{
-                  width: "100%",
-                  padding: "0.6rem",
-                  backgroundColor: "#2196F3",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "8px",
+                  padding: "10px 14px",
+                  borderRadius: 14,
+                  border: "1px solid rgba(59,130,246,0.25)",
+                  background: "rgba(59,130,246,0.10)",
+                  color: "#2563eb",
+                  fontWeight: 900,
                   cursor: "pointer",
-                  fontWeight: "bold",
-                  marginBottom: "1rem",
                 }}
               >
-                💳 Select Payment Method
+                💳 Select Payment
               </button>
-            </div>
 
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginTop: "0.5rem",
-                paddingTop: "0.75rem",
-                borderTop: "1px solid #eee",
-              }}
-            >
-              <strong style={{ fontSize: "1.1rem" }}>Total: {formatCurrency(cartTotal)}</strong>
               <button
                 onClick={handleCheckout}
                 style={{
-                  padding: "0.6rem 1.2rem",
-                  backgroundColor: "#4CAF50",
-                  color: "#fff",
+                  padding: "10px 16px",
+                  borderRadius: 14,
                   border: "none",
-                  borderRadius: "8px",
+                  background: "linear-gradient(135deg, #22c55e, #16a34a)",
+                  color: "#fff",
+                  fontWeight: 950,
                   cursor: "pointer",
-                  fontWeight: "bold",
+                  boxShadow: "0 14px 30px rgba(34,197,94,0.25)",
                 }}
               >
                 ✅ Checkout
               </button>
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>

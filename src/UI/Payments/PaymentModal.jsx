@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import PaymentDashboard from '../Payments/PaymentDashboard';
+import React, { useState } from "react";
+import axios from "axios";
+import PaymentDashboard from "../Payments/PaymentDashboard";
 
 function PaymentModal({
   cart,
@@ -12,35 +12,28 @@ function PaymentModal({
   setToastMessage,
   setToastType,
   setShowToast,
-  onClose
+  onClose,
 }) {
   const [receiptFile, setReceiptFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const total = cart.reduce(
-    (sum, item) => sum + Number(item.price) * item.quantity,
-    0
-  );
+  const total = cart.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
 
-  // ✅ Phone validation helper
-  const isValidPhone = (phone) => {
-    const regex = /^(09\d{9}|639\d{9}|\+639\d{9})$/;
-    return regex.test(phone);
-  };
+  const isValidPhone = (phone) => /^(09\d{9}|639\d{9}|\+639\d{9})$/.test(phone);
 
-  // 👇 upload receipt helper
   const uploadReceipt = async () => {
     if (!receiptFile) return "";
-
     const formData = new FormData();
     formData.append("receipt", receiptFile);
 
     setIsUploading(true);
     try {
-      const res = await axios.post("https://capstone-backend-kiax.onrender.com/upload-receipt", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-      return res.data.url; // assume backend returns { url: "http://..." }
+      const res = await axios.post(
+        "https://capstone-backend-kiax.onrender.com/upload-receipt",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+      return res.data.url || "";
     } catch (err) {
       console.error("Upload error:", err);
       setToastType("error");
@@ -52,25 +45,22 @@ function PaymentModal({
     }
   };
 
-  // 👇 helper for GCash simulation
   const handleProceedPayment = async () => {
-    // ✅ validate phone first
     if (!isValidPhone(user.contact)) {
       setToastType("error");
-      setToastMessage("❌ Invalid contact number. Must start with 09 / 639 / +639 and contain 11 digits after.");
+      setToastMessage("❌ Invalid contact number. Use 09 / 639 / +639 format.");
       setShowToast(true);
       return;
     }
 
-    const cleanedCart = cart.map(item => ({
+    const cleanedCart = cart.map((item) => ({
       productId: item.productId || item.id,
       variantId: item.variantId || null,
       quantity: item.quantity,
       price: item.price,
       variantName: item.variantName || item.variant_name || item.name || "Product",
-      variantImage: item.variantImage || item.imageUrl || null
+      variantImage: item.variantImage || item.imageUrl || null,
     }));
-
 
     try {
       const uploadedUrl = await uploadReceipt();
@@ -79,72 +69,106 @@ function PaymentModal({
         userId: user.id,
         items: cleanedCart,
         payment_method: "GCash",
-        receipt_url: uploadedUrl, 
+        receipt_url: uploadedUrl,
         contact: user.contact,
         customer_name: user.fullname,
       };
 
-      const createdSale = await axios.post("https://capstone-backend-kiax.onrender.com/sales", salePayload);
+      const createdSale = await axios.post(
+        "https://capstone-backend-kiax.onrender.com/sales",
+        salePayload
+      );
 
       localStorage.setItem("orderSuccess", "true");
       localStorage.setItem("recentOrderId", String(createdSale.data.saleId));
 
       setToastType("success");
-      setToastMessage("✅ Order placed successfully via GCash!");
+      setToastMessage("✅ Order placed successfully!");
       setShowToast(true);
 
       localStorage.removeItem("cart");
 
       onClose();
-      window.location.href = "/consumer"; 
-
+      window.location.href = "/consumer";
     } catch (error) {
-      console.error("GCash simulation error:", error);
-      alert("Failed to process GCash payment.");
+      console.error("Payment error:", error);
+      alert("Failed to process payment.");
     }
   };
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        top: 0, left: 0,
-        width: '100%', height: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 10000
-      }}
       onClick={onClose}
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.65)",
+        display: "grid",
+        placeItems: "center",
+        padding: 16,
+        zIndex: 20000,
+      }}
     >
       <div
-        style={{
-          borderRadius: '8px',
-          padding: '1rem',
-          width: '95%',
-          maxWidth: '800px',
-          maxHeight: '90%',
-          overflowY: 'auto',
-          boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-          position: 'relative'
-        }}
         onClick={(e) => e.stopPropagation()}
+        style={{
+          width: "min(860px, 96vw)",
+          maxHeight: "90vh",
+          borderRadius: 18,
+          overflow: "hidden",
+          background: "rgba(255,255,255,0.92)",
+          backdropFilter: "blur(12px)",
+          boxShadow: "0 24px 80px rgba(0,0,0,0.35)",
+          border: "1px solid rgba(255,255,255,0.6)",
+          position: "relative",
+        }}
       >
-        <PaymentDashboard
-          cart={cart}
-          total={total}
-          user={user}
-          onClose={onClose}
-          setToastMessage={setToastMessage}
-          setToastType={setToastType}
-          setShowToast={setShowToast}
-          paymentMethod={paymentMethod}
-          setPaymentMethod={setPaymentMethod}
-          hasSelectedPayment={hasSelectedPayment}
-          setHasSelectedPayment={setHasSelectedPayment}
-          onProceedPayment={handleProceedPayment}  // ✅ pass simulation handler
-        />
+        {/* Modern close button */}
+        <button
+          onClick={onClose}
+          aria-label="Close payment modal"
+          style={{
+            position: "absolute",
+            top: 12,
+            right: 12,
+            width: 40,
+            height: 40,
+            borderRadius: 14,
+            border: "1px solid rgba(0,0,0,0.10)",
+            background: "rgba(255,255,255,0.9)",
+            cursor: "pointer",
+            fontSize: 20,
+            zIndex: 10,
+          }}
+        >
+          ×
+        </button>
+
+        <div
+          style={{
+            padding: 16,
+            maxHeight: "90vh",
+            overflowY: "auto",
+          }}
+        >
+          <PaymentDashboard
+            cart={cart}
+            total={total}
+            user={user}
+            onClose={onClose}
+            setToastMessage={setToastMessage}
+            setToastType={setToastType}
+            setShowToast={setShowToast}
+            paymentMethod={paymentMethod}
+            setPaymentMethod={setPaymentMethod}
+            hasSelectedPayment={hasSelectedPayment}
+            setHasSelectedPayment={setHasSelectedPayment}
+            onProceedPayment={handleProceedPayment}
+            isUploading={isUploading}
+            receiptFile={receiptFile}
+            setReceiptFile={setReceiptFile}
+          />
+        </div>
       </div>
     </div>
   );
