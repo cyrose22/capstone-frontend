@@ -59,15 +59,6 @@ function ProductDashboard() {
     fetchProducts();
   }, []);
 
-  useEffect(() => {
-    if (showModal) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => (document.body.style.overflow = "");
-  }, [showModal]);
-
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
   const paginatedProducts = products.slice(indexOfFirst, indexOfLast);
@@ -242,277 +233,323 @@ function ProductDashboard() {
   return (
     <div className="product-dashboard">
       <Header title="🛍️ Product Dashboard" />
+      <button
+        className="add-product-btn"
+        onClick={() => {
+          setForm({
+            name: "",
+            price: "",
+            image: "",
+            category: "",
+            variants: [],
+          });
+          setEditingId(null);
+          setShowModal(true);
+        }}
+      >
+        ➕ Add Product
+      </button>
 
-      {/* ✅ Apply Sales-like topbar + container, keep your existing code intact */}
-      <div className="page-container sd__container">
-        <div className="sd__topbar">
-          <div className="sd__topbarLeft">
-            <h2 className="sd__title">Product Overview</h2>
-            <p className="sd__subtitle">Manage products, prices, images and variants.</p>
-          </div>
-
-          <div className="sd__topbarRight">
+      {/* MODAL */}
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
-              className="sd__btn sd__btn--primary"
-              onClick={() => {
-                setForm({
-                  name: "",
-                  price: "",
-                  image: "",
-                  category: "",
-                  variants: [],
-                });
-                setEditingId(null);
-                setShowModal(true);
-              }}
+              className="modal-close-btn"
+              onClick={() => setShowModal(false)}
             >
-              ➕ Add Product
+              ×
             </button>
-          </div>
-        </div>
+            <h3>{editingId !== null ? "Update Product" : "Add New Product"}</h3>
+            <form onSubmit={handleSubmit} className="modal-form">
+              <label>Product Name *</label>
+              <input
+                type="text"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                required
+              />
 
-        {/* MODAL */}
-        {showModal && (
-          <div className="modal-overlay sd__modalOverlay" onClick={() => setShowModal(false)}>
-            <div className="modal-content sd__modal pd__modal" onClick={(e) => e.stopPropagation()}>
-              <div className="sd__modalHeader">
-                <h3>{editingId !== null ? "Update Product" : "Add New Product"}</h3>
-                <button
-                  className="sd__modalX"
-                  onClick={() => setShowModal(false)}
-                  aria-label="Close"
+              <label>Category</label>
+              <input
+                type="text"
+                name="category"
+                value={form.category}
+                onChange={handleChange}
+              />
+
+              <label>Price *</label>
+              <input
+                type="number"
+                name="price"
+                value={form.price}
+                onChange={handleChange}
+                required
+                step="0.01"
+                min="0"
+              />
+
+              <label>Display Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleMainImageChange}
+              />
+              {form.image && (
+                <div
+                  style={{
+                    width: "100%",
+                    height: "180px",
+                    marginTop: "8px",
+                    borderRadius: "8px",
+                    overflow: "hidden",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    background: "#fafafa",
+                  }}
                 >
-                  ×
+                  <img
+                    src={form.image}
+                    alt="Main product"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain", // ✅ keeps proportions
+                    }}
+                  />
+                </div>
+              )}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <h4>Variants</h4>
+                <button
+                  type="button"
+                  className="add-product-btn"
+                  onClick={addVariant}
+                >
+                  + Add Variant
                 </button>
               </div>
 
-              {/* ✅ Scroll area */}
-              <div className="pd__modalBody">
-                <form id="productForm" onSubmit={handleSubmit} className="pd__form">
-                  <div className="pd__grid2">
-                    <div>
-                      <label className="pd__label">Product Name *</label>
-                      <input
-                        className="pd__input"
-                        type="text"
-                        name="name"
-                        value={form.name}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
+              {form.variants.length === 0 && <p>No variants added.</p>}
+              {form.variants.map((variant, idx) => (
+                <div
+                  key={variant.id || idx}
+                  style={{
+                    border: "1px solid #ddd",
+                    padding: "15px",
+                    marginBottom: "10px",
+                    borderRadius: "8px",
+                    background: "#fafafa",
+                  }}
+                >
+                  <label>Variant Name</label>
+                  <input
+                    type="text"
+                    value={variant.variantName}
+                    onChange={(e) =>
+                      handleVariantNameChange(idx, e.target.value)
+                    }
+                    required
+                  />
 
-                    <div>
-                      <label className="pd__label">Category</label>
-                      <input
-                        className="pd__input"
-                        type="text"
-                        name="category"
-                        value={form.category}
-                        onChange={handleChange}
-                      />
-                    </div>
+                  <label>Variant Stock</label>
+                  <input
+                    type="number"
+                    value={variant.qty || 0}
+                    min="0"
+                    onChange={(e) =>
+                      handleVariantQtyChange(idx, e.target.value)
+                    }
+                  />
+                  <p
+                    style={{
+                      fontSize: "0.9em",
+                      color: variant.qty <= 0 ? "red" : "green",
+                    }}
+                  >
+                    {variant.qty > 0
+                      ? `${variant.qty} in stock`
+                      : "Out of Stock"}
+                  </p>
 
-                    <div>
-                      <label className="pd__label">Price *</label>
-                      <input
-                        className="pd__input"
-                        type="number"
-                        name="price"
-                        value={form.price}
-                        onChange={handleChange}
-                        required
-                        step="0.01"
-                        min="0"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="pd__label">Display Image</label>
-                      <input
-                        className="pd__input"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleMainImageChange}
-                      />
-                    </div>
+                  <label>Variant Images</label>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={(e) =>
+                      handleVariantImagesChange(idx, e.target.files)
+                    }
+                  />
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "8px",
+                      flexWrap: "wrap",
+                      marginTop: "8px",
+                    }}
+                  >
+                    {variant.images &&
+                      variant.images.map((img, i) => (
+                        <div key={i} style={{ position: "relative" }}>
+                          <img
+                            src={img}
+                            alt=""
+                            style={{
+                              width: "60px",
+                              height: "60px",
+                              objectFit: "cover",
+                              borderRadius: "6px",
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeVariantImage(idx, i)}
+                            style={{
+                              position: "absolute",
+                              top: "-5px",
+                              right: "-5px",
+                              background: "#e74c3c",
+                              border: "none",
+                              borderRadius: "50%",
+                              color: "white",
+                              width: "20px",
+                              height: "20px",
+                              cursor: "pointer",
+                            }}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
                   </div>
 
-                  {/* ✅ Smaller preview */}
-                  {form.image && (
-                    <div className="pd__preview">
-                      <img src={form.image} alt="Main product" />
-                    </div>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeVariant(idx)}
+                    style={{
+                      marginTop: "10px",
+                      backgroundColor: "#e74c3c",
+                      color: "white",
+                      border: "none",
+                      padding: "6px 12px",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Remove Variant
+                  </button>
+                </div>
+              ))}
 
-                  <div className="pd__variantsHead">
-                    <h4 className="pd__variantsTitle">Variants</h4>
-                    <button type="button" className="sd__btn" onClick={addVariant}>
-                      + Add Variant
-                    </button>
-                  </div>
-
-                  {form.variants.length === 0 && <p className="pd__muted">No variants added.</p>}
-
-                  {form.variants.map((variant, idx) => (
-                    <div key={variant.id || idx} className="pd__variantCard">
-                      <div className="pd__variantTop">
-                        <strong>Variant {idx + 1}</strong>
-                        <button
-                          type="button"
-                          className="sd__btn sd__btn--danger"
-                          onClick={() => removeVariant(idx)}
-                        >
-                          Remove
-                        </button>
-                      </div>
-
-                      <div className="pd__grid2">
-                        <div>
-                          <label className="pd__label">Variant Name</label>
-                          <input
-                            className="pd__input"
-                            type="text"
-                            value={variant.variantName}
-                            onChange={(e) => handleVariantNameChange(idx, e.target.value)}
-                            required
-                          />
-                        </div>
-
-                        <div>
-                          <label className="pd__label">Variant Stock</label>
-                          <input
-                            className="pd__input"
-                            type="number"
-                            value={variant.qty || 0}
-                            min="0"
-                            onChange={(e) => handleVariantQtyChange(idx, e.target.value)}
-                          />
-                          <div className={`pd__stock ${variant.qty > 0 ? "ok" : "bad"}`}>
-                            {variant.qty > 0 ? `${variant.qty} in stock` : "Out of stock"}
-                          </div>
-                        </div>
-                      </div>
-
-                      <label className="pd__label">Variant Images</label>
-                      <input
-                        className="pd__input"
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={(e) => handleVariantImagesChange(idx, e.target.files)}
-                      />
-
-                      <div className="pd__thumbs">
-                        {variant.images?.map((img, i) => (
-                          <div key={i} className="pd__thumb">
-                            <img src={img} alt="" />
-                            <button
-                              type="button"
-                              className="pd__thumbX"
-                              onClick={() => removeVariantImage(idx, i)}
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </form>
-              </div>
-
-              {/* ✅ Footer aligned, outside scroll */}
-              <div className="pd__modalFooter">
-                <button className="sd__btn" type="button" onClick={() => setShowModal(false)}>
+              <div className="modal-actions">
+                <button type="submit">
+                  {editingId !== null ? "Update" : "Add"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                >
                   Cancel
                 </button>
-                <button className="sd__btn sd__btn--primary" type="submit" form="productForm">
-                  {editingId !== null ? "Update" : "Add"}
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Product Grid */}
+      <div className="product-grid">
+        {products.length === 0 ? (
+          <p className="empty-message">No products yet.</p>
+        ) : (
+          paginatedProducts.map((p) => (
+            <div key={p.id} className="product-card">
+              <div className="product-image">
+                {p.image ? (
+                  <img
+                    src={p.image}
+                    alt={p.name}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain", // ✅ fix stretch here too
+                    }}
+                  />
+                ) : (
+                  <div className="no-image">No Image</div>
+                )}
+              </div>
+              <div className="product-info">
+                <h4>{p.name}</h4>
+                <p>₱{parseFloat(p.price).toFixed(2)}</p>
+
+                {p.variants && p.variants.length > 0 && (
+                  <div style={{ marginTop: "6px" }}>
+                    <strong>Variants:</strong>
+                    <ul style={{ margin: 0, paddingLeft: "18px" }}>
+                      {p.variants.map((v, i) => (
+                        <li key={i}>
+                          {v.variantName} –{" "}
+                          {v.qty > 0 ? (
+                            <span style={{ color: "green" }}>
+                              {v.qty} in stock
+                            </span>
+                          ) : (
+                            <span style={{ color: "red" }}>
+                              Out of Stock
+                            </span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+              <div className="product-actions">
+                <button
+                  className="edit-btn"
+                  onClick={() => handleEdit(p)}
+                >
+                  ✏️ Edit
+                </button>
+                <button
+                  className="delete-btn"
+                  onClick={() => handleDelete(p.id)}
+                >
+                  🗑️ Delete
                 </button>
               </div>
             </div>
-          </div>
-        )}
-
-        {/* Product Grid */}
-        <div className="product-grid sales-card-list sd__grid pd__grid">
-          {products.length === 0 ? (
-            <p className="empty-message">No products yet.</p>
-          ) : (
-            paginatedProducts.map((p) => (
-              <div key={p.id} className="product-card sales-card sd__card pd__card">
-                <div className="product-image">
-                  {p.image ? (
-                    <img
-                      src={p.image}
-                      alt={p.name}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "contain",
-                      }}
-                    />
-                  ) : (
-                    <div className="no-image">No Image</div>
-                  )}
-                </div>
-
-                <div className="product-info">
-                  <h4>{p.name}</h4>
-                  <p className="pd__price">₱{parseFloat(p.price).toFixed(2)}</p>
-
-                  {p.variants && p.variants.length > 0 && (
-                    <div style={{ marginTop: "6px" }}>
-                      <strong>Variants:</strong>
-                      <ul className="pd__variantsList">
-                        {p.variants.map((v, i) => (
-                          <li key={i}>
-                            {v.variantName} –{" "}
-                            {v.qty > 0 ? (
-                              <span style={{ color: "#15803d", fontWeight: 900 }}>
-                                {v.qty} in stock
-                              </span>
-                            ) : (
-                              <span style={{ color: "#b91c1c", fontWeight: 900 }}>
-                                Out of Stock
-                              </span>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-
-                <div className="product-actions card-actions sd__actions">
-                  <button className="sd__btn" onClick={() => handleEdit(p)}>
-                    ✏️ Edit
-                  </button>
-                  <button className="sd__btn sd__btn--danger" onClick={() => handleDelete(p.id)}>
-                    🗑️ Delete
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="pagination">
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i + 1}
-                className={currentPage === i + 1 ? "active" : ""}
-                onClick={() => handleChangePage(i + 1)}
-              >
-                {i + 1}
-              </button>
-            ))}
-          </div>
+          ))
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="pagination">
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i + 1}
+              className={currentPage === i + 1 ? "active" : ""}
+              onClick={() => handleChangePage(i + 1)}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
