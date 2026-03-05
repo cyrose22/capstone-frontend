@@ -13,9 +13,34 @@ html, body {
   overflow-x: hidden;
 }
 
-button {
-  cursor: pointer;
-  transition: all 0.2s ease;
+/* ================= BUTTON SYSTEM ================= */
+
+.btn {
+  padding: 11px 18px;
+  border-radius: 12px;
+  font-weight: 800;
+  border: 1px solid transparent;
+}
+
+.btn-primary {
+  background:#ff6b35;
+  color:#fff;
+}
+
+.btn-secondary {
+  background:transparent;
+  border-color:#1f2937;
+  color:#1f2937;
+}
+
+.btn-secondary:hover {
+  background:#1f2937;
+  color:#fff;
+}
+
+.btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
 }
 
 /* ================= STORE LAYOUT ================= */
@@ -379,14 +404,11 @@ button {
     max-width: 360px;
   }
   
-  .store-topbar {
-    font-size: 12px;
-    padding: 6px 10px;
+  .store-header-main, .store-topbar {
+    padding-left: max(20px, (100vw - 1100px) / 2);
+    padding-right: max(20px, (100vw - 1100px) / 2);
   }
-
-  .store-header-main {
-    padding: 10px 12px;
-  }
+  .store-topbar { padding-top: 4px; padding-bottom: 4px; font-size: 12px; }
 
   .store-logo {
     height: 34px; /* adjust if needed */
@@ -714,6 +736,11 @@ button {
     radial-gradient(circle at 20% 20%, rgba(255,107,53,0.12), transparent 35%),
     radial-gradient(circle at 80% 30%, rgba(0,0,0,0.04), transparent 40%);
   pointer-events:none;
+}
+
+.category-card.active{
+  border-color: #ff6b35;
+  box-shadow: 0 10px 24px rgba(255,107,53,0.18);
 }
 
 .category-card h3{

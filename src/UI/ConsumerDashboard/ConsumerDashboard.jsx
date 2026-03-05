@@ -292,12 +292,12 @@ function ConsumerDashboard() {
           </div>
 
           <div className="hero-buttons">
-            <button className="hero-primary-btn" onClick={goToProducts}>
+            <button className="btn btn-primary" onClick={goToProducts}>
               Shop Now
             </button>
 
             <button
-              className="hero-secondary-btn"
+              className="btn btn-secondary"
               onClick={() => setActiveTab("orders")}
             >
               Track Orders
@@ -330,7 +330,7 @@ function ConsumerDashboard() {
             .map((cat) => (
               <div
                 key={cat}
-                className="category-card"
+                className={`category-card ${selectedCategory === cat ? "active" : ""}`}
                 onClick={() => {
                   setSelectedCategory(cat);
                   goToProducts();
