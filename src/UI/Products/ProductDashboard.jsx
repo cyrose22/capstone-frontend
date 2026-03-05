@@ -59,6 +59,15 @@ function ProductDashboard() {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    if (showModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => (document.body.style.overflow = "");
+  }, [showModal]);
+
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
   const paginatedProducts = products.slice(indexOfFirst, indexOfLast);
@@ -254,163 +263,110 @@ function ProductDashboard() {
           {/* MODAL */}
           {showModal && (
             <div className="modal-overlay" onClick={() => setShowModal(false)}>
-              <div
-                className="modal-content"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button
-                  className="modal-close-btn"
-                  onClick={() => setShowModal(false)}
-                >
-                  ×
-                </button>
-                <h3>{editingId !== null ? "Update Product" : "Add New Product"}</h3>
-                <form onSubmit={handleSubmit} className="modal-form">
-                  <label>Product Name *</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    required
-                  />
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                
+                <div className="modal-header">
+                  <h3>{editingId !== null ? "Update Product" : "Add New Product"}</h3>
+                  <button className="modal-close-btn" onClick={() => setShowModal(false)}>
+                    ×
+                  </button>
+                </div>
 
-                  <label>Category</label>
-                  <input
-                    type="text"
-                    name="category"
-                    value={form.category}
-                    onChange={handleChange}
-                  />
+                <div className="modal-body">
+                  <form onSubmit={handleSubmit} className="modal-form">
+                    <label>Product Name *</label>
+                    <input type="text" name="name" value={form.name} onChange={handleChange} required />
 
-                  <label>Price *</label>
-                  <input
-                    type="number"
-                    name="price"
-                    value={form.price}
-                    onChange={handleChange}
-                    required
-                    step="0.01"
-                    min="0"
-                  />
+                    <label>Category</label>
+                    <input type="text" name="category" value={form.category} onChange={handleChange} />
 
-                  <label>Display Image</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleMainImageChange}
-                  />
-                  {form.image && (
-                    <div
-                      style={{
-                        width: "100%",
-                        height: "180px",
-                        marginTop: "8px",
-                        borderRadius: "8px",
-                        overflow: "hidden",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        background: "#fafafa",
-                      }}
-                    >
-                      <img
-                        src={form.image}
-                        alt="Main product"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "contain", // ✅ keeps proportions
-                        }}
-                      />
-                    </div>
-                  )}
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <h4>Variants</h4>
-                    <button
-                      type="button"
-                      className="add-product-btn"
-                      onClick={addVariant}
-                    >
-                      + Add Variant
-                    </button>
-                  </div>
+                    <label>Price *</label>
+                    <input type="number" name="price" value={form.price} onChange={handleChange} required step="0.01" min="0" />
 
-                  {form.variants.length === 0 && <p>No variants added.</p>}
-                  
-                  {form.variants.map((variant, idx) => (
-                    <div key={variant.id || idx} className="variant-card">
-                      <label>Variant Name</label>
-                      <input
-                        type="text"
-                        value={variant.variantName}
-                        onChange={(e) => handleVariantNameChange(idx, e.target.value)}
-                        required
-                      />
+                    <label>Display Image</label>
+                    <input type="file" accept="image/*" onChange={handleMainImageChange} />
 
-                      <label>Variant Stock</label>
-                      <input
-                        type="number"
-                        value={variant.qty || 0}
-                        min="0"
-                        onChange={(e) => handleVariantQtyChange(idx, e.target.value)}
-                      />
-
-                      <p className={`stock-text ${variant.qty > 0 ? "in" : "out"}`}>
-                        {variant.qty > 0 ? `${variant.qty} in stock` : "Out of Stock"}
-                      </p>
-
-                      <label>Variant Images</label>
-                      <input
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={(e) => handleVariantImagesChange(idx, e.target.files)}
-                      />
-
-                      <div className="variant-thumb-grid">
-                        {variant.images?.map((img, i) => (
-                          <div key={i} className="variant-thumb">
-                            <img src={img} alt="" />
-                            <button
-                              type="button"
-                              className="variant-thumb-remove"
-                              onClick={() => removeVariantImage(idx, i)}
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        ))}
+                    {form.image && (
+                      <div className="image-preview">
+                        <img src={form.image} alt="Main product" />
                       </div>
+                    )}
 
-                      <button
-                        type="button"
-                        className="variant-remove-btn"
-                        onClick={() => removeVariant(idx)}
-                      >
-                        Remove Variant
+                    <div className="variants-head">
+                      <h4>Variants</h4>
+                      <button type="button" className="add-variant-btn" onClick={addVariant}>
+                        + Add Variant
                       </button>
                     </div>
-                  ))}
 
-                  <div className="modal-actions">
-                    <button type="submit">
-                      {editingId !== null ? "Update" : "Add"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowModal(false)}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
+                    {form.variants.length === 0 && <p className="muted">No variants added.</p>}
+
+                    {form.variants.map((variant, idx) => (
+                      <div key={variant.id || idx} className="variant-card">
+                        <div className="variant-top">
+                          <h5 className="variant-title">Variant {idx + 1}</h5>
+                          <button type="button" className="variant-remove-x" onClick={() => removeVariant(idx)}>
+                            Remove
+                          </button>
+                        </div>
+
+                        <label>Variant Name</label>
+                        <input
+                          type="text"
+                          value={variant.variantName}
+                          onChange={(e) => handleVariantNameChange(idx, e.target.value)}
+                          required
+                        />
+
+                        <label>Variant Stock</label>
+                        <input
+                          type="number"
+                          value={variant.qty || 0}
+                          min="0"
+                          onChange={(e) => handleVariantQtyChange(idx, e.target.value)}
+                        />
+
+                        <p className={`stock-text ${variant.qty > 0 ? "in" : "out"}`}>
+                          {variant.qty > 0 ? `${variant.qty} in stock` : "Out of Stock"}
+                        </p>
+
+                        <label>Variant Images</label>
+                        <input
+                          type="file"
+                          multiple
+                          accept="image/*"
+                          onChange={(e) => handleVariantImagesChange(idx, e.target.files)}
+                        />
+
+                        <div className="variant-thumb-grid">
+                          {variant.images?.map((img, i) => (
+                            <div key={i} className="variant-thumb">
+                              <img src={img} alt="" />
+                              <button
+                                type="button"
+                                className="variant-thumb-remove"
+                                onClick={() => removeVariantImage(idx, i)}
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* footer buttons moved outside form body visually (see CSS) */}
+                    <div className="modal-footer">
+                      <button className="primary-btn" type="submit">
+                        {editingId !== null ? "Update" : "Add"}
+                      </button>
+                      <button className="ghost-btn" type="button" onClick={() => setShowModal(false)}>
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
               </div>
             </div>
           )}
