@@ -188,7 +188,7 @@ function ConsumerDashboard() {
             <img src={logo} alt="logo" className="store-logo" />
           </div>
 
-          <nav className="store-nav">
+          {/* <nav className="store-nav">
             <button
               className={activeTab === "shop" ? "nav-active" : ""}
               onClick={() => setActiveTab("shop")}
@@ -209,7 +209,7 @@ function ConsumerDashboard() {
             >
               Profile
             </button>
-          </nav>
+          </nav> */}
 
           <div className="store-icons">
 
