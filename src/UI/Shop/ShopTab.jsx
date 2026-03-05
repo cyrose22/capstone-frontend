@@ -175,14 +175,7 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
             {category}
           </h3>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-              gap: "1rem",
-              marginTop: "1rem",
-            }}
-          >
+          <div className="shop-grid">
             {items.map((p) => (
               <div
                 key={p.id}
