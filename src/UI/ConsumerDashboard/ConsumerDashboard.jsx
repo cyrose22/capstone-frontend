@@ -53,6 +53,7 @@ function ConsumerDashboard() {
   const [newPassword, setNewPassword] = useState("");
   const [savingPassword, setSavingPassword] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
     const stored = localStorage.getItem("user");
@@ -296,21 +297,20 @@ function ConsumerDashboard() {
         <h2>Our Pet Categories</h2>
 
         <div className="category-grid">
-
           {categories
             .filter((cat) => cat !== "All")
             .map((cat) => (
-
               <div
                 key={cat}
                 className="category-card"
-                onClick={() => setActiveTab("shop")}
+                onClick={() => {
+                  setActiveTab("shop");
+                  setSelectedCategory(cat);
+                }}
               >
                 <h3>{cat}</h3>
               </div>
-
           ))}
-
         </div>
 
       </section>
@@ -321,6 +321,8 @@ function ConsumerDashboard() {
           <ShopTab
             products={products}
             addToCart={addToCart}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
           />
         )}
 

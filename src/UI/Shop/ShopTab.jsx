@@ -2,10 +2,10 @@ import React, { useState, useMemo, useEffect } from "react";
 import axios from "axios";
 import VariantModal from "../Variant/VariantModal"; // ✅ import reusable modal
 
-function ShopTab({ addToCart }) {
+function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  // const [selectedCategory, setSelectedCategory] = useState("All");
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
