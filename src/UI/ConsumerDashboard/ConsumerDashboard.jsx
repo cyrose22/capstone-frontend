@@ -54,6 +54,15 @@ function ConsumerDashboard() {
   const [savingPassword, setSavingPassword] = useState(false);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const productsRef = useRef(null);
+
+  const goToProducts = () => {
+    setActiveTab("shop");
+    // wait for ShopTab to render
+    setTimeout(() => {
+      productsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
+  };
 
   useEffect(() => {
     const stored = localStorage.getItem("user");
@@ -273,7 +282,7 @@ function ConsumerDashboard() {
           <p>Premium food, treats, vitamins & accessories</p>
 
           <div className="hero-buttons">
-            <button onClick={() => setActiveTab("shop")}>
+            <button onClick={goToProducts}>
               Shop Now
             </button>
 
@@ -307,8 +316,8 @@ function ConsumerDashboard() {
                 key={cat}
                 className="category-card"
                 onClick={() => {
-                  setActiveTab("shop");
                   setSelectedCategory(cat);
+                  goToProducts();
                 }}
               >
                 <h3>{cat}</h3>
@@ -321,12 +330,14 @@ function ConsumerDashboard() {
       <div className="store-content">
 
         {activeTab === "shop" && (
-          <ShopTab
-            products={products}
-            addToCart={addToCart}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-          />
+          <div ref={productsRef}>
+            <ShopTab
+              products={products}
+              addToCart={addToCart}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+            />
+          </div>
         )}
 
         {activeTab === "orders" && (

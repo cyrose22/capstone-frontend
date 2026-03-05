@@ -99,7 +99,7 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
         .includes(searchTerm.toLowerCase());
 
       const matchesCategory =
-        selectedCategory === "All" || p.category === selectedCategory;
+        selectedCategory === "All" || (p.category || "Others") === selectedCategory;
 
       return matchesSearch && matchesCategory;
     });
