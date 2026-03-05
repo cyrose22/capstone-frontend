@@ -294,7 +294,7 @@ function ConsumerDashboard() {
 
       <section className="pet-categories">
 
-        <h2>Our Pet Categories</h2>
+        <h2>Categories</h2>
 
         <div className="category-grid">
           {categories
