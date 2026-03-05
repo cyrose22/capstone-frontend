@@ -1,178 +1,171 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from "react";
 
 function NotificationPanel({
   notifBounce,
   newStatusChanges,
   setNewStatusChanges,
-  notifRef
 }) {
-  const [showNotifications, setShowNotifications] = useState(false);
+  const [open, setOpen] = useState(false);
 
+  // prevent background scroll when open (mobile-friendly)
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (notifRef.current && !notifRef.current.contains(e.target)) {
-        setShowNotifications(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [notifRef]);
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => (document.body.style.overflow = prev);
+  }, [open]);
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        display: 'inline-block',
-        zIndex: 3000
-      }}
-      ref={notifRef}
-    >
-      {/* Bell Icon */}
-      <div
-        onClick={() => setShowNotifications(!showNotifications)}
+    <>
+      {/* 🔔 Bell Icon (same as before) */}
+      <button
+        className="icon-btn"
+        onClick={() => setOpen(true)}
         style={{
-          position: 'relative',
-          fontSize: '1.6rem',
-          cursor: 'pointer',
-          userSelect: 'none',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          animation: notifBounce ? 'bounce 1s infinite' : 'none'
+          position: "relative",
+          animation: notifBounce ? "bounce 1s infinite" : "none",
         }}
       >
         🔔
         {newStatusChanges.length > 0 && (
           <span
-            style={{
-              position: 'absolute',
-              top: '-6px',
-              right: '-6px',
-              backgroundColor: '#ff3b30',
-              color: '#fff',
-              borderRadius: '50%',
-              padding: '3px 6px',
-              fontSize: '0.7rem',
-              fontWeight: 'bold'
-            }}
+            className="icon-badge"
+            style={{ top: "-6px", right: "-6px" }}
           >
             {newStatusChanges.length}
           </span>
         )}
-      </div>
+      </button>
 
-      {/* Dropdown */}
-      {showNotifications && (
+      {/* ✅ MODAL (same style as cart) */}
+      {open && (
         <div
+          onClick={() => setOpen(false)}
           style={{
-            position: 'absolute',
-            right: 0,
-            top: '48px',
-            width: '320px',
-            backgroundColor: '#fff',
-            borderRadius: '12px',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
-            zIndex: 4000,
-            overflow: 'hidden',
-            animation: 'fadeDown 0.2s ease'
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 3000,
+            padding: "16px",
           }}
         >
-          <h4
+          <div
+            onClick={(e) => e.stopPropagation()}
             style={{
-              margin: 0,
-              padding: '0.9rem',
-              borderBottom: '1px solid #eee',
-              fontWeight: 600
+              backgroundColor: "#fff",
+              borderRadius: "12px",
+              padding: "1rem",
+              width: "100%",
+              maxWidth: "520px",
+              maxHeight: "85vh",
+              overflowY: "auto",
+              position: "relative",
+              boxShadow: "0 6px 14px rgba(0,0,0,0.15)",
             }}
           >
-            Order Notifications
-          </h4>
+            {/* Close */}
+            <span
+              style={{
+                position: "absolute",
+                top: "0.75rem",
+                right: "1rem",
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+                cursor: "pointer",
+                color: "#555",
+              }}
+              onClick={() => setOpen(false)}
+            >
+              ×
+            </span>
 
-          <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
-            {newStatusChanges.length > 0 ? (
-              newStatusChanges.map((change, index) => (
-                <div
-                  key={`${change.id}-${change.status}-${index}`}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '0.75rem',
-                    padding: '0.9rem',
-                    borderBottom: '1px solid #f2f2f2',
-                    position: 'relative'
-                  }}
-                >
-                  <div style={{ fontSize: '1.3rem' }}>
-                    {change.status === 'processing' && '⏳'}
-                    {change.status === 'to receive' && '📦'}
-                    {change.status === 'cancelled' && '❌'}
-                    {change.status === 'completed' && '✅'}
-                  </div>
+            <h3 style={{ marginBottom: "1rem" }}>
+              🔔 Notifications ({newStatusChanges.length})
+            </h3>
 
-                  <div style={{ flex: 1 }}>
-                    <strong>Order #{change.id}</strong>
-
-                    {change.status === 'processing' && (
-                      <p style={{ margin: '0.3rem 0' }}>
-                        has been <strong>processed</strong>. Waiting for admin confirmation.
-                      </p>
-                    )}
-
-                    {change.status === 'to receive' && (
-                      <p style={{ margin: '0.3rem 0' }}>
-                        has been moved to <strong>To Receive</strong>. Get ready to receive your order.
-                      </p>
-                    )}
-
-                    {change.status === 'completed' && (
-                      <p style={{ margin: '0.3rem 0' }}>
-                        has been <strong>Completed</strong>. Thank you for shopping with us!
-                      </p>
-                    )}
-
-                    {change.status === 'cancelled' && (
-                      <p style={{ margin: '0.3rem 0' }}>
-                        was <strong>Cancelled</strong> by{' '}
-                        <strong>
-                          {change.cancelledByRole === 'admin'
-                            ? 'Admin'
-                            : change.cancelledByName}
-                        </strong>. 
-                        You may check the reason in order history.
-                      </p>
-                    )}
-                  </div>
-
-                  <button
-                    onClick={() =>
-                      setNewStatusChanges((prev) =>
-                        prev.filter((_, i) => i !== index)
-                      )
-                    }
-                    style={{
-                      border: 'none',
-                      background: 'transparent',
-                      fontSize: '1rem',
-                      cursor: 'pointer',
-                      position: 'absolute',
-                      top: '10px',
-                      right: '10px',
-                      color: '#aaa'
-                    }}
-                  >
-                    ×
-                  </button>
-                </div>
-              ))
-            ) : (
-              <p style={{ padding: '1.2rem', textAlign: 'center', color: '#888' }}>
+            {newStatusChanges.length === 0 ? (
+              <p style={{ textAlign: "center", color: "#777" }}>
                 No recent status changes
               </p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                {newStatusChanges.map((change, index) => (
+                  <div
+                    key={`${change.id}-${change.status}-${index}`}
+                    style={{
+                      border: "1px solid #eee",
+                      borderRadius: "10px",
+                      padding: "0.75rem",
+                      position: "relative",
+                    }}
+                  >
+                    <button
+                      onClick={() =>
+                        setNewStatusChanges((prev) =>
+                          prev.filter((_, i) => i !== index)
+                        )
+                      }
+                      style={{
+                        position: "absolute",
+                        top: "10px",
+                        right: "10px",
+                        border: "none",
+                        background: "transparent",
+                        cursor: "pointer",
+                        color: "#aaa",
+                        fontSize: "1.1rem",
+                      }}
+                    >
+                      ×
+                    </button>
+
+                    <div style={{ display: "flex", gap: "0.6rem" }}>
+                      <div style={{ fontSize: "1.3rem" }}>
+                        {change.status === "processing" && "⏳"}
+                        {change.status === "to receive" && "📦"}
+                        {change.status === "cancelled" && "❌"}
+                        {change.status === "completed" && "✅"}
+                      </div>
+
+                      <div style={{ flex: 1 }}>
+                        <strong>Order #{change.id}</strong>
+
+                        {change.status === "processing" && (
+                          <p style={{ margin: "0.3rem 0" }}>
+                            has been <strong>processed</strong>.
+                          </p>
+                        )}
+                        {change.status === "to receive" && (
+                          <p style={{ margin: "0.3rem 0" }}>
+                            is now <strong>To Receive</strong>.
+                          </p>
+                        )}
+                        {change.status === "completed" && (
+                          <p style={{ margin: "0.3rem 0" }}>
+                            has been <strong>Completed</strong>.
+                          </p>
+                        )}
+                        {change.status === "cancelled" && (
+                          <p style={{ margin: "0.3rem 0" }}>
+                            was <strong>Cancelled</strong>.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 

@@ -309,12 +309,11 @@ button {
   }
 
   /* ✅ icons always stay in ONE ROW on the right */
-  .store-icons{
-    flex:0 0 auto;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    white-space:nowrap;
+  .store-icons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
   }
 
   /* ensure icon buttons don't shrink */

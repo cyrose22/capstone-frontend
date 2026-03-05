@@ -217,7 +217,6 @@ function ConsumerDashboard() {
               notifBounce={notifBounce}
               newStatusChanges={newStatusChanges}
               setNewStatusChanges={setNewStatusChanges}
-              notifRef={notifRef}
             />
 
             <button
