@@ -287,7 +287,6 @@ function ConsumerDashboard() {
 
           {/* little feature chips */}
           <div className="hero-features">
-            <span>✅ Fast Delivery</span>
             <span>✅ Quality Products</span>
             <span>✅ Easy Ordering</span>
           </div>
