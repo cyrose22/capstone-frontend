@@ -257,14 +257,6 @@ function ProductDashboard() {
           <div
             className="modal-content"
             onClick={(e) => e.stopPropagation()}
-            style={{
-              maxWidth: "620px",
-              maxHeight: "85vh",
-              overflowY: "auto",
-              padding: "20px",
-              borderRadius: "12px",
-              background: "#fff",
-            }}
           >
             <button
               className="modal-close-btn"
@@ -273,15 +265,7 @@ function ProductDashboard() {
               ×
             </button>
             <h3>{editingId !== null ? "Update Product" : "Add New Product"}</h3>
-            <form
-              onSubmit={handleSubmit}
-              className="modal-form"
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "1rem",
-              }}
-            >
+            <form onSubmit={handleSubmit} className="modal-form">
               <label>Product Name *</label>
               <input
                 type="text"
@@ -493,19 +477,7 @@ function ProductDashboard() {
         ) : (
           paginatedProducts.map((p) => (
             <div key={p.id} className="product-card">
-              <div
-                className="product-image"
-                style={{
-                  width: "100%",
-                  height: "160px",
-                  borderRadius: "8px",
-                  overflow: "hidden",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  background: "#fafafa",
-                }}
-              >
+              <div className="product-image">
                 {p.image ? (
                   <img
                     src={p.image}
