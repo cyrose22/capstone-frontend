@@ -33,7 +33,7 @@ function PaymentModal({
     if (!receiptFile) return "";
 
     const formData = new FormData();
-    formData.append("file", receiptFile);
+    formData.append("receipt", receiptFile);
 
     setIsUploading(true);
     try {
@@ -114,7 +114,7 @@ function PaymentModal({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        zIndex: 1000
+        zIndex: 2000
       }}
       onClick={onClose}
     >
