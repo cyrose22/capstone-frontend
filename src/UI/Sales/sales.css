@@ -1,210 +1,481 @@
 /* =========================
-   Spacing + Font polish (override)
-   Paste at END of sales.css
+   Modern Sales UI (Drop-in)
    ========================= */
 
-:root {
-  --sd-font: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-
-  /* spacing scale */
-  --sd-2: 8px;
-  --sd-3: 12px;
-  --sd-4: 16px;
-  --sd-5: 20px;
-  --sd-6: 24px;
-
-  --sd-text: #0f172a;
-  --sd-muted: #64748b;
-}
-
-.sd, .sales-dashboard, .sd * {
-  font-family: var(--sd-font);
+.sd {
+  background: #f6f8fb;
+  min-height: 100vh;
 }
 
 .sd__container {
-  padding: var(--sd-5) 0 var(--sd-6) !important;
+  width: min(1200px, 92vw);
+  margin: 0 auto;
+  padding: 18px 0 40px;
 }
 
-/* ---------- Top bar ---------- */
+/* Top bar */
 .sd__topbar {
-  margin: var(--sd-3) 0 var(--sd-4) !important;
-  align-items: center !important;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 10px 0 18px;
 }
 
 .sd__title {
-  font-size: 1.25rem !important;
-  line-height: 1.15 !important;
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -0.02em;
 }
 
 .sd__subtitle {
-  font-size: 0.95rem !important;
-  line-height: 1.35 !important;
-  margin-top: 6px !important;
+  margin: 6px 0 0;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
+/* Buttons */
 .sd__btn {
-  padding: 10px 16px !important;
-  font-size: 0.92rem !important;
-  letter-spacing: -0.01em !important;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.85);
+  color: #0f172a;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  backdrop-filter: blur(8px);
 }
 
-/* ---------- Summary cards ---------- */
+.sd__btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.10);
+  border-color: rgba(15, 23, 42, 0.18);
+}
+
+.sd__btn--primary {
+  border: none;
+  color: #fff;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.25);
+}
+
+.sd__btn--primary:hover {
+  box-shadow: 0 18px 40px rgba(37, 99, 235, 0.30);
+}
+
+.sd__btn--danger {
+  border: none;
+  color: #fff;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 14px 30px rgba(239, 68, 68, 0.25);
+}
+
+/* Summary */
 .sales-summary.sd__summary {
-  gap: var(--sd-3) !important;
-  margin: var(--sd-3) 0 var(--sd-4) !important;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 14px;
+  margin: 10px 0 18px;
 }
 
 .sd__summaryCard {
-  padding: var(--sd-4) !important;
-  border-radius: 18px !important;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
+  padding: 14px 16px;
+  backdrop-filter: blur(10px);
+}
+
+.sd__summaryMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .sd__summaryLabel {
-  font-size: 0.85rem !important;
-  letter-spacing: -0.01em !important;
+  color: #64748b;
+  font-weight: 800;
+  font-size: 0.9rem;
 }
 
 .sd__summaryValue {
-  font-size: 1.35rem !important;
-  line-height: 1.1 !important;
+  color: #0f172a;
+  font-weight: 950;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
 }
 
-/* ---------- Tabs spacing ---------- */
+/* Tabs */
 .order-status-tabs.sd__tabs {
-  margin: var(--sd-3) 0 var(--sd-4) !important;
-  gap: var(--sd-2) !important;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 14px 0 18px;
 }
 
 .sd__tab {
-  padding: 10px 14px !important;
-  font-size: 0.92rem !important;
-  line-height: 1 !important;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  background: rgba(255, 255, 255, 0.75);
+  color: #0f172a;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  backdrop-filter: blur(10px);
 }
 
-/* ---------- Cards ---------- */
+.sd__tab:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.10);
+}
+
+.sd__tab--active {
+  border: none;
+  color: #fff;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  box-shadow: 0 16px 34px rgba(37, 99, 235, 0.25);
+}
+
+/* Grid cards */
 .sales-card-list.sd__grid {
-  gap: var(--sd-3) !important;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
 }
 
 .sales-card.sd__card {
-  padding: var(--sd-4) !important;
-  border-radius: 18px !important;
+  border-radius: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  background: rgba(255, 255, 255, 0.90);
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.08);
+  padding: 14px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.sales-card.sd__card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 26px 60px rgba(15, 23, 42, 0.12);
 }
 
 .sd__cardHeader {
-  margin-bottom: var(--sd-3) !important;
-  align-items: center !important;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.sd__orderMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .sd__orderId {
-  font-size: 0.98rem !important;
-  letter-spacing: -0.01em !important;
+  font-weight: 950;
+  color: #0f172a;
 }
 
 .sd__orderDate {
-  font-size: 0.82rem !important;
-  margin-top: 2px !important;
+  color: #64748b;
+  font-weight: 700;
+  font-size: 0.85rem;
 }
 
-/* status chip */
+/* Status chips */
 .status-tag.sd__status {
-  padding: 6px 10px !important;
-  font-size: 0.78rem !important;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 0.8rem;
+  text-transform: capitalize;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(10px);
 }
 
-/* ---------- Card body / rows ---------- */
+.status-processing {
+  background: rgba(245, 158, 11, 0.14);
+  color: #b45309;
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+.status-to-receive {
+  background: rgba(59, 130, 246, 0.14);
+  color: #1d4ed8;
+  border-color: rgba(59, 130, 246, 0.25);
+}
+
+.status-completed {
+  background: rgba(34, 197, 94, 0.14);
+  color: #15803d;
+  border-color: rgba(34, 197, 94, 0.25);
+}
+
+.status-cancelled {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+/* Card body */
 .stylish-body.sd__cardBody {
-  padding: var(--sd-3) !important;
-  border-radius: 16px !important;
+  border-radius: 14px;
+  background: rgba(248, 250, 252, 0.9);
+  border: 1px solid rgba(15, 23, 42, 0.05);
+  padding: 12px;
 }
 
 .sd__row {
-  padding: 6px 0 !important;
+  padding: 6px 0;
 }
 
 .sd__label {
-  font-size: 0.88rem !important;
-  font-weight: 800 !important;
-  color: var(--sd-muted) !important;
+  color: #64748b;
+  font-weight: 900;
 }
 
 .sd__value {
-  font-size: 0.92rem !important;
-  font-weight: 900 !important;
-  color: var(--sd-text) !important;
+  color: #0f172a;
+  font-weight: 900;
 }
 
-/* ---------- Items list tighter + cleaner ---------- */
+/* Items list */
 .sd__itemsTitle {
-  display: block !important;
-  margin-top: 10px !important;
-  margin-bottom: 8px !important;
-  font-size: 0.9rem !important;
+  display: inline-block;
+  margin-top: 8px;
+  color: #0f172a;
 }
 
 .sd__itemsList {
-  gap: 10px !important;
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .sd__item {
-  padding: 10px 12px !important;
-  border-radius: 16px !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .sd__itemImg {
-  width: 46px !important;
-  height: 46px !important;
-  border-radius: 14px !important;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  flex-shrink: 0;
+}
+
+.sd__itemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
 .sd__itemName {
-  font-size: 0.92rem !important;
-  line-height: 1.15 !important;
+  font-weight: 900;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sd__itemSub {
-  font-size: 0.82rem !important;
-  color: var(--sd-muted) !important;
+  font-weight: 700;
+  color: #64748b;
+  font-size: 0.85rem;
 }
 
-/* ---------- Actions row spacing ---------- */
+/* Cancel box */
+.sd__cancelBox {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.20);
+  color: #7f1d1d;
+  font-weight: 700;
+}
+
+/* Actions */
 .card-actions.sd__actions {
-  margin-top: var(--sd-3) !important;
-  gap: var(--sd-2) !important;
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
 }
 
 .sd__iconBtn {
-  width: 44px !important;
-  height: 44px !important;
-  border-radius: 16px !important;
-  font-size: 16px !important;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  background: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
 }
 
-/* ---------- Modal typography ---------- */
+.sd__iconBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
+}
+
+.sd__iconBtn--blue {
+  border-color: rgba(37, 99, 235, 0.25);
+  background: rgba(37, 99, 235, 0.10);
+}
+
+.sd__iconBtn--green {
+  border-color: rgba(34, 197, 94, 0.25);
+  background: rgba(34, 197, 94, 0.10);
+}
+
+.sd__iconBtn--red {
+  border-color: rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.10);
+}
+
+/* Empty state */
+.sd__empty {
+  border-radius: 18px;
+  border: 1px dashed rgba(15, 23, 42, 0.18);
+  background: rgba(255, 255, 255, 0.8);
+  padding: 22px;
+  text-align: center;
+  color: #64748b;
+  font-weight: 800;
+}
+
+.sd__emptyTitle {
+  color: #0f172a;
+  font-weight: 950;
+  margin-bottom: 6px;
+}
+
+.sd__emptySub {
+  font-weight: 700;
+}
+
+/* Modal */
+.modal-overlay.sd__modalOverlay {
+  background: rgba(2, 6, 23, 0.55);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+}
+
 .modal-content.sd__modal {
-  padding: var(--sd-4) !important;
-  border-radius: 18px !important;
+  width: min(560px, 92vw);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 26px 80px rgba(0,0,0,0.35);
+  padding: 16px;
+}
+
+.sd__modal--wide {
+  width: min(820px, 94vw);
+}
+
+.sd__modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }
 
 .sd__modalHeader h3 {
-  font-size: 1rem !important;
-  font-weight: 900 !important;
+  margin: 0;
+  color: #0f172a;
+  font-weight: 950;
+  font-size: 1.05rem;
+}
+
+.sd__modalX {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  background: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 20px;
 }
 
 .sd__textarea {
-  font-size: 0.92rem !important;
-  line-height: 1.4 !important;
+  width: 100%;
+  min-height: 110px;
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.9);
+  font-weight: 700;
+  outline: none;
 }
 
-/* ---------- Toast ---------- */
+.sd__modalActions {
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Receipt */
+.sd__receipt h2 {
+  margin: 12px 0 8px;
+  text-align: center;
+  color: #0f172a;
+  font-weight: 950;
+  letter-spacing: -0.02em;
+}
+
+.sd__receipt p {
+  margin: 6px 0;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.sd__receiptImg {
+  width: 100%;
+  border-radius: 16px;
+  margin-top: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+/* Toast */
 .quick-toast.sd__toast {
-  font-size: 0.9rem !important;
-  letter-spacing: -0.01em !important;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-weight: 800;
+  box-shadow: 0 16px 50px rgba(0,0,0,0.25);
 }
 
-/* ---------- Mobile ---------- */
+/* Responsive */
 @media (max-width: 900px) {
-  .sd__container {
-    width: min(1100px, 94vw) !important;
+  .sales-summary.sd__summary {
+    grid-template-columns: 1fr;
+  }
+  .sd__topbar {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
