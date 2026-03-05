@@ -70,6 +70,11 @@ function ConsumerDashboard() {
   }, []);
 
   useEffect(() => {
+    document.body.style.overflow = showCartModal ? "hidden" : "auto";
+    return () => (document.body.style.overflow = "auto");
+  }, [showCartModal]);
+
+  useEffect(() => {
     if (products.length > 0) {
       const uniqueCategories = [
         "All",

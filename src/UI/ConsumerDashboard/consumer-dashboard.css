@@ -829,10 +829,10 @@ html, body {
 
 /* ================= CATEGORY STRIP (MODERN) ================= */
 
-.category-strip{
+.category-strip {
   position: sticky;
   top: 72px;                 /* adjust to your header height */
-  z-index: 1500;
+  z-index: 200;
   background: rgba(248,250,252,0.92);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid #eef2f7;
