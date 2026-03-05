@@ -453,6 +453,7 @@ button {
   box-shadow: 0 6px 18px rgba(0,0,0,0.06);
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
   cursor: pointer;
+  background:linear-gradient(135deg,#ffffff,#f8f8f8);
 }
 
 /* soft accent stripe */
@@ -481,16 +482,15 @@ button {
   position: relative;
   z-index: 1;
   margin: 0;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 600;
   color: #1f2937;
   letter-spacing: 0.2px;
 }
 
 .category-card:hover{
-  transform: translateY(-3px);
-  box-shadow: 0 10px 26px rgba(0,0,0,0.10);
-  border-color: rgba(255,107,53,0.35);
+  transform:translateY(-4px);
+  box-shadow:0 10px 24px rgba(0,0,0,0.12);
 }
 
 .shop-search {
