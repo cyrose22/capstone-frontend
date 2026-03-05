@@ -297,12 +297,15 @@ button {
   }
 
   /* nav uses remaining space */
-  .store-nav{
-    flex:1 1 auto;
-    display:flex;
-    justify-content:center;
-    gap:10px;
-    flex-wrap:wrap;
+  .store-nav {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;        /* ✅ STOP wrapping */
+    overflow-x: auto;         /* ✅ allow scroll instead */
+    gap: 8px;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* ✅ icons always stay in ONE ROW on the right */
@@ -366,16 +369,15 @@ button {
   padding:10px 20px;
 }
 
-.store-nav{
-  display:flex;
-  gap:20px;
+.store-nav::-webkit-scrollbar{
+  display:none;
 }
 
-.store-nav button{
-  border:none;
-  background:none;
-  font-size:16px;
-  font-weight:600;
+.store-nav button {
+  white-space: nowrap;      /* ✅ prevent "Track Orders" type wrap */
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  font-size: 13px;
 }
 
 .nav-active{
