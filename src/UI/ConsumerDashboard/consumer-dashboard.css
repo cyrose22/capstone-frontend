@@ -218,24 +218,70 @@ button {
 /* ================= MOBILE ================= */
 
 @media (max-width: 768px) {
-
   .store-hero {
-    padding: 40px 16px;
+    flex-direction: column;
+    padding: 18px 14px;
+    text-align: center;
+    gap: 14px;
   }
 
-  .store-hero h1 {
-    font-size: 1.5rem;
+  .hero-left h1 {
+    font-size: 28px;
+    line-height: 1.15;
   }
 
-  .store-content {
-    padding: 16px;
+  .hero-buttons {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
   }
 
-  .notif-dropdown {
-    width: 280px;
-    right: 0;
+  .hero-right {
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
 
+  .hero-card {
+    width: 100%;
+    max-width: 320px;
+  }
+  .store-topbar {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .store-header-main {
+    padding: 10px 12px;
+  }
+
+  .store-logo {
+    height: 34px; /* adjust if needed */
+  }
+
+  .store-nav button {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+
+  .store-icons .icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .category-card {
+    padding: 14px 10px;
+    min-height: 70px;
+  }
+
+  .category-card h3 {
+    font-size: 14px;
+  }
 }
 
 /* ================= ENHANCED SEARCH ================= */
@@ -363,10 +409,15 @@ button {
   transform:translateY(-4px);
 }
 
-.shop-search{
+.shop-search {
   position: sticky;
-  top: 80px; /* adjust depending on header height */
-  background: white;
+  top: 64px; /* adjust depending on your header height */
+  background: #fff;
   padding: 10px 0;
   z-index: 50;
+}
+
+.shop-search input {
+  height: 44px;
+  font-size: 16px;
 }
