@@ -346,9 +346,11 @@ function ProductDashboard() {
             </p>
           </div>
 
-          <button className="primary-btn" onClick={openAddModal}>
-            + Add Product
-          </button>
+          <div className="toolbar-actions">
+            <button className="primary-btn" onClick={openAddModal}>
+              + Add Product
+            </button>
+          </div>
         </div>
 
         <div className="product-grid">
