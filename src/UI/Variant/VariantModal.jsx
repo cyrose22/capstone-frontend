@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 function VariantModal({
   product,
@@ -260,7 +261,7 @@ function VariantModal({
             gridTemplateColumns: "48px 1fr 48px",
             gap: "12px",
             alignItems: "center",
-            marginTop: "18px",
+            marginTop: "8px",
           }}
         >
           <button
@@ -273,35 +274,36 @@ function VariantModal({
               width: "48px",
               height: "48px",
               cursor: variants.length <= 1 ? "not-allowed" : "pointer",
-              fontSize: "1.2rem",
-              fontWeight: "700",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               opacity: variants.length <= 1 ? 0.4 : 1,
             }}
           >
-            ←
+            <FiChevronLeft size={22} />
           </button>
 
-          <button
-            onClick={handleAddToCart}
-            disabled={stockQty <= 0}
+          <div
             style={{
-              background:
-                stockQty > 0
-                  ? "linear-gradient(45deg, #ff4e50, #f9d423)"
-                  : "#ccc",
-              color: "#fff",
-              border: "none",
-              height: "48px",
-              padding: "0 1.2rem",
+              width: "100%",
+              height: "240px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "#f9fafb",
               borderRadius: "14px",
-              fontWeight: "700",
-              fontSize: "1rem",
-              cursor: stockQty > 0 ? "pointer" : "not-allowed",
-              transition: "opacity 0.2s ease, transform 0.18s ease",
             }}
           >
-            🛒 Add to Cart
-          </button>
+            <img
+              src={variant.images?.[0] ?? ""}
+              alt={variant.variant_name}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "contain",
+              }}
+            />
+          </div>
 
           <button
             onClick={nextVariant}
@@ -313,14 +315,36 @@ function VariantModal({
               width: "48px",
               height: "48px",
               cursor: variants.length <= 1 ? "not-allowed" : "pointer",
-              fontSize: "1.2rem",
-              fontWeight: "700",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               opacity: variants.length <= 1 ? 0.4 : 1,
             }}
           >
-            →
+            <FiChevronRight size={22} />
           </button>
         </div>
+        <button
+          onClick={handleAddToCart}
+          disabled={stockQty <= 0}
+          style={{
+            marginTop: "18px",
+            width: "100%",
+            height: "48px",
+            background:
+              stockQty > 0
+                ? "linear-gradient(45deg, #ff4e50, #f9d423)"
+                : "#ccc",
+            color: "#fff",
+            border: "none",
+            borderRadius: "14px",
+            fontWeight: "700",
+            fontSize: "1rem",
+            cursor: stockQty > 0 ? "pointer" : "not-allowed",
+          }}
+        >
+          🛒 Add to Cart
+        </button>
       </div>
     </div>
   );
