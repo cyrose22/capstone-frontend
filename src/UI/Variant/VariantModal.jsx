@@ -23,6 +23,7 @@ function VariantModal({
   const variants = product.variants;
   const variant = variants[selectedVariantIndex];
   const stockQty = Number(variant?.quantity || 0);
+  const imageSrc = variant.images?.[0] || product.image || "";
 
   const formatCurrency = (amount) =>
     `₱${Number(amount).toLocaleString("en-PH", {
@@ -55,8 +56,6 @@ function VariantModal({
 
     onClose();
   };
-
-  const imageSrc = variant.images?.[0] || product.image || "";
 
   return (
     <div
@@ -111,20 +110,6 @@ function VariantModal({
           ×
         </button>
 
-        {/* Product Name */}
-        <h4
-          style={{
-            margin: "6px 0 16px",
-            fontSize: "1.15rem",
-            fontWeight: "700",
-            color: "#2f2f2f",
-            lineHeight: "1.35",
-            padding: "0 22px",
-          }}
-        >
-          {product.name}
-        </h4>
-
         {/* Out of Stock Badge */}
         {stockQty <= 0 && (
           <span
@@ -144,47 +129,108 @@ function VariantModal({
           </span>
         )}
 
-        {/* Variant Image */}
-        <div
+        {/* Product Name */}
+        <h4
           style={{
-            width: "100%",
-            height: "250px",
-            overflow: "hidden",
-            borderRadius: "18px",
-            marginBottom: "16px",
-            background: "#fafafa",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+            margin: "6px 0 16px",
+            fontSize: "1.15rem",
+            fontWeight: "700",
+            color: "#2f2f2f",
+            lineHeight: "1.35",
+            padding: "0 22px",
           }}
         >
-          {imageSrc ? (
-            <img
-              src={imageSrc}
-              alt={variant.variant_name}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "contain",
-                padding: "14px",
-                transition: "transform 0.3s ease",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.transform = "scale(1.05)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.transform = "scale(1)")
-              }
-            />
-          ) : (
-            <div style={{ color: "#9ca3af", fontSize: "14px" }}>No Image</div>
-          )}
+          {product.name}
+        </h4>
+
+        {/* Navigation + Image */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "48px 1fr 48px",
+            gap: "12px",
+            alignItems: "center",
+            marginTop: "8px",
+          }}
+        >
+          <button
+            onClick={prevVariant}
+            disabled={variants.length <= 1}
+            style={{
+              background: "#f3f4f6",
+              border: "none",
+              borderRadius: "999px",
+              width: "48px",
+              height: "48px",
+              cursor: variants.length <= 1 ? "not-allowed" : "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              opacity: variants.length <= 1 ? 0.4 : 1,
+            }}
+          >
+            <FiChevronLeft size={22} />
+          </button>
+
+          <div
+            style={{
+              width: "100%",
+              height: "220px",
+              overflow: "hidden",
+              borderRadius: "18px",
+              background: "#fafafa",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {imageSrc ? (
+              <img
+                src={imageSrc}
+                alt={variant.variant_name}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                  padding: "14px",
+                  transition: "transform 0.3s ease",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.transform = "scale(1.05)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.transform = "scale(1)")
+                }
+              />
+            ) : (
+              <div style={{ color: "#9ca3af", fontSize: "14px" }}>No Image</div>
+            )}
+          </div>
+
+          <button
+            onClick={nextVariant}
+            disabled={variants.length <= 1}
+            style={{
+              background: "#f3f4f6",
+              border: "none",
+              borderRadius: "999px",
+              width: "48px",
+              height: "48px",
+              cursor: variants.length <= 1 ? "not-allowed" : "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              opacity: variants.length <= 1 ? 0.4 : 1,
+            }}
+          >
+            <FiChevronRight size={22} />
+          </button>
         </div>
 
         {/* Variant Info */}
         <p
           style={{
-            margin: "0 0 6px",
+            margin: "18px 0 6px",
             fontWeight: "700",
             fontSize: "1.05rem",
             color: "#374151",
@@ -246,7 +292,8 @@ function VariantModal({
                   height: "10px",
                   borderRadius: "999px",
                   border: "none",
-                  background: idx === selectedVariantIndex ? "#ee4d2d" : "#d1d5db",
+                  background:
+                    idx === selectedVariantIndex ? "#ee4d2d" : "#d1d5db",
                   cursor: "pointer",
                 }}
               />
@@ -254,76 +301,7 @@ function VariantModal({
           </div>
         )}
 
-        {/* Navigation + Add to Cart */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "48px 1fr 48px",
-            gap: "12px",
-            alignItems: "center",
-            marginTop: "8px",
-          }}
-        >
-          <button
-            onClick={prevVariant}
-            disabled={variants.length <= 1}
-            style={{
-              background: "#f3f4f6",
-              border: "none",
-              borderRadius: "999px",
-              width: "48px",
-              height: "48px",
-              cursor: variants.length <= 1 ? "not-allowed" : "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              opacity: variants.length <= 1 ? 0.4 : 1,
-            }}
-          >
-            <FiChevronLeft size={22} />
-          </button>
-
-          <div
-            style={{
-              width: "100%",
-              height: "240px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: "#f9fafb",
-              borderRadius: "14px",
-            }}
-          >
-            <img
-              src={variant.images?.[0] ?? ""}
-              alt={variant.variant_name}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "contain",
-              }}
-            />
-          </div>
-
-          <button
-            onClick={nextVariant}
-            disabled={variants.length <= 1}
-            style={{
-              background: "#f3f4f6",
-              border: "none",
-              borderRadius: "999px",
-              width: "48px",
-              height: "48px",
-              cursor: variants.length <= 1 ? "not-allowed" : "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              opacity: variants.length <= 1 ? 0.4 : 1,
-            }}
-          >
-            <FiChevronRight size={22} />
-          </button>
-        </div>
+        {/* Add to Cart */}
         <button
           onClick={handleAddToCart}
           disabled={stockQty <= 0}
