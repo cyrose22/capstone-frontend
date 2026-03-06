@@ -31,10 +31,7 @@
 
 .product-dashboard {
   min-height: 100vh;
-  background:
-    radial-gradient(circle at top left, rgba(238, 77, 45, 0.08), transparent 28%),
-    radial-gradient(circle at top right, rgba(59, 130, 246, 0.06), transparent 22%),
-    var(--bg);
+  background: #ffffff;
   padding: 0 0 40px;
 }
 
@@ -120,15 +117,16 @@
   min-height: 44px;
   padding: 0 16px;
   border-radius: 12px;
-  background: #fff;
-  color: var(--text);
-  border: 1px solid var(--border);
+  background: #fff7f4;
+  color: #9a3412;
+  border: 1px solid #f3d6cc;
   font-weight: 700;
 }
 
 .secondary-btn:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
+  background: #ffefe8;
+  border-color: #efc2b3;
+  color: #7c2d12;
 }
 
 .danger-btn {
@@ -181,10 +179,10 @@
 
 .product-card {
   background: var(--panel);
-  border: 1px solid var(--border);
+  border: 1px solid #e9edf3;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 8px 22px rgba(17, 24, 39, 0.06);
   display: flex;
   flex-direction: column;
   transition: 0.18s ease;
