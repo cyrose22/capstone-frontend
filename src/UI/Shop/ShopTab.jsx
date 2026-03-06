@@ -203,12 +203,25 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
               p.variants?.[0]?.images?.[0] || p.image || "";
 
             return (
-              <article key={p.id} className="shop-card">
+              <article
+                key={p.id}
+                className="shop-card"
+                onClick={() => openVariantModal(p, 0)}
+                style={{ cursor: "pointer" }}
+              >
                 {p.displayQuantity <= 0 && (
                   <span className="shop-stock-badge out">Out of Stock</span>
                 )}
 
-                <div className="shop-card-image">
+                <div
+                  className="shop-card-image"
+                  onClick={() =>
+                    p.hasVariants ? openVariantModal(p, 0) : handleAddToCart(p)
+                  }
+                  style={{
+                    cursor: p.displayQuantity > 0 ? "pointer" : "default",
+                  }}
+                >
                   {imageSrc ? (
                     <img src={imageSrc} alt={p.name} />
                   ) : (

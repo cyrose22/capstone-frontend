@@ -987,6 +987,11 @@ html, body {
   height: 100%;
   object-fit: contain;
   padding: 14px;
+  transition: transform 0.25s ease;
+}
+
+.shop-card-image:hover img {
+  transform: scale(1.05);
 }
 
 .shop-card-no-image {
