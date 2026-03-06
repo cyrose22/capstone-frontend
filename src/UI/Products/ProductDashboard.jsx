@@ -94,10 +94,26 @@ function ProductDashboard() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+
+    setForm((prev) => {
+      if (name === "price") {
+        const updatedVariants = (prev.variants || []).map((variant) => ({
+          ...variant,
+          price: value,
+        }));
+
+        return {
+          ...prev,
+          price: value,
+          variants: updatedVariants,
+        };
+      }
+
+      return {
+        ...prev,
+        [name]: value,
+      };
+    });
   };
 
   const handleMainImageChange = (e) => {
@@ -500,7 +516,7 @@ function ProductDashboard() {
                           </div>
 
                           <div className="form-group">
-                            <label>Base Price *</label>
+                            <label>Default Variant Price *</label>
                             <input
                               type="number"
                               name="price"
