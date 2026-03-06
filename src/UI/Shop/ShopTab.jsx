@@ -181,15 +181,13 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
 
       {/* Category Result Header */}
       <div className="shop-results-header">
-        <div className="shop-results-heading">
-          <h2>
-            {selectedCategory === "All" ? "All Products" : selectedCategory}
-          </h2>
-          <p>
-            {filteredProducts.length} item
-            {filteredProducts.length !== 1 ? "s" : ""}
-          </p>
-        </div>
+        <h2 className="shop-results-title">
+          {selectedCategory === "All" ? "All Products" : selectedCategory} 
+          <span>
+            ({filteredProducts.length} item
+            {filteredProducts.length !== 1 ? "s" : ""})
+          </span>
+        </h2>
       </div>
 
       {/* Product grid */}
