@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import "./product-dashboard.css";
 import Header from "../Header/Header";
+
+const API_URL = "https://capstone-backend-kiax.onrender.com/products";
 
 function ProductDashboard() {
   const [products, setProducts] = useState([]);
@@ -15,15 +17,20 @@ function ProductDashboard() {
   const [editingId, setEditingId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+
   const itemsPerPage = 6;
 
-  // Fetch products
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("https://capstone-backend-kiax.onrender.com/products");
+      const res = await axios.get(API_URL);
+
       const normalized = (res.data || []).map((p) => {
         const variants = (p.variants || []).map((v) => ({
-          id: v.id,
+          id: v.id || null,
           variantName: v.variant_name || "Original",
           price: parseFloat(v.price || 0),
           qty: v.quantity != null ? parseInt(v.quantity, 10) : 0,
@@ -35,15 +42,15 @@ function ProductDashboard() {
             id: null,
             variantName: "Original",
             price: parseFloat(p.price || 0),
-            qty: p.quantity || 0,
+            qty: p.quantity != null ? parseInt(p.quantity, 10) : 0,
             images: p.image ? [p.image] : [],
           });
         }
 
         return {
           ...p,
-          price: variants[0].price || 0,
-          image: (variants[0].images && variants[0].images[0]) || null,
+          price: variants[0]?.price || 0,
+          image: variants[0]?.images?.[0] || p.image || "",
           variants,
         };
       });
@@ -55,95 +62,177 @@ function ProductDashboard() {
     }
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const indexOfLast = currentPage * itemsPerPage;
-  const indexOfFirst = indexOfLast - itemsPerPage;
-  const paginatedProducts = products.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(products.length / itemsPerPage);
+  const paginatedProducts = useMemo(() => {
+    const indexOfLast = currentPage * itemsPerPage;
+    const indexOfFirst = indexOfLast - itemsPerPage;
+    return products.slice(indexOfFirst, indexOfLast);
+  }, [products, currentPage]);
+
+  const resetForm = () => {
+    setForm({
+      name: "",
+      price: "",
+      image: "",
+      category: "",
+      variants: [],
+    });
+    setEditingId(null);
+  };
+
+  const openAddModal = () => {
+    resetForm();
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    resetForm();
+  };
 
   const handleChangePage = (page) => setCurrentPage(page);
 
-  // Input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleMainImageChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setForm((prev) => ({ ...prev, image: reader.result }));
+      setForm((prev) => ({
+        ...prev,
+        image: reader.result,
+      }));
     };
     reader.readAsDataURL(file);
   };
 
-  // Variants handling
   const addVariant = () => {
     setForm((prev) => ({
       ...prev,
       variants: [
         ...(prev.variants || []),
-        { variantName: "", qty: 0, images: [] },
+        {
+          id: null,
+          variantName: "",
+          price: prev.price ? parseFloat(prev.price) : "",
+          qty: 0,
+          images: [],
+        },
+      ],
+    }));
+  };
+
+  const addPresetVariant = (name) => {
+    setForm((prev) => ({
+      ...prev,
+      variants: [
+        ...(prev.variants || []),
+        {
+          id: null,
+          variantName: name,
+          price: prev.price ? parseFloat(prev.price) : "",
+          qty: 0,
+          images: [],
+        },
       ],
     }));
   };
 
   const removeVariant = (index) => {
-    const newVariants = [...form.variants];
-    newVariants.splice(index, 1);
-    setForm((prev) => ({ ...prev, variants: newVariants }));
+    setForm((prev) => {
+      const nextVariants = [...(prev.variants || [])];
+      nextVariants.splice(index, 1);
+      return {
+        ...prev,
+        variants: nextVariants,
+      };
+    });
   };
 
-  const handleVariantNameChange = (index, value) => {
-    const newVariants = [...form.variants];
-    newVariants[index].variantName = value;
-    setForm((prev) => ({ ...prev, variants: newVariants }));
-  };
-
-  const handleVariantQtyChange = (index, value) => {
-    const newVariants = [...form.variants];
-    newVariants[index].qty = parseInt(value, 10) || 0;
-    setForm((prev) => ({ ...prev, variants: newVariants }));
+  const updateVariantField = (index, field, value) => {
+    setForm((prev) => {
+      const nextVariants = [...(prev.variants || [])];
+      nextVariants[index] = {
+        ...nextVariants[index],
+        [field]: value,
+      };
+      return {
+        ...prev,
+        variants: nextVariants,
+      };
+    });
   };
 
   const handleVariantImagesChange = (index, files) => {
-    const newVariants = [...form.variants];
-    const images = [];
+    const selectedFiles = Array.from(files || []);
+    if (selectedFiles.length === 0) return;
 
-    Array.from(files).forEach((file) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        images.push(reader.result);
-        if (images.length === files.length) {
-          newVariants[index].images = images;
-          setForm((prev) => ({ ...prev, variants: newVariants }));
-        }
-      };
-      reader.readAsDataURL(file);
-    });
+    Promise.all(
+      selectedFiles.map(
+        (file) =>
+          new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          })
+      )
+    )
+      .then((images) => {
+        setForm((prev) => {
+          const nextVariants = [...(prev.variants || [])];
+          const currentImages = nextVariants[index]?.images || [];
+          nextVariants[index] = {
+            ...nextVariants[index],
+            images: [...currentImages, ...images],
+          };
+          return {
+            ...prev,
+            variants: nextVariants,
+          };
+        });
+      })
+      .catch((err) => {
+        console.error("Variant image upload error:", err);
+        alert("Failed to load one or more images");
+      });
   };
 
   const removeVariantImage = (variantIndex, imageIndex) => {
     setForm((prev) => {
-      const newVariants = [...(prev.variants || [])];
-      newVariants[variantIndex].images.splice(imageIndex, 1);
-      return { ...prev, variants: newVariants };
+      const nextVariants = [...(prev.variants || [])];
+      const nextImages = [...(nextVariants[variantIndex]?.images || [])];
+      nextImages.splice(imageIndex, 1);
+
+      nextVariants[variantIndex] = {
+        ...nextVariants[variantIndex],
+        images: nextImages,
+      };
+
+      return {
+        ...prev,
+        variants: nextVariants,
+      };
     });
   };
 
-  // Save product
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const { name, price, image, category, variants } = form;
 
-    if (!name || price === "")
-      return alert("Please fill all required fields");
+    if (!name.trim() || price === "") {
+      alert("Please fill all required fields");
+      return;
+    }
 
     const normalizedVariants =
       variants && variants.length > 0
@@ -160,7 +249,7 @@ function ProductDashboard() {
 
     const mappedVariants = normalizedVariants.map((v) => ({
       id: v.id || null,
-      variantName: v.variantName || "Original",
+      variantName: v.variantName?.trim() || "Original",
       price: parseFloat(v.price || price),
       qty: parseInt(v.qty, 10) || 0,
       images: v.images || [],
@@ -168,14 +257,13 @@ function ProductDashboard() {
 
     try {
       if (editingId !== null) {
-        await axios.put(`https://capstone-backend-kiax.onrender.com/products/${editingId}`, {
-          name,
+        await axios.put(`${API_URL}/${editingId}`, {
+          name: name.trim(),
           price: parseFloat(price),
           image,
-          category,
+          category: category.trim(),
           variants: mappedVariants,
         });
-        setEditingId(null);
       } else {
         const quantity =
           mappedVariants.length === 1 &&
@@ -183,373 +271,446 @@ function ProductDashboard() {
             ? mappedVariants[0].qty
             : 0;
 
-        await axios.post("https://capstone-backend-kiax.onrender.com/products", {
-          name,
+        await axios.post(API_URL, {
+          name: name.trim(),
           price: parseFloat(price),
           image,
-          category,
+          category: category.trim(),
           variants: mappedVariants,
           quantity,
         });
       }
 
-      setForm({
-        name: "",
-        price: "",
-        image: "",
-        category: "",
-        variants: [],
-      });
-      fetchProducts();
-      setShowModal(false);
+      await fetchProducts();
+      closeModal();
     } catch (err) {
-      console.error(err);
+      console.error("Save error:", err);
       alert("Failed to save product");
     }
   };
 
   const handleEdit = (product) => {
     setForm({
-      name: product.name,
-      price: product.price,
+      name: product.name || "",
+      price: product.price || "",
       image: product.image || "",
       category: product.category || "",
-      variants: product.variants || [],
+      variants: (product.variants || []).map((v) => ({
+        id: v.id || null,
+        variantName: v.variantName || "Original",
+        price: parseFloat(v.price || product.price || 0),
+        qty: parseInt(v.qty || 0, 10),
+        images: v.images || [],
+      })),
     });
+
     setEditingId(product.id);
     setShowModal(true);
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this product?")) return;
+
     try {
-      await axios.delete(`https://capstone-backend-kiax.onrender.com/products/${id}`);
-      fetchProducts();
-    } catch {
+      await axios.delete(`${API_URL}/${id}`);
+      await fetchProducts();
+    } catch (err) {
+      console.error("Delete error:", err);
       alert("Failed to delete product");
     }
   };
 
+  const getTotalStock = (variants = []) =>
+    variants.reduce((sum, v) => sum + (parseInt(v.qty, 10) || 0), 0);
+
+  const presetVariants = [
+    "Small Breed",
+    "Large Breed",
+    "Puppy",
+    "Adult",
+    "Senior",
+    "1kg",
+    "3kg",
+  ];
+
   return (
     <div className="product-dashboard">
-      <Header title="🛍️ Product Dashboard" />
-      <button
-        className="add-product-btn"
-        onClick={() => {
-          setForm({
-            name: "",
-            price: "",
-            image: "",
-            category: "",
-            variants: [],
-          });
-          setEditingId(null);
-          setShowModal(true);
-        }}
-      >
-        ➕ Add Product
-      </button>
+      <div className="dashboard-container">
+        <Header title="🛍️ Product Dashboard" />
 
-      {/* MODAL */}
-      {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div
-            className="modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="modal-close-btn"
-              onClick={() => setShowModal(false)}
-            >
-              ×
-            </button>
-            <h3>{editingId !== null ? "Update Product" : "Add New Product"}</h3>
-            <form onSubmit={handleSubmit} className="modal-form">
-              <label>Product Name *</label>
-              <input
-                type="text"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                required
-              />
+        <div className="dashboard-toolbar">
+          <div>
+            <h2 className="dashboard-title">Products</h2>
+            <p className="dashboard-subtitle">
+              Manage your catalog, variants, stock, and images.
+            </p>
+          </div>
 
-              <label>Category</label>
-              <input
-                type="text"
-                name="category"
-                value={form.category}
-                onChange={handleChange}
-              />
+          <button className="primary-btn" onClick={openAddModal}>
+            + Add Product
+          </button>
+        </div>
 
-              <label>Price *</label>
-              <input
-                type="number"
-                name="price"
-                value={form.price}
-                onChange={handleChange}
-                required
-                step="0.01"
-                min="0"
-              />
+        <div className="product-grid">
+          {products.length === 0 ? (
+            <div className="empty-state">
+              <h3>No products yet</h3>
+              <p>Start by adding your first product.</p>
+            </div>
+          ) : (
+            paginatedProducts.map((p) => {
+              const totalStock = getTotalStock(p.variants);
 
-              <label>Display Image</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleMainImageChange}
-              />
-              {form.image && (
-                <div
-                  style={{
-                    width: "100%",
-                    height: "180px",
-                    marginTop: "8px",
-                    borderRadius: "8px",
-                    overflow: "hidden",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    background: "#fafafa",
-                  }}
-                >
-                  <img
-                    src={form.image}
-                    alt="Main product"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain", // ✅ keeps proportions
-                    }}
-                  />
+              return (
+                <div key={p.id} className="product-card">
+                  <div className="product-image">
+                    {p.image ? (
+                      <img src={p.image} alt={p.name} />
+                    ) : (
+                      <div className="no-image">No Image</div>
+                    )}
+                  </div>
+
+                  <div className="product-content">
+                    <div className="product-top-row">
+                      <span className="category-badge">
+                        {p.category || "Uncategorized"}
+                      </span>
+                      <span
+                        className={`stock-badge ${
+                          totalStock > 0 ? "in" : "out"
+                        }`}
+                      >
+                        {totalStock > 0 ? `${totalStock} in stock` : "Out of stock"}
+                      </span>
+                    </div>
+
+                    <h4 className="product-name">{p.name}</h4>
+                    <p className="product-price">
+                      ₱{parseFloat(p.price || 0).toFixed(2)}
+                    </p>
+
+                    <div className="product-summary">
+                      <span>{p.variants?.length || 0} variants</span>
+                    </div>
+
+                    {p.variants?.length > 0 && (
+                      <div className="product-variant-list">
+                        {p.variants.map((v, i) => (
+                          <div key={i} className="product-variant-item">
+                            <span className="variant-name">{v.variantName}</span>
+                            <span
+                              className={`variant-stock ${
+                                v.qty > 0 ? "in" : "out"
+                              }`}
+                            >
+                              {v.qty > 0 ? `${v.qty} stock` : "Out"}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="product-actions">
+                    <button
+                      className="secondary-btn"
+                      onClick={() => handleEdit(p)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="danger-btn"
+                      onClick={() => handleDelete(p.id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
-              )}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
+              );
+            })
+          )}
+        </div>
+
+        {totalPages > 1 && (
+          <div className="pagination">
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i + 1}
+                className={currentPage === i + 1 ? "active" : ""}
+                onClick={() => handleChangePage(i + 1)}
               >
-                <h4>Variants</h4>
-                <button
-                  type="button"
-                  className="add-product-btn"
-                  onClick={addVariant}
-                >
-                  + Add Variant
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {showModal && (
+          <div className="modal-overlay" onClick={closeModal}>
+            <div
+              className="modal-content"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="modal-header">
+                <div>
+                  <h3>
+                    {editingId !== null ? "Update Product" : "Add New Product"}
+                  </h3>
+                  <p>
+                    Fill in product info, upload images, and manage variants.
+                  </p>
+                </div>
+                <button className="icon-btn" onClick={closeModal}>
+                  ×
                 </button>
               </div>
 
-              {form.variants.length === 0 && <p>No variants added.</p>}
-              {form.variants.map((variant, idx) => (
-                <div
-                  key={variant.id || idx}
-                  style={{
-                    border: "1px solid #ddd",
-                    padding: "15px",
-                    marginBottom: "10px",
-                    borderRadius: "8px",
-                    background: "#fafafa",
-                  }}
-                >
-                  <label>Variant Name</label>
-                  <input
-                    type="text"
-                    value={variant.variantName}
-                    onChange={(e) =>
-                      handleVariantNameChange(idx, e.target.value)
-                    }
-                    required
-                  />
+              <form onSubmit={handleSubmit} className="modal-shell">
+                <div className="modal-body">
+                  <div className="product-editor">
+                    <div className="editor-main">
+                      <section className="editor-section">
+                        <h4>Basic Information</h4>
 
-                  <label>Variant Stock</label>
-                  <input
-                    type="number"
-                    value={variant.qty || 0}
-                    min="0"
-                    onChange={(e) =>
-                      handleVariantQtyChange(idx, e.target.value)
-                    }
-                  />
-                  <p
-                    style={{
-                      fontSize: "0.9em",
-                      color: variant.qty <= 0 ? "red" : "green",
-                    }}
-                  >
-                    {variant.qty > 0
-                      ? `${variant.qty} in stock`
-                      : "Out of Stock"}
-                  </p>
-
-                  <label>Variant Images</label>
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={(e) =>
-                      handleVariantImagesChange(idx, e.target.files)
-                    }
-                  />
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "8px",
-                      flexWrap: "wrap",
-                      marginTop: "8px",
-                    }}
-                  >
-                    {variant.images &&
-                      variant.images.map((img, i) => (
-                        <div key={i} style={{ position: "relative" }}>
-                          <img
-                            src={img}
-                            alt=""
-                            style={{
-                              width: "60px",
-                              height: "60px",
-                              objectFit: "cover",
-                              borderRadius: "6px",
-                            }}
+                        <div className="form-group">
+                          <label>Product Name *</label>
+                          <input
+                            type="text"
+                            name="name"
+                            value={form.name}
+                            onChange={handleChange}
+                            placeholder="e.g. Pedigree Adult Dog Food"
+                            required
                           />
+                        </div>
+
+                        <div className="form-grid two">
+                          <div className="form-group">
+                            <label>Category</label>
+                            <input
+                              type="text"
+                              name="category"
+                              value={form.category}
+                              onChange={handleChange}
+                              placeholder="e.g. Dog Food"
+                            />
+                          </div>
+
+                          <div className="form-group">
+                            <label>Base Price *</label>
+                            <input
+                              type="number"
+                              name="price"
+                              value={form.price}
+                              onChange={handleChange}
+                              min="0"
+                              step="0.01"
+                              placeholder="0.00"
+                              required
+                            />
+                          </div>
+                        </div>
+                      </section>
+
+                      <section className="editor-section">
+                        <h4>Main Display Image</h4>
+
+                        <div className="form-group">
+                          <label>Upload Image</label>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleMainImageChange}
+                          />
+                        </div>
+
+                        <div className="main-image-preview">
+                          {form.image ? (
+                            <img src={form.image} alt="Main product preview" />
+                          ) : (
+                            <div className="empty-upload-state">
+                              No display image selected
+                            </div>
+                          )}
+                        </div>
+                      </section>
+                    </div>
+
+                    <aside className="editor-side">
+                      <section className="editor-section">
+                        <div className="section-header">
+                          <div>
+                            <h4>Variants</h4>
+                            <p className="section-note">
+                              Add size, breed, life stage, or packaging variants.
+                            </p>
+                          </div>
                           <button
                             type="button"
-                            onClick={() => removeVariantImage(idx, i)}
-                            style={{
-                              position: "absolute",
-                              top: "-5px",
-                              right: "-5px",
-                              background: "#e74c3c",
-                              border: "none",
-                              borderRadius: "50%",
-                              color: "white",
-                              width: "20px",
-                              height: "20px",
-                              cursor: "pointer",
-                            }}
+                            className="primary-btn small"
+                            onClick={addVariant}
                           >
-                            ✕
+                            + Add Variant
                           </button>
                         </div>
-                      ))}
-                  </div>
 
+                        <div className="preset-tags">
+                          {presetVariants.map((item) => (
+                            <button
+                              key={item}
+                              type="button"
+                              className="tag-btn"
+                              onClick={() => addPresetVariant(item)}
+                            >
+                              {item}
+                            </button>
+                          ))}
+                        </div>
+
+                        {form.variants.length === 0 ? (
+                          <div className="variant-empty">
+                            No variants added yet.
+                          </div>
+                        ) : (
+                          form.variants.map((variant, idx) => (
+                            <div key={variant.id || idx} className="variant-card">
+                              <div className="variant-card-header">
+                                <div>
+                                  <h5>
+                                    {variant.variantName?.trim()
+                                      ? variant.variantName
+                                      : `Variant ${idx + 1}`}
+                                  </h5>
+                                  <span
+                                    className={`stock-badge ${
+                                      variant.qty > 0 ? "in" : "out"
+                                    }`}
+                                  >
+                                    {variant.qty > 0
+                                      ? `${variant.qty} in stock`
+                                      : "Out of stock"}
+                                  </span>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  className="text-danger-btn"
+                                  onClick={() => removeVariant(idx)}
+                                >
+                                  Remove
+                                </button>
+                              </div>
+
+                              <div className="form-group">
+                                <label>Variant Name</label>
+                                <input
+                                  type="text"
+                                  value={variant.variantName}
+                                  onChange={(e) =>
+                                    updateVariantField(
+                                      idx,
+                                      "variantName",
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="e.g. Small Breed"
+                                  required
+                                />
+                              </div>
+
+                              <div className="form-grid two">
+                                <div className="form-group">
+                                  <label>Price</label>
+                                  <input
+                                    type="number"
+                                    value={variant.price}
+                                    min="0"
+                                    step="0.01"
+                                    onChange={(e) =>
+                                      updateVariantField(
+                                        idx,
+                                        "price",
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder="0.00"
+                                  />
+                                </div>
+
+                                <div className="form-group">
+                                  <label>Stock</label>
+                                  <input
+                                    type="number"
+                                    value={variant.qty}
+                                    min="0"
+                                    onChange={(e) =>
+                                      updateVariantField(
+                                        idx,
+                                        "qty",
+                                        parseInt(e.target.value, 10) || 0
+                                      )
+                                    }
+                                    placeholder="0"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="form-group">
+                                <label>Variant Images</label>
+                                <input
+                                  type="file"
+                                  multiple
+                                  accept="image/*"
+                                  onChange={(e) =>
+                                    handleVariantImagesChange(idx, e.target.files)
+                                  }
+                                />
+                              </div>
+
+                              {variant.images?.length > 0 && (
+                                <div className="variant-thumb-grid">
+                                  {variant.images.map((img, i) => (
+                                    <div key={i} className="variant-thumb">
+                                      <img src={img} alt="" />
+                                      <button
+                                        type="button"
+                                        className="variant-thumb-remove"
+                                        onClick={() =>
+                                          removeVariantImage(idx, i)
+                                        }
+                                      >
+                                        ×
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ))
+                        )}
+                      </section>
+                    </aside>
+                  </div>
+                </div>
+
+                <div className="modal-footer">
                   <button
                     type="button"
-                    onClick={() => removeVariant(idx)}
-                    style={{
-                      marginTop: "10px",
-                      backgroundColor: "#e74c3c",
-                      color: "white",
-                      border: "none",
-                      padding: "6px 12px",
-                      borderRadius: "6px",
-                      cursor: "pointer",
-                    }}
+                    className="secondary-btn"
+                    onClick={closeModal}
                   >
-                    Remove Variant
+                    Cancel
+                  </button>
+                  <button type="submit" className="primary-btn">
+                    {editingId !== null ? "Update Product" : "Save Product"}
                   </button>
                 </div>
-              ))}
-
-              <div className="modal-actions">
-                <button type="submit">
-                  {editingId !== null ? "Update" : "Add"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Product Grid */}
-      <div className="product-grid">
-        {products.length === 0 ? (
-          <p className="empty-message">No products yet.</p>
-        ) : (
-          paginatedProducts.map((p) => (
-            <div key={p.id} className="product-card">
-              <div className="product-image">
-                {p.image ? (
-                  <img
-                    src={p.image}
-                    alt={p.name}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain", // ✅ fix stretch here too
-                    }}
-                  />
-                ) : (
-                  <div className="no-image">No Image</div>
-                )}
-              </div>
-              <div className="product-info">
-                <h4>{p.name}</h4>
-                <p>₱{parseFloat(p.price).toFixed(2)}</p>
-
-                {p.variants && p.variants.length > 0 && (
-                  <div style={{ marginTop: "6px" }}>
-                    <strong>Variants:</strong>
-                    <ul style={{ margin: 0, paddingLeft: "18px" }}>
-                      {p.variants.map((v, i) => (
-                        <li key={i}>
-                          {v.variantName} –{" "}
-                          {v.qty > 0 ? (
-                            <span style={{ color: "green" }}>
-                              {v.qty} in stock
-                            </span>
-                          ) : (
-                            <span style={{ color: "red" }}>
-                              Out of Stock
-                            </span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-              <div className="product-actions">
-                <button
-                  className="edit-btn"
-                  onClick={() => handleEdit(p)}
-                >
-                  ✏️ Edit
-                </button>
-                <button
-                  className="delete-btn"
-                  onClick={() => handleDelete(p.id)}
-                >
-                  🗑️ Delete
-                </button>
-              </div>
+              </form>
             </div>
-          ))
+          </div>
         )}
       </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="pagination">
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i + 1}
-              className={currentPage === i + 1 ? "active" : ""}
-              onClick={() => handleChangePage(i + 1)}
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
