@@ -82,7 +82,23 @@ function ProductDashboard() {
   };
 
   const openAddModal = () => {
-    resetForm();
+    setForm({
+      name: "",
+      price: "",
+      image: "",
+      category: "",
+      variants: [
+        {
+          id: null,
+          variantName: "Original",
+          price: "",
+          qty: 0,
+          images: [],
+        },
+      ],
+    });
+
+    setEditingId(null);
     setShowModal(true);
   };
 
