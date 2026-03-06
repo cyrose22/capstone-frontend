@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function VariantModal({
   product,
@@ -7,7 +7,13 @@ function VariantModal({
   onClose,
   addToCart,
 }) {
-  const [selectedVariantIndex, setSelectedVariantIndex] = useState(currentIndex || 0);
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState(
+    currentIndex || 0
+  );
+
+  useEffect(() => {
+    setSelectedVariantIndex(currentIndex || 0);
+  }, [currentIndex]);
 
   if (!product || !product.variants || product.variants.length === 0) {
     return null;
@@ -15,6 +21,7 @@ function VariantModal({
 
   const variants = product.variants;
   const variant = variants[selectedVariantIndex];
+  const stockQty = Number(variant?.quantity || 0);
 
   const formatCurrency = (amount) =>
     `₱${Number(amount).toLocaleString("en-PH", {
@@ -23,15 +30,16 @@ function VariantModal({
     })}`;
 
   const prevVariant = () => {
-    setSelectedVariantIndex(
-      (prev) => (prev - 1 + variants.length) % variants.length
-    );
-    setCurrentIndex((prev) => (prev - 1 + variants.length) % variants.length);
+    const nextIndex =
+      (selectedVariantIndex - 1 + variants.length) % variants.length;
+    setSelectedVariantIndex(nextIndex);
+    setCurrentIndex(nextIndex);
   };
 
   const nextVariant = () => {
-    setSelectedVariantIndex((prev) => (prev + 1) % variants.length);
-    setCurrentIndex((prev) => (prev + 1) % variants.length);
+    const nextIndex = (selectedVariantIndex + 1) % variants.length;
+    setSelectedVariantIndex(nextIndex);
+    setCurrentIndex(nextIndex);
   };
 
   const handleAddToCart = () => {
@@ -47,19 +55,20 @@ function VariantModal({
     onClose();
   };
 
+  const imageSrc = variant.images?.[0] || product.image || "";
+
   return (
     <div
       onClick={onClose}
       style={{
         position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
+        inset: 0,
         backgroundColor: "rgba(0,0,0,0.5)",
+        backdropFilter: "blur(4px)",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        padding: "20px",
         zIndex: 1000,
       }}
     >
@@ -68,51 +77,66 @@ function VariantModal({
         style={{
           position: "relative",
           backgroundColor: "#fff",
-          padding: "1.5rem",
-          borderRadius: "16px",
-          maxWidth: "420px",
+          padding: "24px 24px 20px",
+          borderRadius: "22px",
+          maxWidth: "430px",
           width: "100%",
           textAlign: "center",
-          boxShadow: "0 6px 16px rgba(0,0,0,0.15)",
+          boxShadow: "0 24px 60px rgba(17,24,39,0.22)",
           animation: "fadeIn 0.3s ease",
         }}
       >
-        {/* ❌ Close button */}
+        {/* Close button */}
         <button
           onClick={onClose}
           style={{
             position: "absolute",
-            top: "10px",
-            right: "12px",
-            background: "transparent",
+            top: "14px",
+            right: "14px",
+            width: "38px",
+            height: "38px",
+            borderRadius: "999px",
+            background: "#f8fafc",
             border: "none",
-            fontSize: "1.4rem",
+            fontSize: "1.5rem",
             fontWeight: "bold",
             cursor: "pointer",
             color: "#666",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           ×
         </button>
 
         {/* Product Name */}
-        <h4 style={{ marginBottom: "0.75rem", fontSize: "1.2rem", fontWeight: "600" }}>
+        <h4
+          style={{
+            margin: "6px 0 16px",
+            fontSize: "1.15rem",
+            fontWeight: "700",
+            color: "#2f2f2f",
+            lineHeight: "1.35",
+            padding: "0 22px",
+          }}
+        >
           {product.name}
         </h4>
 
         {/* Out of Stock Badge */}
-        {Number(variant.quantity) <= 0 && (
+        {stockQty <= 0 && (
           <span
             style={{
               position: "absolute",
               top: "16px",
               left: "16px",
-              background: "#e74c3c",
-              color: "#fff",
-              padding: "3px 8px",
-              borderRadius: "6px",
+              background: "#fef2f2",
+              color: "#dc2626",
+              padding: "6px 10px",
+              borderRadius: "999px",
               fontSize: "0.75rem",
-              fontWeight: "bold",
+              fontWeight: "700",
             }}
           >
             Out of Stock
@@ -123,109 +147,155 @@ function VariantModal({
         <div
           style={{
             width: "100%",
-            height: "240px",
+            height: "250px",
             overflow: "hidden",
-            borderRadius: "10px",
-            marginBottom: "0.75rem",
+            borderRadius: "18px",
+            marginBottom: "16px",
+            background: "#fafafa",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          <img
-            src={variant.images?.[0] ?? ""}
-            alt={variant.variant_name}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "contain",
-              transition: "transform 0.3s ease",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.08)")}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-          />
+          {imageSrc ? (
+            <img
+              src={imageSrc}
+              alt={variant.variant_name}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "contain",
+                padding: "14px",
+                transition: "transform 0.3s ease",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.transform = "scale(1.05)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.transform = "scale(1)")
+              }
+            />
+          ) : (
+            <div style={{ color: "#9ca3af", fontSize: "14px" }}>No Image</div>
+          )}
         </div>
 
         {/* Variant Info */}
-        <p style={{ margin: "0.25rem 0", fontWeight: "600", fontSize: "1rem" }}>
+        <p
+          style={{
+            margin: "0 0 6px",
+            fontWeight: "700",
+            fontSize: "1.05rem",
+            color: "#374151",
+          }}
+        >
           {variant.variant_name}
         </p>
-        <p style={{ margin: "0.25rem 0", color: "#e74c3c", fontWeight: "bold", fontSize: "1.1rem" }}>
+
+        <p
+          style={{
+            margin: "0",
+            color: "#e74c3c",
+            fontWeight: "900",
+            fontSize: "1.5rem",
+          }}
+        >
           {formatCurrency(variant.price)}
         </p>
 
-        {/* Stock with progress bar */}
-        <div style={{ width: "100%", marginTop: "0.5rem" }}>
+        {/* Stock pill */}
+        <div style={{ marginTop: "12px" }}>
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "8px 12px",
+              borderRadius: "999px",
+              fontSize: "0.92rem",
+              fontWeight: "800",
+              background: stockQty > 0 ? "#ecfdf3" : "#fef2f2",
+              color: stockQty > 0 ? "#16a34a" : "#dc2626",
+            }}
+          >
+            {stockQty > 0 ? `${stockQty} in stock` : "Out of stock"}
+          </span>
+        </div>
+
+        {/* Variant dots */}
+        {variants.length > 1 && (
           <div
             style={{
-              height: "6px",
-              borderRadius: "4px",
-              background: "#f0f0f0",
-              overflow: "hidden",
+              display: "flex",
+              justifyContent: "center",
+              gap: "8px",
+              marginTop: "16px",
             }}
           >
-            <div
-              style={{
-                width: `${
-                  Number(variant.quantity) > 0
-                    ? Math.min(100, (variant.quantity / 20) * 100)
-                    : 5 // always show a small red bar if 0
-                }%`,
-                background: Number(variant.quantity) > 0 ? "#27ae60" : "#e74c3c",
-                height: "100%",
-                transition: "width 0.4s ease",
-              }}
-            />
+            {variants.map((_, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => {
+                  setSelectedVariantIndex(idx);
+                  setCurrentIndex(idx);
+                }}
+                style={{
+                  width: "10px",
+                  height: "10px",
+                  borderRadius: "999px",
+                  border: "none",
+                  background: idx === selectedVariantIndex ? "#ee4d2d" : "#d1d5db",
+                  cursor: "pointer",
+                }}
+              />
+            ))}
           </div>
+        )}
 
-          <p
-            style={{
-              margin: "0.25rem 0",
-              fontSize: "0.85rem",
-              fontWeight: "bold",
-              color: Number(variant.quantity) > 0 ? "#27ae60" : "#e74c3c",
-            }}
-          >
-            Stock: {variant.quantity}
-          </p>
-        </div>
         {/* Navigation + Add to Cart */}
         <div
           style={{
-            display: "flex",
-            justifyContent: "space-between",
+            display: "grid",
+            gridTemplateColumns: "48px 1fr 48px",
+            gap: "12px",
             alignItems: "center",
-            marginTop: "1rem",
+            marginTop: "18px",
           }}
         >
           <button
             onClick={prevVariant}
             style={{
-              background: "#f5f5f5",
+              background: "#f3f4f6",
               border: "none",
-              borderRadius: "50%",
-              width: "36px",
-              height: "36px",
+              borderRadius: "999px",
+              width: "48px",
+              height: "48px",
               cursor: "pointer",
-              fontSize: "1.1rem",
+              fontSize: "1.2rem",
+              fontWeight: "700",
             }}
           >
-            ⬅
+            ←
           </button>
 
           <button
             onClick={handleAddToCart}
-            disabled={Number(variant.quantity) <= 0}
+            disabled={stockQty <= 0}
             style={{
               background:
-                Number(variant.quantity) > 0
+                stockQty > 0
                   ? "linear-gradient(45deg, #ff4e50, #f9d423)"
                   : "#ccc",
               color: "#fff",
               border: "none",
-              padding: "0.6rem 1.2rem",
-              borderRadius: "8px",
-              fontWeight: "600",
-              fontSize: "0.9rem",
-              cursor: Number(variant.quantity) > 0 ? "pointer" : "not-allowed",
-              transition: "opacity 0.2s ease",
+              height: "48px",
+              padding: "0 1.2rem",
+              borderRadius: "14px",
+              fontWeight: "700",
+              fontSize: "1rem",
+              cursor: stockQty > 0 ? "pointer" : "not-allowed",
+              transition: "opacity 0.2s ease, transform 0.18s ease",
             }}
           >
             🛒 Add to Cart
@@ -234,16 +304,17 @@ function VariantModal({
           <button
             onClick={nextVariant}
             style={{
-              background: "#f5f5f5",
+              background: "#f3f4f6",
               border: "none",
-              borderRadius: "50%",
-              width: "36px",
-              height: "36px",
+              borderRadius: "999px",
+              width: "48px",
+              height: "48px",
               cursor: "pointer",
-              fontSize: "1.1rem",
+              fontSize: "1.2rem",
+              fontWeight: "700",
             }}
           >
-            ➡
+            →
           </button>
         </div>
       </div>
