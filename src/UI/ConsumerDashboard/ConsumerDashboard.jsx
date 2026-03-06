@@ -343,8 +343,8 @@ function ConsumerDashboard() {
       <section className="category-strip">
         <div className="category-strip-inner">
           <div className="category-strip-title">
-            <h2>Browse</h2>
-            <p>Pick a category to filter products</p>
+            <h2>Browse Products</h2>
+            <p>Filter by category</p>
           </div>
 
           <div className="category-pills" role="tablist" aria-label="Product categories">
