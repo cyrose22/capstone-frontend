@@ -265,15 +265,17 @@ function VariantModal({
         >
           <button
             onClick={prevVariant}
+            disabled={variants.length <= 1}
             style={{
               background: "#f3f4f6",
               border: "none",
               borderRadius: "999px",
               width: "48px",
               height: "48px",
-              cursor: "pointer",
+              cursor: variants.length <= 1 ? "not-allowed" : "pointer",
               fontSize: "1.2rem",
               fontWeight: "700",
+              opacity: variants.length <= 1 ? 0.4 : 1,
             }}
           >
             ←
@@ -303,15 +305,17 @@ function VariantModal({
 
           <button
             onClick={nextVariant}
+            disabled={variants.length <= 1}
             style={{
               background: "#f3f4f6",
               border: "none",
               borderRadius: "999px",
               width: "48px",
               height: "48px",
-              cursor: "pointer",
+              cursor: variants.length <= 1 ? "not-allowed" : "pointer",
               fontSize: "1.2rem",
               fontWeight: "700",
+              opacity: variants.length <= 1 ? 0.4 : 1,
             }}
           >
             →
