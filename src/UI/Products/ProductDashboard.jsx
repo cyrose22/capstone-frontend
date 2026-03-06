@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 import "./product-dashboard.css";
 import Header from "../Header/Header";
 
@@ -58,7 +59,7 @@ function ProductDashboard() {
       setProducts(normalized);
     } catch (err) {
       console.error("Fetch error:", err);
-      alert("Failed to fetch products");
+      toast.error("Failed to fetch products");
     }
   };
 
@@ -218,7 +219,7 @@ function ProductDashboard() {
       })
       .catch((err) => {
         console.error("Variant image upload error:", err);
-        alert("Failed to load one or more images");
+        toast.error("Failed to load one or more images");
       });
   };
 
@@ -246,7 +247,7 @@ function ProductDashboard() {
     const { name, price, image, category, variants } = form;
 
     if (!name.trim() || price === "") {
-      alert("Please fill all required fields");
+      toast.error("Please fill all required fields");
       return;
     }
 
@@ -271,15 +272,21 @@ function ProductDashboard() {
       images: v.images || [],
     }));
 
+    const payload = {
+      name: name.trim(),
+      price: parseFloat(price),
+      image,
+      category: category.trim(),
+      variants: mappedVariants,
+    };
+
     try {
+      const toastId = toast.loading(
+        editingId !== null ? "Updating product..." : "Saving product..."
+      );
+
       if (editingId !== null) {
-        await axios.put(`${API_URL}/${editingId}`, {
-          name: name.trim(),
-          price: parseFloat(price),
-          image,
-          category: category.trim(),
-          variants: mappedVariants,
-        });
+        await axios.put(`${API_URL}/${editingId}`, payload);
       } else {
         const quantity =
           mappedVariants.length === 1 &&
@@ -288,20 +295,29 @@ function ProductDashboard() {
             : 0;
 
         await axios.post(API_URL, {
-          name: name.trim(),
-          price: parseFloat(price),
-          image,
-          category: category.trim(),
-          variants: mappedVariants,
+          ...payload,
           quantity,
         });
       }
+
+      toast.update(toastId, {
+        render:
+          editingId !== null
+            ? "Product updated successfully!"
+            : "Product added successfully!",
+        type: "success",
+        isLoading: false,
+        autoClose: 2500,
+        closeOnClick: true,
+      });
 
       await fetchProducts();
       closeModal();
     } catch (err) {
       console.error("Save error:", err);
-      alert("Failed to save product");
+
+      toast.dismiss();
+      toast.error(err.response?.data?.message || "Failed to save product");
     }
   };
 
@@ -327,12 +343,29 @@ function ProductDashboard() {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this product?")) return;
 
+    const toastId = toast.loading("Deleting product...");
+
     try {
       await axios.delete(`${API_URL}/${id}`);
       await fetchProducts();
+
+      toast.update(toastId, {
+        render: "Product deleted successfully!",
+        type: "success",
+        isLoading: false,
+        autoClose: 2500,
+        closeOnClick: true,
+      });
     } catch (err) {
       console.error("Delete error:", err);
-      alert("Failed to delete product");
+
+      toast.update(toastId, {
+        render: err.response?.data?.message || "Failed to delete product",
+        type: "error",
+        isLoading: false,
+        autoClose: 2500,
+        closeOnClick: true,
+      });
     }
   };
 
