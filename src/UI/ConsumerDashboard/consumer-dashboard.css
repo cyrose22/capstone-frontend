@@ -8,7 +8,7 @@ html, body {
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f8fafc;
+  background: #ffffff;
   color: #333;
   overflow-x: hidden;
 }
@@ -933,7 +933,7 @@ html, body {
 .shop-card {
   position: relative;
   background: #fff;
-  border: 1px solid #eceff3;
+  border: 1px solid #f1f1f1;
   border-radius: 18px;
   overflow: hidden;
   box-shadow: 0 8px 22px rgba(17, 24, 39, 0.06);
@@ -1051,7 +1051,7 @@ html, body {
   margin-top: auto;
   border: none;
   border-radius: 12px;
-  background: #ee4d2d;
+  background: #ff6b35;
   color: white;
   font-weight: 800;
   cursor: pointer;
@@ -1059,7 +1059,7 @@ html, body {
 }
 
 .shop-card-btn:hover:not(:disabled) {
-  background: #d9482a;
+  background: #e85c2d;
   transform: translateY(-1px);
 }
 
