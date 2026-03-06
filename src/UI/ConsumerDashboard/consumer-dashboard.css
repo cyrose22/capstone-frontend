@@ -761,7 +761,7 @@ html, body {
 .shop-search {
   position: sticky;
   top: 64px; /* adjust depending on your header height */
-  background: #fff;
+  background: transparent;
   padding: 10px 0;
   z-index: 50;
 }
