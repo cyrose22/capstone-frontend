@@ -238,29 +238,19 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
                     {formatCurrency(p.displayPrice)}
                   </p>
 
-                  {p.variants?.length > 1 && (
-                    <p className="shop-card-meta">
-                      {p.variants.length} variants available
-                    </p>
-                  )}
+                  <p className="shop-card-meta">
+                    {p.variants?.length > 1 ? `${p.variants.length} variants available` : ""}
+                  </p>
 
-                  {p.hasVariants ? (
-                    <button
-                      className="shop-card-btn"
-                      onClick={() => openVariantModal(p, 0)}
-                      disabled={p.displayQuantity <= 0}
-                    >
-                      View Options
-                    </button>
-                  ) : (
-                    <button
-                      className="shop-card-btn"
-                      onClick={() => handleAddToCart(p)}
-                      disabled={p.displayQuantity <= 0}
-                    >
-                      Add to Cart
-                    </button>
-                  )}
+                  <button
+                    className="shop-card-btn"
+                    onClick={() =>
+                      p.hasVariants ? openVariantModal(p, 0) : handleAddToCart(p)
+                    }
+                    disabled={p.displayQuantity <= 0}
+                  >
+                    🛒 {p.hasVariants ? "Choose Options" : "Add to Cart"}
+                  </button>
                 </div>
               </article>
             );
