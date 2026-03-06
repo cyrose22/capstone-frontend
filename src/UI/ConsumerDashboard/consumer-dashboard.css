@@ -275,7 +275,7 @@ html, body {
 /* ================= CONTENT ================= */
 
 .store-content {
-  padding: 24px;
+  padding: 16px 24px 24px;
 }
 
 /* ================= PROFILE DROPDOWN ================= */
@@ -762,7 +762,9 @@ html, body {
   position: sticky;
   top: 64px; /* adjust depending on your header height */
   background: transparent;
-  padding: 10px 0;
+  margin-top: 8px;
+  margin-bottom: 14px;
+  padding: 0;
   z-index: 50;
 }
 
@@ -1178,22 +1180,22 @@ html, body {
   }
 }
 
-.shop-results-header{
-  max-width:1180px;
-  margin:20px auto 10px;
-  padding:0 4px;
+.shop-results-header {
+  max-width: 1180px;
+  margin: 8px auto 14px;
+  padding: 0 4px;
 }
 
-.shop-results-title{
-  margin:0;
-  font-size:28px;
-  font-weight:700;
-  color:#374151;
+.shop-results-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #374151;
 }
 
-.shop-results-title span{
-  font-size:16px;
-  font-weight:500;
-  color:#6b7280;
-  margin-left:6px;
+.shop-results-title span {
+  font-size: 16px;
+  font-weight: 500;
+  color: #6b7280;
+  margin-left: 6px;
 }
