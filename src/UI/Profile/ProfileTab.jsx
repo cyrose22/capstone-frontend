@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import axios from "axios";
 
 function ProfileTab({ user, setUser }) {
@@ -9,16 +9,31 @@ function ProfileTab({ user, setUser }) {
   const [showPassword, setShowPassword] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
 
+  const initials = useMemo(() => {
+    const name = user?.fullname || "User";
+    return name
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+  }, [user]);
+
   const handleContactSave = async () => {
     if (!newContact.trim()) return alert("📵 Contact can't be empty");
+
     try {
       setUpdatingContact(true);
-      await axios.put(`https://capstone-backend-kiax.onrender.com/users/${user.id}/contact`, {
-        contact: newContact,
-      });
+
+      await axios.put(
+        `https://capstone-backend-kiax.onrender.com/users/${user.id}/contact`,
+        { contact: newContact }
+      );
+
       const updatedUser = { ...user, contact: newContact };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setUser(updatedUser);
+
       alert("📞 Contact updated successfully!");
     } catch {
       alert("❌ Failed to update contact.");
@@ -29,14 +44,19 @@ function ProfileTab({ user, setUser }) {
 
   const handlePasswordSave = async () => {
     if (!newPassword.trim()) return alert("Password can't be empty");
+
     try {
       setSavingPassword(true);
-      await axios.put(`https://capstone-backend-kiax.onrender.com/users/${user.id}/password`, {
-        password: newPassword,
-      });
+
+      await axios.put(
+        `https://capstone-backend-kiax.onrender.com/users/${user.id}/password`,
+        { password: newPassword }
+      );
+
       alert("✅ Password updated!");
       setEditingPassword(false);
       setNewPassword("");
+      setShowPassword(false);
     } catch {
       alert("❌ Failed to update password.");
     } finally {
@@ -44,131 +64,313 @@ function ProfileTab({ user, setUser }) {
     }
   };
 
+  const inputBase = {
+    width: "100%",
+    padding: "14px 16px",
+    borderRadius: "14px",
+    border: "1px solid #e5e7eb",
+    background: "#ffffff",
+    fontSize: "0.95rem",
+    color: "#111827",
+    outline: "none",
+    transition: "all 0.2s ease",
+  };
+
+  const readOnlyInput = {
+    ...inputBase,
+    background: "#f8fafc",
+    color: "#6b7280",
+  };
+
   return (
-    <div
-      style={{
-        backgroundColor: "#fff",
-        padding: "1.5rem",
-        borderRadius: "12px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-        maxWidth: "520px",
-        margin: "1rem auto",
-        transition: "transform 0.2s, box-shadow 0.2s",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-2px)";
-        e.currentTarget.style.boxShadow = "0 6px 16px rgba(0,0,0,0.12)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)";
-      }}
-    >
-      <h2 style={{ marginBottom: "1.5rem", color: "#333" }}>👤 Account Details</h2>
-
-      {/* Full Name */}
-      <div style={{ marginBottom: "1.2rem" }}>
-        <label>
-          <strong>🪪 Full Name</strong>
-        </label>
-        <input
-          type="text"
-          value={user?.fullname || ""}
-          disabled
-          style={{
-            width: "100%",
-            padding: "0.6rem",
-            border: "1px solid #ddd",
-            borderRadius: "8px",
-            marginTop: "0.35rem",
-            backgroundColor: "#f9f9f9",
-          }}
-        />
-      </div>
-
-      {/* Username */}
-      <div style={{ marginBottom: "1.2rem" }}>
-        <label>
-          <strong>👤 Username</strong>
-        </label>
-        <input
-          type="text"
-          value={user?.username || ""}
-          disabled
-          style={{
-            width: "100%",
-            padding: "0.6rem",
-            border: "1px solid #ddd",
-            borderRadius: "8px",
-            marginTop: "0.35rem",
-            backgroundColor: "#f9f9f9",
-          }}
-        />
-      </div>
-
-      {/* Contact Number */}
-      <div style={{ marginBottom: "1.2rem" }}>
-        <label>
-          <strong>📞 Contact #</strong>
-        </label>
+    <>
+      <div
+        style={{
+          maxWidth: "760px",
+          margin: "24px auto",
+          background: "linear-gradient(180deg, #ffffff 0%, #fffaf7 100%)",
+          border: "1px solid rgba(15, 23, 42, 0.06)",
+          borderRadius: "24px",
+          boxShadow: "0 18px 45px rgba(15, 23, 42, 0.08)",
+          overflow: "hidden",
+        }}
+      >
+        {/* Top header */}
         <div
           style={{
-            display: "flex",
-            gap: "0.5rem",
-            alignItems: "center",
-            marginTop: "0.35rem",
+            padding: "28px 28px 20px",
+            background:
+              "linear-gradient(135deg, rgba(255,107,53,0.10), rgba(255,255,255,0.8))",
+            borderBottom: "1px solid rgba(15, 23, 42, 0.06)",
           }}
         >
-          <input
-            type="text"
-            value={newContact}
-            onChange={(e) => setNewContact(e.target.value)}
+          <div
             style={{
-              flex: 1,
-              padding: "0.6rem",
-              border: "1px solid #ccc",
-              borderRadius: "8px",
-            }}
-          />
-          <button
-            onClick={handleContactSave}
-            disabled={updatingContact}
-            style={{
-              padding: "0.5rem 0.9rem",
-              fontSize: "0.9rem",
-              borderRadius: "8px",
-              border: "none",
-              backgroundColor: updatingContact ? "#bbb" : "#4CAF50",
-              color: "#fff",
-              cursor: updatingContact ? "not-allowed" : "pointer",
-              fontWeight: "600",
+              display: "flex",
+              alignItems: "center",
+              gap: "18px",
+              flexWrap: "wrap",
             }}
           >
-            {updatingContact ? "..." : "💾"}
-          </button>
-        </div>
-      </div>
+            <div
+              style={{
+                width: "72px",
+                height: "72px",
+                borderRadius: "50%",
+                background: "linear-gradient(135deg, #ff6b35, #ffb27a)",
+                color: "#fff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: "800",
+                fontSize: "1.35rem",
+                boxShadow: "0 12px 24px rgba(255, 107, 53, 0.22)",
+              }}
+            >
+              {initials}
+            </div>
 
-      {/* Password */}
-      <div style={{ marginBottom: "1.2rem" }}>
-        <label>
-          <strong>🔐 Password</strong>
-        </label>
-        <div style={{ marginTop: "0.35rem" }}>
-          <button
-            onClick={() => setEditingPassword(true)}
+            <div style={{ flex: 1, minWidth: "220px" }}>
+              <h2
+                style={{
+                  margin: 0,
+                  fontSize: "1.6rem",
+                  fontWeight: "800",
+                  color: "#111827",
+                }}
+              >
+                Account Settings
+              </h2>
+              <p
+                style={{
+                  margin: "8px 0 0",
+                  color: "#6b7280",
+                  fontSize: "0.95rem",
+                }}
+              >
+                Manage your personal details and keep your account secure.
+              </p>
+            </div>
+
+            <div
+              style={{
+                padding: "8px 14px",
+                borderRadius: "999px",
+                background: "rgba(255,107,53,0.12)",
+                color: "#c2410c",
+                fontWeight: "700",
+                fontSize: "0.88rem",
+              }}
+            >
+              👤 Profile
+            </div>
+          </div>
+        </div>
+
+        {/* Main content */}
+        <div style={{ padding: "28px" }}>
+          <div
             style={{
-              padding: "0.5rem 1rem",
-              borderRadius: "8px",
-              border: "none",
-              backgroundColor: "#2196F3",
-              color: "#fff",
-              cursor: "pointer",
-              fontWeight: "600",
+              display: "grid",
+              gap: "18px",
             }}
           >
-            Change Password
-          </button>
+            {/* Full Name */}
+            <div
+              style={{
+                background: "#fff",
+                border: "1px solid #eef2f7",
+                borderRadius: "18px",
+                padding: "18px",
+                boxShadow: "0 6px 16px rgba(15, 23, 42, 0.04)",
+              }}
+            >
+              <label
+                style={{
+                  display: "block",
+                  fontSize: "0.9rem",
+                  fontWeight: "700",
+                  color: "#374151",
+                  marginBottom: "10px",
+                }}
+              >
+                🪪 Full Name
+              </label>
+              <input type="text" value={user?.fullname || ""} disabled style={readOnlyInput} />
+            </div>
+
+            {/* Username */}
+            <div
+              style={{
+                background: "#fff",
+                border: "1px solid #eef2f7",
+                borderRadius: "18px",
+                padding: "18px",
+                boxShadow: "0 6px 16px rgba(15, 23, 42, 0.04)",
+              }}
+            >
+              <label
+                style={{
+                  display: "block",
+                  fontSize: "0.9rem",
+                  fontWeight: "700",
+                  color: "#374151",
+                  marginBottom: "10px",
+                }}
+              >
+                👤 Username
+              </label>
+              <input type="text" value={user?.username || ""} disabled style={readOnlyInput} />
+            </div>
+
+            {/* Contact */}
+            <div
+              style={{
+                background: "#fff",
+                border: "1px solid #eef2f7",
+                borderRadius: "18px",
+                padding: "18px",
+                boxShadow: "0 6px 16px rgba(15, 23, 42, 0.04)",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: "10px",
+                  flexWrap: "wrap",
+                  marginBottom: "12px",
+                }}
+              >
+                <label
+                  style={{
+                    fontSize: "0.9rem",
+                    fontWeight: "700",
+                    color: "#374151",
+                  }}
+                >
+                  📞 Contact Number
+                </label>
+
+                <span
+                  style={{
+                    fontSize: "0.82rem",
+                    color: "#6b7280",
+                    background: "#f8fafc",
+                    border: "1px solid #e5e7eb",
+                    padding: "6px 10px",
+                    borderRadius: "999px",
+                  }}
+                >
+                  Editable
+                </span>
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  gap: "12px",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                }}
+              >
+                <input
+                  type="text"
+                  value={newContact}
+                  onChange={(e) => setNewContact(e.target.value)}
+                  placeholder="Enter contact number"
+                  style={{
+                    ...inputBase,
+                    flex: 1,
+                    minWidth: "220px",
+                  }}
+                />
+
+                <button
+                  onClick={handleContactSave}
+                  disabled={updatingContact}
+                  style={{
+                    height: "48px",
+                    padding: "0 18px",
+                    borderRadius: "14px",
+                    border: "none",
+                    background: updatingContact
+                      ? "#d1d5db"
+                      : "linear-gradient(135deg, #ff6b35, #ff8a5b)",
+                    color: "#fff",
+                    fontWeight: "800",
+                    fontSize: "0.92rem",
+                    cursor: updatingContact ? "not-allowed" : "pointer",
+                    boxShadow: updatingContact
+                      ? "none"
+                      : "0 10px 20px rgba(255, 107, 53, 0.22)",
+                    transition: "all 0.18s ease",
+                  }}
+                >
+                  {updatingContact ? "Saving..." : "💾 Save Contact"}
+                </button>
+              </div>
+            </div>
+
+            {/* Password */}
+            <div
+              style={{
+                background: "#fff",
+                border: "1px solid #eef2f7",
+                borderRadius: "18px",
+                padding: "18px",
+                boxShadow: "0 6px 16px rgba(15, 23, 42, 0.04)",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: "10px",
+                  flexWrap: "wrap",
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      fontSize: "0.9rem",
+                      fontWeight: "700",
+                      color: "#374151",
+                      marginBottom: "6px",
+                    }}
+                  >
+                    🔐 Password
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "0.88rem",
+                      color: "#6b7280",
+                    }}
+                  >
+                    Update your password regularly to keep your account safe.
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setEditingPassword(true)}
+                  style={{
+                    padding: "12px 18px",
+                    borderRadius: "14px",
+                    border: "1px solid #e5e7eb",
+                    background: "#111827",
+                    color: "#fff",
+                    fontWeight: "800",
+                    cursor: "pointer",
+                    boxShadow: "0 10px 22px rgba(17, 24, 39, 0.16)",
+                  }}
+                >
+                  Change Password
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -178,69 +380,111 @@ function ProfileTab({ user, setUser }) {
           onClick={() => setEditingPassword(false)}
           style={{
             position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0,0,0,0.5)",
+            inset: 0,
+            background: "rgba(15, 23, 42, 0.45)",
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            padding: "20px",
             zIndex: 1000,
           }}
         >
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
-              backgroundColor: "#fff",
-              padding: "1.8rem",
-              borderRadius: "12px",
-              width: "90%",
-              maxWidth: "420px",
+              width: "100%",
+              maxWidth: "460px",
+              background: "rgba(255,255,255,0.97)",
+              borderRadius: "24px",
+              border: "1px solid rgba(255,255,255,0.8)",
+              boxShadow: "0 24px 60px rgba(15, 23, 42, 0.20)",
+              padding: "24px",
               position: "relative",
-              boxShadow: "0 6px 18px rgba(0,0,0,0.2)",
             }}
           >
             <button
               onClick={() => setEditingPassword(false)}
               style={{
                 position: "absolute",
-                top: "0.8rem",
-                right: "0.8rem",
-                background: "none",
+                top: "14px",
+                right: "14px",
+                width: "38px",
+                height: "38px",
+                borderRadius: "50%",
                 border: "none",
-                fontSize: "1.4rem",
+                background: "#f3f4f6",
+                color: "#374151",
+                fontSize: "1.1rem",
                 cursor: "pointer",
-                color: "#666",
+                fontWeight: "700",
               }}
             >
-              ×
+              ✕
             </button>
-            <div style={{ marginBottom: "1rem" }}>
-              <h2 style={{ margin: 0 }}>🔐 Update Password</h2>
-              <p style={{ fontSize: "0.9rem", color: "#555", margin: "0.3rem 0" }}>
-                Keep your account secure by using a strong password.
+
+            <div style={{ marginBottom: "18px" }}>
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  background: "rgba(255,107,53,0.12)",
+                  color: "#c2410c",
+                  padding: "8px 12px",
+                  borderRadius: "999px",
+                  fontWeight: "700",
+                  fontSize: "0.84rem",
+                  marginBottom: "14px",
+                }}
+              >
+                🔐 Security
+              </div>
+
+              <h2
+                style={{
+                  margin: 0,
+                  fontSize: "1.4rem",
+                  color: "#111827",
+                  fontWeight: "800",
+                }}
+              >
+                Update Password
+              </h2>
+
+              <p
+                style={{
+                  margin: "8px 0 0",
+                  fontSize: "0.92rem",
+                  color: "#6b7280",
+                  lineHeight: 1.5,
+                }}
+              >
+                Choose a strong password that you don’t use anywhere else.
               </p>
             </div>
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter new password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "0.6rem",
-                border: "1px solid #ccc",
-                borderRadius: "8px",
-                marginBottom: "0.9rem",
-              }}
-            />
-            <div
+
+            <div style={{ marginBottom: "14px" }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter new password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                style={inputBase}
+              />
+            </div>
+
+            <label
+              htmlFor="showPassword"
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "0.5rem",
-                marginBottom: "1rem",
+                gap: "10px",
+                marginBottom: "22px",
+                fontSize: "0.92rem",
+                color: "#374151",
+                cursor: "pointer",
               }}
             >
               <input
@@ -249,50 +493,57 @@ function ProfileTab({ user, setUser }) {
                 checked={showPassword}
                 onChange={() => setShowPassword((prev) => !prev)}
               />
-              <label htmlFor="showPassword" style={{ fontSize: "0.9rem" }}>
-                Show Password
-              </label>
-            </div>
+              Show password
+            </label>
+
             <div
               style={{
                 display: "flex",
                 justifyContent: "flex-end",
-                gap: "0.6rem",
+                gap: "10px",
+                flexWrap: "wrap",
               }}
             >
               <button
                 onClick={() => setEditingPassword(false)}
                 style={{
-                  padding: "0.5rem 1rem",
-                  borderRadius: "8px",
-                  border: "none",
-                  backgroundColor: "#ccc",
+                  padding: "12px 16px",
+                  borderRadius: "14px",
+                  border: "1px solid #e5e7eb",
+                  background: "#f9fafb",
+                  color: "#111827",
+                  fontWeight: "800",
                   cursor: "pointer",
-                  fontWeight: "600",
                 }}
               >
-                ❌ Cancel
+                Cancel
               </button>
+
               <button
                 onClick={handlePasswordSave}
                 disabled={savingPassword}
                 style={{
-                  padding: "0.5rem 1rem",
-                  borderRadius: "8px",
+                  padding: "12px 18px",
+                  borderRadius: "14px",
                   border: "none",
-                  backgroundColor: savingPassword ? "#bbb" : "#4CAF50",
+                  background: savingPassword
+                    ? "#d1d5db"
+                    : "linear-gradient(135deg, #16a34a, #22c55e)",
                   color: "#fff",
+                  fontWeight: "800",
                   cursor: savingPassword ? "not-allowed" : "pointer",
-                  fontWeight: "600",
+                  boxShadow: savingPassword
+                    ? "none"
+                    : "0 12px 24px rgba(34, 197, 94, 0.22)",
                 }}
               >
-                {savingPassword ? "Saving..." : "💾 Save"}
+                {savingPassword ? "Saving..." : "Save Password"}
               </button>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 
