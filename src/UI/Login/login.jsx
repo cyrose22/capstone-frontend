@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import logo from '../../assets/logo.png';
 import './login.css';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 function LoginForm() {
@@ -14,13 +14,16 @@ function LoginForm() {
   const [message, setMessage] = useState('');
   const [otpSent, setOtpSent] = useState(false);
 
-  // ✅ NEW STATES
   const [recoverMode, setRecoverMode] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
   const [newPassword, setNewPassword] = useState('');
 
   const otpInputRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const query = new URLSearchParams(location.search);
+  const redirect = query.get('redirect');
 
   useEffect(() => {
     if (useOtp && otpSent && !otpVerified) {
@@ -32,7 +35,7 @@ function LoginForm() {
     e.preventDefault();
 
     try {
-      toast.loading("Logging in...");
+      toast.loading('Logging in...');
 
       const response = await axios.post(
         'https://capstone-backend-kiax.onrender.com/login',
@@ -40,20 +43,17 @@ function LoginForm() {
       );
 
       toast.dismiss();
-      toast.success("Login successful!");
-
-      handleSuccess(response.data);  // ✅ navigate will work properly
-
+      toast.success('Login successful!');
+      handleSuccess(response.data);
     } catch (err) {
       toast.dismiss();
-      toast.error(err.response?.data?.message || "Login failed");
+      toast.error(err.response?.data?.message || 'Login failed');
     }
   };
 
-  // ✅ UPDATED (handles both OTP login & recover)
   const handleSendOtp = async () => {
     if (!username) {
-      toast.error("Please enter your email first.");
+      toast.error('Please enter your email first.');
       return;
     }
 
@@ -77,15 +77,14 @@ function LoginForm() {
     setOtpSent(true);
   };
 
-  // ✅ UPDATED (handles login OR verify for reset)
   const handleOtpLogin = async () => {
     if (otp.length !== 6) {
-      toast.error("OTP must be 6 digits.");
+      toast.error('OTP must be 6 digits.');
       return;
     }
 
     try {
-      toast.loading("Verifying OTP...");
+      toast.loading('Verifying OTP...');
 
       if (recoverMode) {
         await axios.post(
@@ -94,9 +93,8 @@ function LoginForm() {
         );
 
         toast.dismiss();
-        toast.success("OTP verified!");
+        toast.success('OTP verified!');
         setOtpVerified(true);
-
       } else {
         const response = await axios.post(
           'https://capstone-backend-kiax.onrender.com/login-otp',
@@ -104,21 +102,18 @@ function LoginForm() {
         );
 
         toast.dismiss();
-        toast.success("Login successful!");
-
-        handleSuccess(response.data);   // ✅ Navigation will now work properly
+        toast.success('Login successful!');
+        handleSuccess(response.data);
       }
-
     } catch (err) {
       toast.dismiss();
-      toast.error(err.response?.data?.message || "Invalid or expired OTP");
+      toast.error(err.response?.data?.message || 'Invalid or expired OTP');
     }
   };
 
-  // ✅ NEW FUNCTION
   const handleResetPassword = async () => {
     if (newPassword.length < 6) {
-      toast.error("Password must be at least 6 characters.");
+      toast.error('Password must be at least 6 characters.');
       return;
     }
 
@@ -138,7 +133,6 @@ function LoginForm() {
       }
     );
 
-    // Reset UI
     setRecoverMode(false);
     setUseOtp(false);
     setOtpSent(false);
@@ -155,12 +149,17 @@ function LoginForm() {
       id: userData.id,
       username: userData.username,
       fullname: userData.fullname,
-      role: role,
+      contact: userData.contact,
+      role,
       token: userData.token
     };
 
-    // ✅ Save as ONE object
     localStorage.setItem('user', JSON.stringify(userObject));
+
+    if (redirect) {
+      navigate(redirect);
+      return;
+    }
 
     if (role === 'admin' || role === 'staff') {
       navigate('/dashboard/admin');
@@ -168,11 +167,10 @@ function LoginForm() {
       navigate('/dashboard/consumer');
     }
   };
-
+  
   return (
     <div className="login-container">
       <div className="login-card">
-
         <div className="brand-section">
           <img src={logo} alt="Logo" className="brand-logo" />
           <div className="brand-text">
@@ -231,7 +229,6 @@ function LoginForm() {
             </button>
 
             <div className="extra-links">
-              {/* ✅ Changed to Recover Password (no redirect) */}
               <span
                 className="forgot-link"
                 onClick={() => {
@@ -293,9 +290,10 @@ function LoginForm() {
 
         <div className="register-link">
           Don’t have an account?
-          <Link to="/register"> Register here</Link>
+          <Link to={redirect ? `/register?redirect=${encodeURIComponent(redirect)}` : '/register'}>
+            {' '}Register here
+          </Link>
         </div>
-
       </div>
     </div>
   );

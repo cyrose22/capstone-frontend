@@ -132,7 +132,7 @@ function ConsumerDashboard() {
 
   const addToCart = (product, variant = null) => {
     if (!user) {
-      navigate("/");
+      navigate("/?redirect=/dashboard/consumer");
       return;
     }
 
@@ -166,17 +166,56 @@ function ConsumerDashboard() {
     });
   };
 
-  const updateCartQuantity = (id, qty) => {
+  const handleOpenCart = () => {
+    if (!user?.token) {
+      navigate("/?redirect=/dashboard/consumer");
+      return;
+    }
+
+    setShowCartModal(true);
+  };
+
+  const handleOpenPayment = (value) => {
+    if (!user?.token) {
+      navigate("/?redirect=/dashboard/consumer");
+      return;
+    }
+
+    setShowPaymentModal(value);
+  };
+
+  const handleCheckout = (payload) => {
+    if (!user?.token) {
+      navigate("/?redirect=/dashboard/consumer");
+      return;
+    }
+
+    console.log("Checkout payload:", payload);
+    setShowPaymentModal(true);
+  };
+
+  const updateCartQuantity = (id, qty, variantId = null) => {
     if (qty < 1) return;
+
     setCart((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, quantity: qty } : item
+        item.id === id && item.variantId === variantId
+          ? { ...item, quantity: qty }
+          : item
       )
     );
   };
 
-  const removeFromCart = (id) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
+  const removeFromCart = (id, variantId = null) => {
+    setCart((prev) =>
+      prev.filter(
+        (item) => !(item.id === id && item.variantId === variantId)
+      )
+    );
+  };
+
+  const clearCart = () => {
+    setCart([]);
   };
 
   const formatCurrency = (amount) =>
@@ -250,7 +289,7 @@ function ConsumerDashboard() {
 
             <button
               className="icon-btn"
-              onClick={() => setShowCartModal(true)}
+              onClick={handleOpenCart}
             >
               🛒
               {cart.length > 0 && (
@@ -409,9 +448,11 @@ function ConsumerDashboard() {
           cart={cart}
           updateCartQuantity={updateCartQuantity}
           removeFromCart={removeFromCart}
-          setShowPaymentModal={setShowPaymentModal}
+          setShowPaymentModal={handleOpenPayment}
           setShowCartModal={setShowCartModal}
           formatCurrency={formatCurrency}
+          userId={user?.id}
+          onCheckout={handleCheckout}
         />
       )}
 
@@ -427,6 +468,7 @@ function ConsumerDashboard() {
           setToastType={setToastType}
           setShowToast={setShowToast}
           onClose={() => setShowPaymentModal(false)}
+          clearCart={() => setCart([])}
         />
       )}
 

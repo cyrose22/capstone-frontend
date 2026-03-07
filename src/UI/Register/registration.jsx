@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import './register.css';
 import logo from '../../assets/logo.png';
 import { toast } from 'react-toastify';
 
 function RegisterForm() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const query = new URLSearchParams(location.search);
+  const redirect = query.get('redirect');
 
   const [formData, setFormData] = useState({
     fullname: '',
@@ -31,18 +35,22 @@ function RegisterForm() {
   const [passwordError, setPasswordError] = useState('');
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
 
-    // Live password match validation
-    if (
-      e.target.name === "password" ||
-      e.target.name === "confirmPassword"
-    ) {
+    const updatedForm = {
+      ...formData,
+      [name]: value
+    };
+
+    setFormData(updatedForm);
+
+    if (name === 'password' || name === 'confirmPassword') {
       if (
-        formData.password !== formData.confirmPassword &&
-        e.target.value !== formData.password
+        updatedForm.password &&
+        updatedForm.confirmPassword &&
+        updatedForm.password !== updatedForm.confirmPassword
       ) {
-        setPasswordError("Passwords do not match");
+        setPasswordError('Passwords do not match');
       } else {
         setPasswordError('');
       }
@@ -53,8 +61,8 @@ function RegisterForm() {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      setPasswordError("Passwords do not match");
-      toast.error("Passwords do not match");
+      setPasswordError('Passwords do not match');
+      toast.error('Passwords do not match');
       return;
     }
 
@@ -103,13 +111,19 @@ function RegisterForm() {
           success: 'Account verified successfully!',
           error: {
             render({ data }) {
-              return data.response?.data?.message || "OTP verification failed.";
+              return data.response?.data?.message || 'OTP verification failed.';
             }
           }
         }
       );
 
-      setTimeout(() => navigate('/'), 1500);
+      setTimeout(() => {
+        navigate(
+          redirect
+            ? `/login?redirect=${encodeURIComponent(redirect)}`
+            : '/login'
+        );
+      }, 1500);
     } catch (err) {
       console.error(err);
     }
@@ -118,7 +132,6 @@ function RegisterForm() {
   return (
     <div className="register-container">
       <div className="register-card">
-
         <div className="brand-section">
           <img src={logo} alt="Oscar Logo" className="brand-logo" />
           <h2>Create Account</h2>
@@ -127,44 +140,53 @@ function RegisterForm() {
 
         {!otpSent ? (
           <form onSubmit={handleRegister}>
-
-            <input name="fullname" placeholder="Full Name" onChange={handleChange} required />
-            <input 
-              type="email"
-              name="username" 
-              placeholder="Email Address" 
-              onChange={handleChange} 
-              required 
+            <input
+              name="fullname"
+              placeholder="Full Name"
+              onChange={handleChange}
+              required
             />
-            <input name="contact" placeholder="Contact Number" onChange={handleChange} required />
 
-            {/* Password */}
+            <input
+              type="email"
+              name="username"
+              placeholder="Email Address"
+              onChange={handleChange}
+              required
+            />
+
+            <input
+              name="contact"
+              placeholder="Contact Number"
+              onChange={handleChange}
+              required
+            />
+
             <div className="password-wrapper">
               <input
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 name="password"
                 placeholder="Password"
                 onChange={handleChange}
-                className={passwordError ? "input-error" : ""}
+                className={passwordError ? 'input-error' : ''}
                 required
               />
               <span onClick={() => setShowPassword(!showPassword)}>
-                {showPassword ? "🙈" : "👁️"}
+                {showPassword ? '🙈' : '👁️'}
               </span>
             </div>
 
-            {/* Confirm Password */}
             <div className="password-wrapper">
               <input
-                type={showConfirmPassword ? "text" : "password"}
+                type={showConfirmPassword ? 'text' : 'password'}
                 name="confirmPassword"
                 placeholder="Confirm Password"
                 onChange={handleChange}
-                className={passwordError ? "input-error" : ""}
+                className={passwordError ? 'input-error' : ''}
                 required
               />
               <span onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-                {showConfirmPassword ? "🙈" : "👁️"}
+                {showConfirmPassword ? '🙈' : '👁️'}
               </span>
             </div>
 
@@ -172,30 +194,51 @@ function RegisterForm() {
               <p className="error-text">{passwordError}</p>
             )}
 
-            {/* Collapsible Address */}
-            <div 
+            <div
               className="address-toggle"
               onClick={() => setShowAddress(!showAddress)}
             >
               <h4 className="section-title">
-                Address Information {showAddress ? "▲" : "▼"}
+                Address Information {showAddress ? '▲' : '▼'}
               </h4>
             </div>
 
             {showAddress && (
               <div className="address-section">
-                <input name="province" placeholder="Province" onChange={handleChange} required />
-                <input name="municipality" placeholder="Municipality" onChange={handleChange} required />
-                <input name="barangay" placeholder="Barangay" onChange={handleChange} required />
-                <input name="street" placeholder="Street (Optional)" onChange={handleChange} />
-                <input name="block" placeholder="Block # (Optional)" onChange={handleChange} />
+                <input
+                  name="province"
+                  placeholder="Province"
+                  onChange={handleChange}
+                  required
+                />
+                <input
+                  name="municipality"
+                  placeholder="Municipality"
+                  onChange={handleChange}
+                  required
+                />
+                <input
+                  name="barangay"
+                  placeholder="Barangay"
+                  onChange={handleChange}
+                  required
+                />
+                <input
+                  name="street"
+                  placeholder="Street (Optional)"
+                  onChange={handleChange}
+                />
+                <input
+                  name="block"
+                  placeholder="Block # (Optional)"
+                  onChange={handleChange}
+                />
               </div>
             )}
 
             <button type="submit" className="primary-btn" disabled={loading}>
-              {loading ? "Sending..." : "Register & Send OTP"}
+              {loading ? 'Sending...' : 'Register & Send OTP'}
             </button>
-
           </form>
         ) : (
           <div className="otp-section">
@@ -213,9 +256,17 @@ function RegisterForm() {
         )}
 
         <p className="redirect-text">
-          Already have an account? <Link to="/">Login</Link>
+          Already have an account?{' '}
+          <Link
+            to={
+              redirect
+                ? `/login?redirect=${encodeURIComponent(redirect)}`
+                : '/login'
+            }
+          >
+            Login
+          </Link>
         </p>
-
       </div>
     </div>
   );

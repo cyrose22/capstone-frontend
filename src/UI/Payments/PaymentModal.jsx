@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import PaymentDashboard from "../Payments/PaymentDashboard";
+import { useNavigate } from "react-router-dom";
 
 function PaymentModal({
   cart,
@@ -13,16 +14,23 @@ function PaymentModal({
   setToastType,
   setShowToast,
   onClose,
+  clearCart,
 }) {
   const [receiptFile, setReceiptFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const navigate = useNavigate();
 
-  const total = cart.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
+  const total = cart.reduce(
+    (sum, item) => sum + Number(item.price) * item.quantity,
+    0
+  );
 
-  const isValidPhone = (phone) => /^(09\d{9}|639\d{9}|\+639\d{9})$/.test(phone);
+  const isValidPhone = (phone) =>
+    /^(09\d{9}|639\d{9}|\+639\d{9})$/.test(phone || "");
 
   const uploadReceipt = async () => {
     if (!receiptFile) return "";
+
     const formData = new FormData();
     formData.append("receipt", receiptFile);
 
@@ -46,6 +54,13 @@ function PaymentModal({
   };
 
   const handleProceedPayment = async () => {
+    if (!user?.id) {
+      setToastType("error");
+      setToastMessage("❌ Please login first.");
+      setShowToast(true);
+      return;
+    }
+
     if (!isValidPhone(user.contact)) {
       setToastType("error");
       setToastMessage("❌ Invalid contact number. Use 09 / 639 / +639 format.");
@@ -58,8 +73,9 @@ function PaymentModal({
       variantId: item.variantId || null,
       quantity: item.quantity,
       price: item.price,
-      variantName: item.variantName || item.variant_name || item.name || "Product",
-      variantImage: item.variantImage || item.imageUrl || null,
+      variantName:
+        item.variantName || item.variant_name || item.name || "Product",
+      variantImage: item.variantImage || item.imageUrl || item.image || null,
     }));
 
     try {
@@ -81,18 +97,21 @@ function PaymentModal({
 
       localStorage.setItem("orderSuccess", "true");
       localStorage.setItem("recentOrderId", String(createdSale.data.saleId));
+      localStorage.removeItem("cart");
+
+      if (clearCart) clearCart();
 
       setToastType("success");
       setToastMessage("✅ Order placed successfully!");
       setShowToast(true);
 
-      localStorage.removeItem("cart");
-
       onClose();
-      window.location.href = "/consumer";
+      navigate("/dashboard/consumer");
     } catch (error) {
       console.error("Payment error:", error);
-      alert("Failed to process payment.");
+      setToastType("error");
+      setToastMessage("❌ Failed to process payment.");
+      setShowToast(true);
     }
   };
 
@@ -123,7 +142,6 @@ function PaymentModal({
           position: "relative",
         }}
       >
-        {/* Modern close button */}
         <button
           onClick={onClose}
           aria-label="Close payment modal"

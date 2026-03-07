@@ -1,5 +1,12 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Outlet,
+  Navigate,
+  useLocation
+} from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -13,7 +20,6 @@ import ConsumerDashboard from './ConsumerDashboard/ConsumerDashboard';
 import Chatbot from './Chat/ChatBot';
 
 import './app.css';
-
 
 // ==========================
 // Dashboard layout with sidebar
@@ -38,17 +44,25 @@ function DashboardLayout() {
   );
 }
 
-
 // ==========================
 // 🔐 Route guard
 // ==========================
 function ProtectedRoute({ children }) {
   const storedUser = localStorage.getItem('user');
   const user = storedUser ? JSON.parse(storedUser) : null;
+  const location = useLocation();
 
-  return user?.token ? children : <Navigate to="/" />;
+  if (!user?.token) {
+    return (
+      <Navigate
+        to={`/?redirect=${encodeURIComponent(location.pathname)}`}
+        replace
+      />
+    );
+  }
+
+  return children;
 }
-
 
 // ==========================
 // Wrapper
@@ -67,7 +81,6 @@ function AppWrapper() {
   return (
     <>
       <Routes>
-
         {/* Public routes */}
         <Route path="/" element={<LoginForm />} />
         <Route path="/register" element={<Registration />} />
@@ -87,13 +100,14 @@ function AppWrapper() {
           <Route path="consumer" element={<ConsumerDashboard />} />
         </Route>
 
+        {/* fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
       {!hideChatBot && <Chatbot />}
     </>
   );
 }
-
 
 // ==========================
 // Main App

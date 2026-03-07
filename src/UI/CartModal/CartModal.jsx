@@ -18,6 +18,12 @@ function CartModal({
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  const handleSelectPayment = () => {
+    if (setShowPaymentModal) {
+      setShowPaymentModal(true);
+    }
+  };
+
   const handleCheckout = () => {
     const payload = {
       userId,
@@ -31,8 +37,11 @@ function CartModal({
       })),
     };
 
-    if (onCheckout) onCheckout(payload);
-    else setShowPaymentModal(true);
+    if (onCheckout) {
+      onCheckout(payload);
+    } else if (setShowPaymentModal) {
+      setShowPaymentModal(true);
+    }
   };
 
   return (
@@ -65,11 +74,11 @@ function CartModal({
           flexDirection: "column",
         }}
       >
-        {/* Header */}
         <div
           style={{
             padding: "14px 16px",
-            background: "linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.75))",
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.75))",
             borderBottom: "1px solid rgba(0,0,0,0.06)",
             display: "flex",
             alignItems: "center",
@@ -97,7 +106,8 @@ function CartModal({
                 Shopping Cart
               </div>
               <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>
-                {totalItems} item{totalItems !== 1 ? "s" : ""} • {formatCurrency(cartTotal)}
+                {totalItems} item{totalItems !== 1 ? "s" : ""} •{" "}
+                {formatCurrency(cartTotal)}
               </div>
             </div>
           </div>
@@ -121,12 +131,12 @@ function CartModal({
           </button>
         </div>
 
-        {/* Body */}
         <div
           style={{
             padding: 16,
             overflowY: "auto",
-            background: "linear-gradient(180deg, rgba(248,250,252,0.9), rgba(255,255,255,0.9))",
+            background:
+              "linear-gradient(180deg, rgba(248,250,252,0.9), rgba(255,255,255,0.9))",
           }}
         >
           {cart.length === 0 ? (
@@ -159,7 +169,6 @@ function CartModal({
                     boxShadow: "0 8px 20px rgba(15,23,42,0.06)",
                   }}
                 >
-                  {/* Image */}
                   <div
                     style={{
                       width: 72,
@@ -177,14 +186,19 @@ function CartModal({
                       <img
                         src={item.variantImage || item.image}
                         alt={item.variantName || item.name}
-                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
                       />
                     ) : (
-                      <span style={{ fontSize: 12, color: "#94a3b8" }}>No image</span>
+                      <span style={{ fontSize: 12, color: "#94a3b8" }}>
+                        No image
+                      </span>
                     )}
                   </div>
 
-                  {/* Info */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                       style={{
@@ -201,20 +215,41 @@ function CartModal({
                       </span>
                     </div>
 
-                    <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                    <div
+                      style={{
+                        marginTop: 6,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        flexWrap: "wrap",
+                      }}
+                    >
                       <div style={{ fontWeight: 900, color: "#ef4444" }}>
                         {formatCurrency(item.price)}
                       </div>
 
                       <div style={{ color: "#94a3b8", fontWeight: 800 }}>•</div>
 
-                      <div style={{ fontSize: 12, color: "#64748b", fontWeight: 800 }}>
-                        Subtotal: {formatCurrency(Number(item.price) * item.quantity)}
+                      <div
+                        style={{
+                          fontSize: 12,
+                          color: "#64748b",
+                          fontWeight: 800,
+                        }}
+                      >
+                        Subtotal:{" "}
+                        {formatCurrency(Number(item.price) * item.quantity)}
                       </div>
                     </div>
 
-                    {/* Qty */}
-                    <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 10 }}>
+                    <div
+                      style={{
+                        marginTop: 10,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                      }}
+                    >
                       <div
                         style={{
                           display: "flex",
@@ -227,7 +262,14 @@ function CartModal({
                         }}
                       >
                         <button
-                          onClick={() => updateCartQuantity(item.id, item.quantity - 1, item.variantId, item.variantName)}
+                          onClick={() =>
+                            updateCartQuantity(
+                              item.id,
+                              item.quantity - 1,
+                              item.variantId,
+                              item.variantName
+                            )
+                          }
                           style={{
                             width: 34,
                             height: 34,
@@ -267,7 +309,14 @@ function CartModal({
                         />
 
                         <button
-                          onClick={() => updateCartQuantity(item.id, item.quantity + 1, item.variantId, item.variantName)}
+                          onClick={() =>
+                            updateCartQuantity(
+                              item.id,
+                              item.quantity + 1,
+                              item.variantId,
+                              item.variantName
+                            )
+                          }
                           style={{
                             width: 34,
                             height: 34,
@@ -285,9 +334,10 @@ function CartModal({
                     </div>
                   </div>
 
-                  {/* Remove */}
                   <button
-                    onClick={() => removeFromCart(item.id, item.variantId, item.variantName)}
+                    onClick={() =>
+                      removeFromCart(item.id, item.variantId, item.variantName)
+                    }
                     style={{
                       width: 42,
                       height: 42,
@@ -309,7 +359,6 @@ function CartModal({
           )}
         </div>
 
-        {/* Footer (sticky) */}
         {cart.length > 0 && (
           <div
             style={{
@@ -324,12 +373,15 @@ function CartModal({
             }}
           >
             <div style={{ fontWeight: 950, color: "#0f172a" }}>
-              Total: <span style={{ color: "#0f172a" }}>{formatCurrency(cartTotal)}</span>
+              Total:{" "}
+              <span style={{ color: "#0f172a" }}>
+                {formatCurrency(cartTotal)}
+              </span>
             </div>
 
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               <button
-                onClick={() => setShowPaymentModal(true)}
+                onClick={handleSelectPayment}
                 style={{
                   padding: "10px 14px",
                   borderRadius: 14,
