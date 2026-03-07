@@ -156,16 +156,19 @@ function LoginForm() {
 
     localStorage.setItem('user', JSON.stringify(userObject));
 
+    // admin/staff should always go to dashboard
+    if (role === 'admin' || role === 'staff') {
+      navigate('/dashboard/admin');
+      return;
+    }
+
+    // normal users can use redirect
     if (redirect) {
       navigate(redirect);
       return;
     }
 
-    if (role === 'admin' || role === 'staff') {
-      navigate('/dashboard/admin');
-    } else {
-      navigate('/dashboard/consumer');
-    }
+    navigate('/');
   };
   
   return (
