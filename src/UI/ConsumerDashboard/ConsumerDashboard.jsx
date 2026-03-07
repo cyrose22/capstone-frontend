@@ -387,7 +387,7 @@ function ConsumerDashboard() {
               className="btn btn-secondary"
               onClick={() => {
                 if (!user?.token) {
-                  navigate("/login?redirect=/dashboard/consumer");
+                  navigate("/login?redirect=/");
                   return;
                 }
 
