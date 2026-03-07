@@ -90,6 +90,12 @@ function ConsumerDashboard() {
   }, []);
 
   useEffect(() => {
+    if (!user?.token && (activeTab === "profile" || activeTab === "orders")) {
+      setActiveTab("shop");
+    }
+  }, [user, activeTab]);
+
+  useEffect(() => {
     if (user?.id) fetchSales();
   }, [user]);
 
@@ -327,6 +333,7 @@ function ConsumerDashboard() {
                         onClick={() => {
                           localStorage.removeItem("user");
                           setUser(null);
+                          setActiveTab("shop");
                           setShowProfileMenu(false);
                           navigate("/");
                         }}
