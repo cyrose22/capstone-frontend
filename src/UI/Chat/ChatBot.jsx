@@ -77,32 +77,10 @@ function Chatbot() {
       });
 
       const data = await res.json();
-      let botReply = data.reply?.trim();
+      let botReply = data.reply;
 
       if (!botReply) {
         botReply = formatFallbackReply();
-      }
-
-      if (botReply.includes("₱")) {
-        const productText = botReply.trim();
-        const products = productText
-          .replace("Available Products:", "")
-          .trim()
-          .split(/🛒\s*/)
-          .filter(Boolean)
-          .map((item) => {
-            const parts = item.split("–");
-            return {
-              name: parts[0]?.trim(),
-              price: parts[1]?.trim(),
-            };
-          });
-
-        botReply = {
-          type: "product",
-          heading: "Available Products",
-          items: products,
-        };
       }
 
       setTimeout(() => {
@@ -157,7 +135,7 @@ function Chatbot() {
   }, [lastUserInteraction, suggestionShown, open]);
 
   const renderMessageContent = (message) => {
-    if (message.text?.type === "product") {
+    if (message.text?.type === "products") {
       return (
         <div>
           <div
@@ -171,7 +149,7 @@ function Chatbot() {
             }}
           >
             <Sparkles size={15} color="#4f46e5" />
-            {message.text.heading}
+            {message.text.heading || "Available Products"}
           </div>
 
           <div
@@ -181,13 +159,13 @@ function Chatbot() {
               gap: "10px",
             }}
           >
-            {message.text.items.map((item, idx) => (
+            {message.text.items?.map((item, idx) => (
               <div
                 key={idx}
                 style={{
                   background: "#ffffff",
                   border: "1px solid #e5e7eb",
-                  borderRadius: "14px",
+                  borderRadius: "16px",
                   padding: "10px",
                   boxShadow: "0 4px 12px rgba(15,23,42,0.06)",
                 }}
@@ -195,51 +173,92 @@ function Chatbot() {
                 <div
                   style={{
                     display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    marginBottom: "6px",
+                    gap: "10px",
+                    alignItems: "flex-start",
                   }}
                 >
-                  <div
-                    style={{
-                      width: "28px",
-                      height: "28px",
-                      borderRadius: "10px",
-                      background: "rgba(79,70,229,0.10)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <ShoppingBag size={14} color="#4f46e5" />
-                  </div>
-                  <span
-                    style={{
-                      fontWeight: 700,
-                      color: "#111827",
-                      fontSize: "13px",
-                    }}
-                  >
-                    {item.name}
-                  </span>
-                </div>
+                  {item.image ? (
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      style={{
+                        width: "54px",
+                        height: "54px",
+                        objectFit: "cover",
+                        borderRadius: "12px",
+                        border: "1px solid #e5e7eb",
+                        flexShrink: 0,
+                        background: "#fff",
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        width: "54px",
+                        height: "54px",
+                        borderRadius: "12px",
+                        background: "rgba(79,70,229,0.10)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <ShoppingBag size={18} color="#4f46e5" />
+                    </div>
+                  )}
 
-                <div
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    background: "rgba(34,197,94,0.10)",
-                    color: "#15803d",
-                    padding: "6px 10px",
-                    borderRadius: "999px",
-                    fontWeight: 700,
-                    fontSize: "12px",
-                  }}
-                >
-                  <Tag size={13} />
-                  {item.price}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div
+                      style={{
+                        fontWeight: 800,
+                        color: "#111827",
+                        fontSize: "13px",
+                        lineHeight: 1.35,
+                        marginBottom: "6px",
+                      }}
+                    >
+                      {item.name}
+                    </div>
+
+                    {item.category && (
+                      <div
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          background: "#f8fafc",
+                          color: "#475569",
+                          padding: "5px 9px",
+                          borderRadius: "999px",
+                          fontWeight: 700,
+                          fontSize: "11px",
+                          marginBottom: "8px",
+                          border: "1px solid #e2e8f0",
+                        }}
+                      >
+                        <ShoppingBag size={12} />
+                        {item.category}
+                      </div>
+                    )}
+
+                    <div
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        background: "rgba(34,197,94,0.10)",
+                        color: "#15803d",
+                        padding: "6px 10px",
+                        borderRadius: "999px",
+                        fontWeight: 800,
+                        fontSize: "12px",
+                      }}
+                    >
+                      <Tag size={13} />
+                      {item.price || "No price available"}
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -248,7 +267,7 @@ function Chatbot() {
       );
     }
 
-    return <span dangerouslySetInnerHTML={{ __html: message.text }} />;
+    return <span dangerouslySetInnerHTML={{ __html: String(message.text) }} />;
   };
 
   return (
@@ -392,8 +411,7 @@ function Chatbot() {
                 flex: 1,
                 overflowY: "auto",
                 padding: "14px",
-                background:
-                  "linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)",
+                background: "linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)",
                 display: "flex",
                 flexDirection: "column",
                 gap: "12px",
@@ -413,14 +431,13 @@ function Chatbot() {
                 >
                   <div
                     style={{
-                      maxWidth: m.text?.type === "product" ? "88%" : "80%",
+                      maxWidth: m.text?.type === "products" ? "88%" : "80%",
                       background:
                         m.sender === "user"
                           ? "linear-gradient(135deg,#6366f1,#7c3aed)"
                           : "#ffffff",
                       color: m.sender === "user" ? "#ffffff" : "#111827",
-                      border:
-                        m.sender === "bot" ? "1px solid #e5e7eb" : "none",
+                      border: m.sender === "bot" ? "1px solid #e5e7eb" : "none",
                       borderRadius:
                         m.sender === "user"
                           ? "20px 20px 8px 20px"
