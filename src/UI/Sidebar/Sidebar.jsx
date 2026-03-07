@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { FiUsers, FiDollarSign, FiBox, FiMenu, FiX } from "react-icons/fi";
+import {
+  FiUsers,
+  FiDollarSign,
+  FiBox,
+  FiMenu,
+  FiX,
+} from "react-icons/fi";
+import logo from "../../assets/logo.png";
 import "./sidebar.css";
 
 function Sidebar() {
@@ -12,37 +19,54 @@ function Sidebar() {
 
   return (
     <>
-      {/* Mobile Top Bar */}
       <div className="mobile-header">
         <button className="menu-btn" onClick={() => setIsOpen(!isOpen)}>
           {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
         </button>
-        <h2>Admin Panel</h2>
+
+        <div className="mobile-brand">
+          <img src={logo} alt="Oscar D’Gr8 Logo" className="mobile-brand-logo" />
+          <h2>Admin Panel</h2>
+        </div>
       </div>
 
-      {/* Overlay for mobile */}
       {isOpen && <div className="overlay" onClick={() => setIsOpen(false)}></div>}
 
       <aside className={`sidebar ${isOpen ? "open" : ""}`}>
-        <h2 className="logo">Admin Panel</h2>
+        <div className="sidebar-brand">
+          <div className="sidebar-brand-top">
+            <img src={logo} alt="Oscar D’Gr8 Logo" className="sidebar-logo-img" />
+            <div>
+              <h2 className="logo">Admin Panel</h2>
+              <p className="sidebar-subtitle">Oscar D’Gr8</p>
+            </div>
+          </div>
+        </div>
 
-        <ul>
-          <li>
-            <NavLink to="/dashboard/admin">
-              <FiUsers /> Users
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/dashboard/sales">
-              <FiDollarSign /> Sales
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/dashboard/products">
-              <FiBox /> Products
-            </NavLink>
-          </li>
-        </ul>
+        <nav className="sidebar-nav">
+          <ul>
+            <li>
+              <NavLink to="/dashboard/admin" onClick={() => setIsOpen(false)}>
+                <FiUsers />
+                <span>Users</span>
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink to="/dashboard/sales" onClick={() => setIsOpen(false)}>
+                <FiDollarSign />
+                <span>Sales</span>
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink to="/dashboard/products" onClick={() => setIsOpen(false)}>
+                <FiBox />
+                <span>Products</span>
+              </NavLink>
+            </li>
+          </ul>
+        </nav>
       </aside>
     </>
   );
