@@ -256,6 +256,7 @@ function ConsumerDashboard() {
             }}
           >
             <img src={logo} alt="logo" className="store-logo" />
+            <span className="store-name">Oscar D’Great</span>
           </div>
 
           <div className="store-icons">
@@ -265,7 +266,10 @@ function ConsumerDashboard() {
               setNewStatusChanges={setNewStatusChanges}
             />
 
-            <button className="icon-btn" onClick={handleOpenCart}>
+            <button
+              className={`icon-btn ${cartBounce ? "cart-bounce" : ""}`}
+              onClick={handleOpenCart}
+            >
               🛒
               {cart.length > 0 && (
                 <span className="icon-badge">
