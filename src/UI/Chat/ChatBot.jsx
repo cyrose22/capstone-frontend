@@ -1,33 +1,70 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ShoppingBag, Tag } from "lucide-react"; // ✅ Added icons
+import {
+  X,
+  ShoppingBag,
+  Tag,
+  Send,
+  Bot,
+  MessageCircle,
+  Sparkles,
+  Phone,
+  Truck,
+  CreditCard,
+  House,
+} from "lucide-react";
 
 function Chatbot() {
   const [open, setOpen] = useState(false);
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const userName = storedUser?.fullname || storedUser?.username || "there";
-  const [messages, setMessages] = useState([
-    { 
-      sender: "bot", 
-      text: `👋 Hello <span style="color:#2563eb; font-weight:bold; text-decoration:underline;">${userName}</span>! I’m Oscar, your assistant. How can I help?` 
 
-    }
+  const [messages, setMessages] = useState([
+    {
+      sender: "bot",
+      text: `👋 Hello <span style="color:#4f46e5; font-weight:700;">${userName}</span>! I’m Oscar, your assistant. How can I help you today?`,
+      time: new Date(),
+    },
   ]);
+
   const [input, setInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef(null);
 
-  // ✅ Track idle time
-  const [idleTimer, setIdleTimer] = useState(null);
   const [lastUserInteraction, setLastUserInteraction] = useState(Date.now());
   const [suggestionShown, setSuggestionShown] = useState(false);
+
+  const quickReplies = [
+    { label: "Home", icon: <House size={14} /> },
+    { label: "Products", icon: <ShoppingBag size={14} /> },
+    { label: "Payment", icon: <CreditCard size={14} /> },
+    { label: "Delivery", icon: <Truck size={14} /> },
+    { label: "Contact", icon: <Phone size={14} /> },
+  ];
+
+  const formatFallbackReply = () =>
+    `🤔 I didn't quite understand that.<br/><br/>
+     You can ask me about:<br/>
+     • 🛍️ Products<br/>
+     • 🚚 Delivery<br/>
+     • 💳 Payment methods<br/>
+     • 📞 Contact information`;
 
   const sendMessage = async (msg) => {
     const userText = msg || input;
     if (!userText.trim()) return;
 
-    const userMsg = { sender: "user", text: userText, time: new Date() };
+    const userMsg = {
+      sender: "user",
+      text: userText,
+      time: new Date(),
+    };
+
     setMessages((prev) => [...prev, userMsg]);
-    setLastUserInteraction(Date.now()); // reset idle timer
+    setInput("");
+    setIsTyping(true);
+    setLastUserInteraction(Date.now());
+    setSuggestionShown(false);
 
     try {
       const res = await fetch("https://capstone-backend-kiax.onrender.com/chatbot", {
@@ -35,18 +72,17 @@ function Chatbot() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: userText,
-          userName: userName
+          userName,
         }),
       });
-      const data = await res.json();
 
+      const data = await res.json();
       let botReply = data.reply?.trim();
 
       if (!botReply) {
-        botReply = "🤔 I didn’t catch that. What would you like to do next?";
+        botReply = formatFallbackReply();
       }
 
-      // 🛒 Detect products
       if (botReply.includes("₱")) {
         const productText = botReply.trim();
         const products = productText
@@ -62,223 +98,348 @@ function Chatbot() {
             };
           });
 
-        botReply = { type: "product", heading: "Available Products:", items: products };
+        botReply = {
+          type: "product",
+          heading: "Available Products",
+          items: products,
+        };
       }
 
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: botReply, time: new Date() },
-      ]);
-    } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: "⚠️ Error: Cannot connect.", time: new Date() },
-      ]);
-    }
-
-    setInput("");
-  };
-
-  // ✅ Auto-scroll
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  // ✅ Auto bot follow-up if idle
-  useEffect(() => {
-    if (suggestionShown) return; // ✅ stop if already shown
-
-    const timer = setTimeout(() => {
-    const now = Date.now();
-      if (now - lastUserInteraction > 50000) { // 50 sec idle
-        // const suggestions = [
-        //   "🛍️ Want to see our Products?",
-        //   "🚚 Need info about Payment?",
-        //   "📞 Or Contact us directly?"
-        // ];
-        // const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
-
+      setTimeout(() => {
+        setIsTyping(false);
         setMessages((prev) => [
           ...prev,
-          // { sender: "bot", text: randomSuggestion, time: new Date() },
-          { sender: "bot", text: "💡 Still there? Need help with something?", time: new Date() } // ✅ always added
+          {
+            sender: "bot",
+            text: botReply,
+            time: new Date(),
+          },
         ]);
+      }, 700);
+    } catch (err) {
+      setTimeout(() => {
+        setIsTyping(false);
+        setMessages((prev) => [
+          ...prev,
+          {
+            sender: "bot",
+            text: "⚠️ I’m having trouble connecting right now. Please try again in a moment.",
+            time: new Date(),
+          },
+        ]);
+      }, 500);
+    }
+  };
 
-        setSuggestionShown(true); // only once
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isTyping]);
+
+  useEffect(() => {
+    if (suggestionShown || !open) return;
+
+    const timer = setTimeout(() => {
+      const now = Date.now();
+      if (now - lastUserInteraction > 50000) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            sender: "bot",
+            text: "💡 Still there? I can help with products, delivery, payments, or contact details.",
+            time: new Date(),
+          },
+        ]);
+        setSuggestionShown(true);
       }
-    }, 50000); // wait 10s idle
+    }, 50000);
 
     return () => clearTimeout(timer);
-  }, [lastUserInteraction, suggestionShown]);
+  }, [lastUserInteraction, suggestionShown, open]);
+
+  const renderMessageContent = (message) => {
+    if (message.text?.type === "product") {
+      return (
+        <div>
+          <div
+            style={{
+              marginBottom: "10px",
+              fontWeight: 800,
+              color: "#111827",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            <Sparkles size={15} color="#4f46e5" />
+            {message.text.heading}
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr",
+              gap: "10px",
+            }}
+          >
+            {message.text.items.map((item, idx) => (
+              <div
+                key={idx}
+                style={{
+                  background: "#ffffff",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "14px",
+                  padding: "10px",
+                  boxShadow: "0 4px 12px rgba(15,23,42,0.06)",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    marginBottom: "6px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "28px",
+                      height: "28px",
+                      borderRadius: "10px",
+                      background: "rgba(79,70,229,0.10)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <ShoppingBag size={14} color="#4f46e5" />
+                  </div>
+                  <span
+                    style={{
+                      fontWeight: 700,
+                      color: "#111827",
+                      fontSize: "13px",
+                    }}
+                  >
+                    {item.name}
+                  </span>
+                </div>
+
+                <div
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    background: "rgba(34,197,94,0.10)",
+                    color: "#15803d",
+                    padding: "6px 10px",
+                    borderRadius: "999px",
+                    fontWeight: 700,
+                    fontSize: "12px",
+                  }}
+                >
+                  <Tag size={13} />
+                  {item.price}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    return <span dangerouslySetInnerHTML={{ __html: message.text }} />;
+  };
 
   return (
     <>
-      {/* Floating button */}
-      <motion.div
+      <motion.button
+        onClick={() => setOpen((prev) => !prev)}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.95 }}
         style={{
           position: "fixed",
           bottom: "20px",
           right: "20px",
           zIndex: 9999,
+          width: "64px",
+          height: "64px",
+          borderRadius: "50%",
+          border: "none",
           cursor: "pointer",
+          background: "linear-gradient(135deg, #6366f1, #7c3aed)",
+          color: "#fff",
+          boxShadow: "0 16px 30px rgba(99,102,241,0.35)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setOpen(!open)}
       >
-        <div
-          style={{
-            width: "60px",
-            height: "60px",
-            borderRadius: "50%",
-            background: "linear-gradient(135deg, #6366f1, #9333ea)",
-            boxShadow: "0 6px 14px rgba(0,0,0,0.3)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "26px",
-            color: "white",
-          }}
-        >
-          💬
-        </div>
-      </motion.div>
+        {open ? <X size={26} /> : <MessageCircle size={26} />}
+      </motion.button>
 
-      {/* Chat window */}
       <AnimatePresence>
         {open && (
           <motion.div
+            initial={{ opacity: 0, y: 24, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 24, scale: 0.98 }}
+            transition={{ duration: 0.22 }}
             style={{
               position: "fixed",
-              bottom: "90px",
+              bottom: "94px",
               right: "20px",
-              width: "360px",
-              height: "500px",
-              background: "white",
-              borderRadius: "20px",
-              boxShadow: "0 10px 25px rgba(0,0,0,0.25)",
-              display: "flex",
-              flexDirection: "column",
+              width: "380px",
+              height: "620px",
+              maxWidth: "calc(100vw - 24px)",
+              maxHeight: "calc(100vh - 120px)",
+              background: "#ffffff",
+              borderRadius: "26px",
+              boxShadow: "0 30px 60px rgba(15,23,42,0.22)",
               overflow: "hidden",
               zIndex: 9999,
+              display: "flex",
+              flexDirection: "column",
+              border: "1px solid rgba(15,23,42,0.08)",
             }}
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
           >
-            {/* Header */}
             <div
               style={{
-                background: "linear-gradient(135deg, #6366f1, #9333ea)",
-                color: "white",
-                padding: "14px",
-                fontWeight: "bold",
+                background: "linear-gradient(135deg, #6366f1, #7c3aed)",
+                color: "#fff",
+                padding: "14px 16px",
                 display: "flex",
-                justifyContent: "space-between",
                 alignItems: "center",
+                justifyContent: "space-between",
               }}
             >
-              🛍️ Oscar Assistant
-              <X
-                size={20}
-                style={{ cursor: "pointer" }}
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <div
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                    background: "rgba(255,255,255,0.18)",
+                    backdropFilter: "blur(6px)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "1px solid rgba(255,255,255,0.22)",
+                  }}
+                >
+                  <Bot size={20} />
+                </div>
+
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: "14px" }}>Oscar Assistant</div>
+                  <div
+                    style={{
+                      fontSize: "11px",
+                      opacity: 0.9,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: "8px",
+                        height: "8px",
+                        borderRadius: "50%",
+                        background: "#86efac",
+                        display: "inline-block",
+                      }}
+                    />
+                    Online • Instant help
+                  </div>
+                </div>
+              </div>
+
+              <button
                 onClick={() => setOpen(false)}
-              />
+                style={{
+                  background: "rgba(255,255,255,0.14)",
+                  border: "1px solid rgba(255,255,255,0.18)",
+                  color: "#fff",
+                  width: "34px",
+                  height: "34px",
+                  borderRadius: "12px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <X size={18} />
+              </button>
             </div>
 
-            {/* Messages */}
+            <div
+              style={{
+                padding: "12px 14px",
+                background: "#f8fafc",
+                borderBottom: "1px solid #e5e7eb",
+                color: "#64748b",
+                fontSize: "12px",
+                fontWeight: 600,
+              }}
+            >
+              Ask about products, delivery, payments, or contact details.
+            </div>
+
             <div
               style={{
                 flex: 1,
-                padding: "12px",
                 overflowY: "auto",
+                padding: "14px",
+                background:
+                  "linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)",
                 display: "flex",
                 flexDirection: "column",
-                gap: "10px",
-                background: "#f9fafb",
+                gap: "12px",
               }}
             >
               {messages.map((m, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2 }}
+                  transition={{ duration: 0.18 }}
                   style={{
-                    alignSelf: m.sender === "user" ? "flex-end" : "flex-start",
-                    background:
-                      m.sender === "user"
-                        ? "linear-gradient(135deg, #6366f1, #9333ea)"
-                        : "#e5e7eb",
-                    color: m.sender === "user" ? "white" : "black",
-                    padding: "10px 14px",
-                    borderRadius:
-                      m.sender === "user"
-                        ? "16px 16px 4px 16px"
-                        : "16px 16px 16px 4px",
-                    maxWidth: "75%",
-                    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-                    fontSize: "14px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: m.sender === "user" ? "flex-end" : "flex-start",
                   }}
                 >
-                  {/* ✅ Render products */}
-                  {m.text?.type === "product" ? (
-                    <div>
-                      <div style={{ marginBottom: "6px", fontWeight: "bold" }}>
-                        {m.text.heading}
-                      </div>
-                      <div
-                        style={{
-                          display: "grid",
-                          gridTemplateColumns: "1fr 1fr",
-                          gap: "8px",
-                        }}
-                      >
-                        {m.text.items.map((item, idx) => (
-                          <div
-                            key={idx}
-                            style={{
-                              background: "white",
-                              border: "1px solid #ddd",
-                              borderRadius: "10px",
-                              padding: "8px",
-                              fontSize: "13px",
-                              boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-                              display: "flex",
-                              flexDirection: "column",
-                              gap: "4px",
-                            }}
-                          >
-                            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                              <ShoppingBag size={14} color="#6366f1" />
-                              <span style={{ fontWeight: "bold" }}>{item.name}</span>
-                            </div>
-                            <div
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "4px",
-                                color: "green",
-                                fontWeight: "600",
-                              }}
-                            >
-                              <Tag size={14} color="green" />
-                              {item.price}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                     <span dangerouslySetInnerHTML={{ __html: m.text }} />
-                  )}
+                  <div
+                    style={{
+                      maxWidth: m.text?.type === "product" ? "88%" : "80%",
+                      background:
+                        m.sender === "user"
+                          ? "linear-gradient(135deg,#6366f1,#7c3aed)"
+                          : "#ffffff",
+                      color: m.sender === "user" ? "#ffffff" : "#111827",
+                      border:
+                        m.sender === "bot" ? "1px solid #e5e7eb" : "none",
+                      borderRadius:
+                        m.sender === "user"
+                          ? "20px 20px 8px 20px"
+                          : "20px 20px 20px 8px",
+                      padding: "12px 14px",
+                      fontSize: "14px",
+                      lineHeight: 1.5,
+                      boxShadow: "0 8px 18px rgba(15,23,42,0.08)",
+                    }}
+                  >
+                    {renderMessageContent(m)}
+                  </div>
 
                   <div
                     style={{
                       fontSize: "10px",
+                      color: "#94a3b8",
                       marginTop: "4px",
-                      opacity: 0.6,
-                      textAlign: m.sender === "user" ? "right" : "left",
+                      padding: "0 4px",
                     }}
                   >
                     {m.time
@@ -290,81 +451,135 @@ function Chatbot() {
                   </div>
                 </motion.div>
               ))}
+
+              {isTyping && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  style={{
+                    alignSelf: "flex-start",
+                    background: "#ffffff",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "20px 20px 20px 8px",
+                    padding: "12px 14px",
+                    boxShadow: "0 8px 18px rgba(15,23,42,0.08)",
+                  }}
+                >
+                  <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                    {[0, 1, 2].map((dot) => (
+                      <motion.span
+                        key={dot}
+                        animate={{ opacity: [0.3, 1, 0.3], y: [0, -2, 0] }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 0.9,
+                          delay: dot * 0.12,
+                        }}
+                        style={{
+                          width: "8px",
+                          height: "8px",
+                          borderRadius: "50%",
+                          background: "#94a3b8",
+                          display: "inline-block",
+                        }}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
               <div ref={chatEndRef} />
             </div>
 
-            {/* Quick replies */}
             <div
               style={{
-                display: "flex",
-                gap: "8px",
-                padding: "8px",
-                background: "#f1f5f9",
-                borderTop: "1px solid #ddd",
-                justifyContent: "center",
+                padding: "10px 12px",
+                borderTop: "1px solid #e5e7eb",
+                background: "#ffffff",
               }}
             >
-              {["🏠 Home", "📞 Contact", "🚚 Payment", "🛍️ Products"].map((btn) => (
-                <button
-                  key={btn}
-                  onClick={() => sendMessage(btn)}
-                  style={{
-                    padding: "6px 14px",
-                    borderRadius: "16px",
-                    border: "1px solid #ddd",
-                    background: "white",
-                    cursor: "pointer",
-                    fontSize: "13px",
-                    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                  }}
-                >
-                  {btn}
-                </button>
-              ))}
-            </div>
-
-            {/* Input */}
-            <div
-              style={{
-                display: "flex",
-                padding: "10px",
-                background: "white",
-                borderTop: "1px solid #eee",
-              }}
-            >
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => {
-                  setInput(e.target.value);
-                  setLastUserInteraction(Date.now()); // reset idle timer when typing
-                }}
-                onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                placeholder="Type a message..."
+              <div
                 style={{
-                  flex: 1,
-                  border: "1px solid #ddd",
-                  borderRadius: "20px",
-                  padding: "10px 14px",
-                  outline: "none",
-                  fontSize: "14px",
-                  marginRight: "8px",
-                }}
-              />
-              <button
-                onClick={() => sendMessage()}
-                style={{
-                  background: "linear-gradient(135deg, #6366f1, #9333ea)",
-                  color: "white",
-                  border: "none",
-                  padding: "0 18px",
-                  borderRadius: "20px",
-                  cursor: "pointer",
-                  fontWeight: "bold",
+                  display: "flex",
+                  gap: "8px",
+                  overflowX: "auto",
+                  paddingBottom: "8px",
+                  marginBottom: "8px",
                 }}
               >
-                ➤
-              </button>
+                {quickReplies.map((btn) => (
+                  <button
+                    key={btn.label}
+                    onClick={() => sendMessage(btn.label)}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      whiteSpace: "nowrap",
+                      padding: "8px 12px",
+                      borderRadius: "999px",
+                      border: "1px solid #e2e8f0",
+                      background: "#f8fafc",
+                      color: "#334155",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {btn.icon}
+                    {btn.label}
+                  </button>
+                ))}
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => {
+                    setInput(e.target.value);
+                    setLastUserInteraction(Date.now());
+                  }}
+                  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                  placeholder="Type your message..."
+                  style={{
+                    flex: 1,
+                    height: "46px",
+                    borderRadius: "16px",
+                    border: "1px solid #dbe2ea",
+                    background: "#f8fafc",
+                    padding: "0 14px",
+                    outline: "none",
+                    fontSize: "14px",
+                    color: "#111827",
+                  }}
+                />
+
+                <button
+                  onClick={() => sendMessage()}
+                  style={{
+                    width: "46px",
+                    height: "46px",
+                    borderRadius: "16px",
+                    border: "none",
+                    cursor: "pointer",
+                    background: "linear-gradient(135deg,#6366f1,#7c3aed)",
+                    color: "#fff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    boxShadow: "0 10px 20px rgba(99,102,241,0.28)",
+                  }}
+                >
+                  <Send size={18} />
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
