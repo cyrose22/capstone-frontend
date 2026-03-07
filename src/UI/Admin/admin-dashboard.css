@@ -508,25 +508,28 @@ button.toggle-status:disabled{
 }
 
 .register-modal{
-  width: min(640px, 92vw);
-  padding: 28px 24px 22px;
-  border-radius: 24px;
+  width: min(540px, 90vw);
+  padding: 24px 22px 20px;
+  border-radius: 22px;
   background: #ffffff;
-  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.18);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
 }
 
 .modal-header.compact{
-  margin-bottom: 18px;
+  margin-bottom: 16px;
   padding-right: 42px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .modal-header.compact .modal-chip{
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .modal-header.compact h2{
-  margin: 0 0 8px;
-  font-size: 1.8rem;
+  margin: 0 0 6px;
+  font-size: 1.55rem;
   font-weight: 800;
   color: #0f172a;
   line-height: 1.2;
@@ -534,22 +537,22 @@ button.toggle-status:disabled{
 
 .modal-header.compact p{
   margin: 0;
-  max-width: 520px;
+  max-width: 420px;
   color: #64748b;
-  font-size: 0.97rem;
-  line-height: 1.55;
+  font-size: 0.92rem;
+  line-height: 1.45;
 }
 
 .form-stack{
   display: grid;
-  gap: 14px;
-  margin-top: 10px;
+  gap: 12px;
+  margin-top: 6px;
 }
 
 .modal-input.styled-input{
   width: 100%;
-  height: 52px;
-  padding: 0 16px;
+  height: 48px;
+  padding: 0 14px;
   border-radius: 16px;
   border: 1px solid #dbe2ea;
   background: #ffffff;
@@ -661,12 +664,17 @@ button.toggle-status:disabled{
 
 @media (max-width: 640px){
   .register-modal{
-    width: min(94vw, 94vw);
-    padding: 22px 18px 18px;
+    width: min(92vw, 92vw);
+    padding: 20px 16px 16px;
   }
 
   .modal-header.compact h2{
-    font-size: 1.45rem;
+    font-size: 1.3rem;
+  }
+
+  .modal-header.compact p{
+    max-width: 100%;
+    font-size: 0.88rem;
   }
 
   .register-actions{
