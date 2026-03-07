@@ -1431,3 +1431,28 @@ html, body {
     height: 64px;
   }
 }
+
+@media (max-width: 768px) {
+  .hero-left {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-buttons .btn,
+  .hero-buttons button {
+    flex: 0 0 auto;
+  }
+}
