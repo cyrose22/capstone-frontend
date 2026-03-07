@@ -242,15 +242,11 @@ function ConsumerDashboard() {
     <div className="storefront-layout">
 
       <header className="store-header">
-
-        {/* TOP BAR */}
         <div className="store-topbar">
           <span>Need help? Call us: +63 912 345 6789</span>
         </div>
 
-        {/* MAIN NAV */}
         <div className="store-header-main">
-
           <div
             className="store-logo-section"
             onClick={() => {
@@ -258,46 +254,18 @@ function ConsumerDashboard() {
               setSelectedCategory("All");
               goToProducts();
             }}
-            style={{ cursor: "pointer" }}
           >
             <img src={logo} alt="logo" className="store-logo" />
           </div>
 
-          {/* <nav className="store-nav">
-            <button
-              className={activeTab === "shop" ? "nav-active" : ""}
-              onClick={() => setActiveTab("shop")}
-            >
-              Shop
-            </button>
-
-            <button
-              className={activeTab === "orders" ? "nav-active" : ""}
-              onClick={() => setActiveTab("orders")}
-            >
-              Orders
-            </button>
-
-            <button
-              className={activeTab === "profile" ? "nav-active" : ""}
-              onClick={() => setActiveTab("profile")}
-            >
-              Profile
-            </button>
-          </nav> */}
-
           <div className="store-icons">
-
             <NotificationPanel
               notifBounce={notifBounce}
               newStatusChanges={newStatusChanges}
               setNewStatusChanges={setNewStatusChanges}
             />
 
-            <button
-              className="icon-btn"
-              onClick={handleOpenCart}
-            >
+            <button className="icon-btn" onClick={handleOpenCart}>
               🛒
               {cart.length > 0 && (
                 <span className="icon-badge">
@@ -326,7 +294,6 @@ function ConsumerDashboard() {
                       >
                         Login
                       </button>
-
                       <button
                         onClick={() => {
                           setShowProfileMenu(false);
@@ -338,11 +305,14 @@ function ConsumerDashboard() {
                     </>
                   ) : (
                     <>
-                      <button onClick={() => setActiveTab("profile")}>
+                      <button
+                        onClick={() => {
+                          setShowProfileMenu(false);
+                          setActiveTab("profile");
+                        }}
+                      >
                         My Profile
                       </button>
-
-                      <button>Change Password</button>
 
                       <button
                         className="logout-btn"
@@ -361,9 +331,7 @@ function ConsumerDashboard() {
               )}
             </div>
           </div>
-
         </div>
-
       </header>
 
       <section className="store-hero">
