@@ -156,7 +156,8 @@ function OrdersTab({
         const total =
           sale.total ??
           items.reduce(
-            (sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 0),
+            (sum, item) =>
+              sum + Number(item.price || 0) * Number(item.quantity || 0),
             0
           );
 
@@ -164,23 +165,12 @@ function OrdersTab({
           <div
             key={sale.id}
             style={{
-              background: "rgba(255,255,255,0.95)",
-              borderRadius: "18px",
-              padding: "1.2rem",
-              marginBottom: "1.2rem",
-              boxShadow: "0 12px 28px rgba(15,23,42,0.08)",
+              background: "rgba(255,255,255,0.96)",
+              borderRadius: "20px",
+              padding: "1rem 1rem 1.1rem",
+              marginBottom: "1rem",
+              boxShadow: "0 10px 26px rgba(15,23,42,0.07)",
               border: "1px solid rgba(15,23,42,0.06)",
-              transition: "transform 0.2s, box-shadow 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-2px)";
-              e.currentTarget.style.boxShadow =
-                "0 18px 34px rgba(15,23,42,0.10)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow =
-                "0 12px 28px rgba(15,23,42,0.08)";
             }}
           >
             {/* Header */}
@@ -188,9 +178,10 @@ function OrdersTab({
               style={{
                 display: "flex",
                 justifyContent: "space-between",
-                gap: "1rem",
                 alignItems: "flex-start",
+                gap: "1rem",
                 flexWrap: "wrap",
+                marginBottom: "0.8rem",
               }}
             >
               <div>
@@ -198,11 +189,17 @@ function OrdersTab({
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "0.65rem",
+                    gap: "0.6rem",
                     flexWrap: "wrap",
                   }}
                 >
-                  <span style={{ fontWeight: "800", fontSize: "1rem", color: "#111827" }}>
+                  <span
+                    style={{
+                      fontWeight: "800",
+                      fontSize: "1.02rem",
+                      color: "#111827",
+                    }}
+                  >
                     Order #{sale.id}
                   </span>
 
@@ -211,7 +208,7 @@ function OrdersTab({
                       ...getStatusStyles(sale.status),
                       padding: "6px 10px",
                       borderRadius: "999px",
-                      fontSize: "0.83rem",
+                      fontSize: "0.82rem",
                       fontWeight: "800",
                     }}
                   >
@@ -234,9 +231,9 @@ function OrdersTab({
                 style={{
                   backgroundColor: "#e0f7fa",
                   color: "#007b8a",
-                  padding: "6px 12px",
+                  padding: "7px 12px",
                   borderRadius: "999px",
-                  fontSize: "0.9rem",
+                  fontSize: "0.88rem",
                   fontWeight: "700",
                   whiteSpace: "nowrap",
                 }}
@@ -251,7 +248,6 @@ function OrdersTab({
                 display: "flex",
                 flexDirection: "column",
                 gap: "0.75rem",
-                marginTop: "1rem",
               }}
             >
               {items.map((item, i) => {
@@ -286,33 +282,38 @@ function OrdersTab({
                   <div
                     key={i}
                     style={{
-                      display: "flex",
+                      display: "grid",
+                      gridTemplateColumns: "72px 1fr auto",
+                      gap: "0.9rem",
                       alignItems: "center",
-                      gap: "0.85rem",
                       border: "1px solid #f1f5f9",
-                      borderRadius: "14px",
-                      padding: "0.75rem",
+                      borderRadius: "16px",
+                      padding: "0.8rem",
                       backgroundColor: "#fafafa",
                     }}
                   >
                     <div
                       style={{
-                        width: "62px",
-                        height: "62px",
+                        width: "72px",
+                        height: "72px",
                         backgroundColor: "#fff",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         border: "1px solid #eee",
-                        borderRadius: "10px",
-                        flexShrink: 0,
+                        borderRadius: "12px",
                         overflow: "hidden",
+                        flexShrink: 0,
                       }}
                     >
                       {imageSrc ? (
                         <img
                           src={imageSrc}
-                          alt={item.variantName || item.variant_name || item.product_name}
+                          alt={
+                            item.variantName ||
+                            item.variant_name ||
+                            item.product_name
+                          }
                           style={{
                             width: "100%",
                             height: "100%",
@@ -326,14 +327,13 @@ function OrdersTab({
                       )}
                     </div>
 
-                    <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ minWidth: 0 }}>
                       <div
                         style={{
-                          fontWeight: "700",
+                          fontWeight: "800",
                           color: "#111827",
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
+                          fontSize: "1rem",
+                          lineHeight: 1.35,
                         }}
                       >
                         {item.product_name}
@@ -342,46 +342,201 @@ function OrdersTab({
                       {showVariant && (
                         <div
                           style={{
-                            fontSize: "0.82rem",
+                            fontSize: "0.83rem",
                             color: "#6b7280",
-                            marginTop: "2px",
+                            marginTop: "3px",
                           }}
                         >
                           Variant: {variantLabel}
                         </div>
                       )}
+
+                      <div
+                        style={{
+                          marginTop: "6px",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          flexWrap: "wrap",
+                          fontSize: "0.87rem",
+                          color: "#6b7280",
+                        }}
+                      >
+                        <span>x{item.quantity}</span>
+                        <span>•</span>
+                        <span>{formatCurrency(item.price)}</span>
+                      </div>
                     </div>
 
-                    <div style={{ textAlign: "right", minWidth: "110px" }}>
-                      <div style={{ fontSize: "0.9rem", color: "#333" }}>
-                        x{item.quantity}
-                      </div>
-                      <div style={{ fontSize: "0.85rem", color: "#888" }}>
-                        {formatCurrency(item.price)}
-                      </div>
-                      <div style={{ fontWeight: "700", marginTop: "2px" }}>
-                        {formatCurrency(Number(item.price) * Number(item.quantity))}
-                      </div>
+                    <div
+                      style={{
+                        textAlign: "right",
+                        minWidth: "90px",
+                        fontWeight: "800",
+                        fontSize: "1.05rem",
+                        color: "#111827",
+                      }}
+                    >
+                      {formatCurrency(
+                        Number(item.price) * Number(item.quantity)
+                      )}
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            {/* Total */}
+            {/* Total + Actions */}
             <div
               style={{
-                textAlign: "right",
-                fontWeight: "800",
-                marginTop: "1rem",
-                fontSize: "1rem",
-                color: "#111827",
+                marginTop: "0.95rem",
+                paddingTop: "0.9rem",
+                borderTop: "1px solid #f1f5f9",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "1rem",
+                flexWrap: "wrap",
               }}
             >
-              Total: {formatCurrency(total)}
+              <div
+                style={{
+                  fontWeight: "900",
+                  fontSize: "1.08rem",
+                  color: "#111827",
+                }}
+              >
+                Total: {formatCurrency(total)}
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: "0.6rem",
+                  flexWrap: "wrap",
+                }}
+              >
+                {(normalizeStatus(sale.status) === "completed" ||
+                  normalizeStatus(sale.status) === "cancelled") && (
+                  <button
+                    onClick={() => {
+                      if (!sale.items) return;
+
+                      const updatedCart = [...cart];
+
+                      sale.items.forEach((item) => {
+                        const cartItem = {
+                          id: item.product_id,
+                          name: item.product_name,
+                          price: Number(item.price) || 0,
+                          quantity: Number(item.quantity) || 1,
+                          variantId: item.variantId || item.variant_id || null,
+                          variantName:
+                            item.variantName || item.variant_name || null,
+                          variantImage:
+                            item.variantImage ||
+                            item.variant_image ||
+                            item.image ||
+                            null,
+                          image: item.image || null,
+                        };
+
+                        const existingIndex = updatedCart.findIndex(
+                          (c) =>
+                            c.id === cartItem.id &&
+                            c.variantId === cartItem.variantId &&
+                            c.variantName === cartItem.variantName
+                        );
+
+                        if (existingIndex >= 0) {
+                          updatedCart[existingIndex] = {
+                            ...updatedCart[existingIndex],
+                            quantity:
+                              updatedCart[existingIndex].quantity +
+                              cartItem.quantity,
+                          };
+                        } else {
+                          updatedCart.push(cartItem);
+                        }
+                      });
+
+                      setCart(updatedCart);
+                      setActiveTab("shop");
+                      setShowCartModal(true);
+                    }}
+                    style={{
+                      padding: "0.7rem 1rem",
+                      backgroundColor: "#ff9800",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "12px",
+                      cursor: "pointer",
+                      fontWeight: "700",
+                    }}
+                  >
+                    🔁 Buy Again
+                  </button>
+                )}
+
+                {normalizeStatus(sale.status) === "to receive" && (
+                  <button
+                    onClick={async () => {
+                      try {
+                        await axios.put(
+                          `https://capstone-backend-kiax.onrender.com/sales/${sale.id}/status`,
+                          { status: "completed" }
+                        );
+
+                        const updated = await axios.get(
+                          `https://capstone-backend-kiax.onrender.com/sales/user/${user.id}`
+                        );
+
+                        setSalesHistory(
+                          enrichSalesWithImages(updated.data, products)
+                        );
+                      } catch {
+                        alert("Failed to mark as received");
+                      }
+                    }}
+                    style={{
+                      padding: "0.7rem 1rem",
+                      backgroundColor: "#4caf50",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "12px",
+                      cursor: "pointer",
+                      fontWeight: "700",
+                    }}
+                  >
+                    📦 Order Received
+                  </button>
+                )}
+
+                {normalizeStatus(sale.status) === "processing" && (
+                  <button
+                    onClick={() => {
+                      setSaleToCancel(sale);
+                      setCancelReason("");
+                      setCancelModalVisible(true);
+                    }}
+                    style={{
+                      padding: "0.7rem 1rem",
+                      backgroundColor: "#e74c3c",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "12px",
+                      cursor: "pointer",
+                      fontWeight: "700",
+                    }}
+                  >
+                    ❌ Cancel Order
+                  </button>
+                )}
+              </div>
             </div>
 
-            {/* Cancel Reason */}
+            {/* Cancel reason */}
             {normalizeStatus(sale.status) === "cancelled" &&
               sale.cancel_description && (
                 <div
@@ -400,7 +555,9 @@ function OrdersTab({
                       gap: "0.5rem",
                     }}
                   >
-                    <span style={{ color: "#e74c3c", fontSize: "1.1rem" }}>❌</span>
+                    <span style={{ color: "#e74c3c", fontSize: "1.1rem" }}>
+                      ❌
+                    </span>
                     <span style={{ fontWeight: "700" }}>Order Cancelled</span>
                   </div>
 
@@ -420,130 +577,6 @@ function OrdersTab({
                   )}
                 </div>
               )}
-
-            {/* Actions */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                gap: "0.6rem",
-                marginTop: "1rem",
-                flexWrap: "wrap",
-              }}
-            >
-              {(normalizeStatus(sale.status) === "completed" ||
-                normalizeStatus(sale.status) === "cancelled") && (
-                <button
-                  onClick={() => {
-                    if (!sale.items) return;
-
-                    const updatedCart = [...cart];
-
-                    sale.items.forEach((item) => {
-                      const cartItem = {
-                        id: item.product_id,
-                        name: item.product_name,
-                        price: Number(item.price) || 0,
-                        quantity: Number(item.quantity) || 1,
-                        variantId: item.variantId || item.variant_id || null,
-                        variantName: item.variantName || item.variant_name || null,
-                        variantImage:
-                          item.variantImage ||
-                          item.variant_image ||
-                          item.image ||
-                          null,
-                        image: item.image || null,
-                      };
-
-                      const existingIndex = updatedCart.findIndex(
-                        (c) =>
-                          c.id === cartItem.id &&
-                          c.variantId === cartItem.variantId &&
-                          c.variantName === cartItem.variantName
-                      );
-
-                      if (existingIndex >= 0) {
-                        updatedCart[existingIndex] = {
-                          ...updatedCart[existingIndex],
-                          quantity:
-                            updatedCart[existingIndex].quantity + cartItem.quantity,
-                        };
-                      } else {
-                        updatedCart.push(cartItem);
-                      }
-                    });
-
-                    setCart(updatedCart);
-                    setActiveTab("shop");
-                    setShowCartModal(true);
-                  }}
-                  style={{
-                    padding: "0.6rem 0.9rem",
-                    backgroundColor: "#ff9800",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "10px",
-                    cursor: "pointer",
-                    fontWeight: "700",
-                  }}
-                >
-                  🔁 Buy Again
-                </button>
-              )}
-
-              {normalizeStatus(sale.status) === "to receive" && (
-                <button
-                  onClick={async () => {
-                    try {
-                      await axios.put(
-                        `https://capstone-backend-kiax.onrender.com/sales/${sale.id}/status`,
-                        { status: "completed" }
-                      );
-
-                      const updated = await axios.get(
-                        `https://capstone-backend-kiax.onrender.com/sales/user/${user.id}`
-                      );
-
-                      setSalesHistory(enrichSalesWithImages(updated.data, products));
-                    } catch {
-                      alert("Failed to mark as received");
-                    }
-                  }}
-                  style={{
-                    padding: "0.6rem 0.9rem",
-                    backgroundColor: "#4caf50",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "10px",
-                    cursor: "pointer",
-                    fontWeight: "700",
-                  }}
-                >
-                  📦 Order Received
-                </button>
-              )}
-
-              {normalizeStatus(sale.status) === "processing" && (
-                <button
-                  onClick={() => {
-                    setSaleToCancel(sale);
-                    setCancelReason("");
-                    setCancelModalVisible(true);
-                  }}
-                  style={{
-                    padding: "0.6rem 0.9rem",
-                    backgroundColor: "#e74c3c",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "10px",
-                    cursor: "pointer",
-                    fontWeight: "700",
-                  }}
-                >
-                  ❌ Cancel Order
-                </button>
-              )}
-            </div>
           </div>
         );
       })}
