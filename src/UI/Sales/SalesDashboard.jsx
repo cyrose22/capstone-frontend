@@ -364,132 +364,183 @@ function SalesDashboard() {
     reportWindow.document.write(`
       <html>
       <head>
-        <title>Sales Report</title>
-        ${style}
-        <style>
-          .report-header{
-            display:flex;
-            align-items:center;
-            gap:16px;
-            margin-bottom:20px;
-            border-bottom:2px solid #e5e7eb;
-            padding-bottom:12px;
-          }
+      <title>Sales Receipt</title>
 
-          .report-logo{
-            width:60px;
-            height:60px;
-            object-fit:contain;
-            border-radius:10px;
-            border:1px solid #e5e7eb;
-            padding:6px;
-          }
+      <style>
+      body{
+        font-family: Arial, sans-serif;
+        padding:30px;
+        color:#111827;
+      }
 
-          .report-title{
-            font-size:22px;
-            font-weight:900;
-            margin:0;
-            color:#111827;
-          }
+      .receipt{
+        max-width:850px;
+        margin:auto;
+      }
 
-          .report-sub{
-            margin:4px 0 0;
-            color:#64748b;
-            font-size:13px;
-          }
+      /* HEADER */
+      .brand{
+        display:flex;
+        align-items:center;
+        gap:14px;
+        border-bottom:2px solid #e5e7eb;
+        padding-bottom:14px;
+        margin-bottom:20px;
+      }
 
-          .meta{
-            margin-top:6px;
-            font-size:13px;
-            color:#374151;
-          }
+      .brand img{
+        width:60px;
+        height:60px;
+        object-fit:contain;
+      }
 
-          table{
-            width:100%;
-            border-collapse:collapse;
-            margin-top:18px;
-          }
+      .brand h1{
+        margin:0;
+        font-size:26px;
+      }
 
-          th{
-            background:#f8fafc;
-            text-align:left;
-            font-weight:800;
-          }
+      .brand p{
+        margin:3px 0 0;
+        color:#64748b;
+        font-size:14px;
+      }
 
-          th, td{
-            padding:10px 8px;
-            border:1px solid #e5e7eb;
-            font-size:13px;
-          }
+      /* ORDER INFO */
+      .info{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+        margin-bottom:20px;
+        font-size:14px;
+      }
 
-          .summary{
-            margin-top:20px;
-            padding:12px;
-            border-radius:10px;
-            background:#f8fafc;
-            border:1px solid #e5e7eb;
-            font-size:14px;
-            font-weight:700;
-            line-height:1.7;
-          }
+      .info div{
+        padding:6px 0;
+      }
 
-          .footer{
-            margin-top:30px;
-            text-align:center;
-            font-size:12px;
-            color:#6b7280;
-          }
-        </style>
+      .label{
+        font-weight:bold;
+      }
+
+      /* TABLE */
+      table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top:10px;
+      }
+
+      th{
+        background:#f8fafc;
+        font-weight:800;
+      }
+
+      th,td{
+        border:1px solid #e5e7eb;
+        padding:10px;
+        text-align:left;
+      }
+
+      .item{
+        display:flex;
+        align-items:center;
+        gap:10px;
+      }
+
+      .item img{
+        width:40px;
+        height:40px;
+        border-radius:6px;
+      }
+
+      /* TOTAL */
+      .total{
+        margin-top:20px;
+        display:flex;
+        justify-content:space-between;
+        font-size:16px;
+        font-weight:bold;
+        border-top:2px solid #e5e7eb;
+        padding-top:10px;
+      }
+
+      .footer{
+        margin-top:25px;
+        text-align:center;
+        font-size:13px;
+        color:#64748b;
+      }
+
+      </style>
       </head>
 
       <body>
 
-        <div class="report-header">
-          <img src="${logoUrl}" class="report-logo" />
+      <div class="receipt">
 
-          <div>
-            <h1 class="report-title">Oscar D’Gr8 Sales Report</h1>
-            <p class="report-sub">Pet supplies and essentials</p>
-            <div class="meta"><strong>Filter:</strong> ${filterLabel}</div>
-            <div class="meta"><strong>Generated on:</strong> ${new Date().toLocaleString()}</div>
-          </div>
+      <div class="brand">
+        <img src="${logoUrl}">
+        <div>
+          <h1>Oscar D’Gr8</h1>
+          <p>Pet supplies and essentials</p>
         </div>
+      </div>
 
-        <table>
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Customer</th>
-              <th>Date</th>
-              <th>Items</th>
-              <th>Total</th>
-            </tr>
-          </thead>
+      <div class="info">
+        <div><span class="label">Receipt No:</span> #${selectedSale.id}</div>
+        <div><span class="label">Date:</span> ${new Date(selectedSale.created_at).toLocaleString()}</div>
 
-          <tbody>
-            ${
-              rows ||
-              '<tr><td colspan="5" style="text-align:center;">No completed sales found for this filter.</td></tr>'
-            }
-          </tbody>
-        </table>
+        <div><span class="label">Customer:</span> ${selectedSale.customer_name}</div>
+        <div><span class="label">Contact:</span> ${selectedSale.contact}</div>
 
-        <div class="summary">
-          📊 Total Sales: ₱${filteredTotalSalesAmount.toLocaleString('en-PH', {
-            minimumFractionDigits: 2,
-          })}<br/>
-          🛍️ Total Items Sold: ${filteredTotalItemsSold}<br/>
-          📦 Items Left in Stock: ${totalItemsLeft}
+        <div><span class="label">Payment Method:</span> ${selectedSale.payment_method}</div>
+        <div><span class="label">Status:</span> ${selectedSale.status}</div>
+      </div>
+
+      <table>
+      <thead>
+      <tr>
+      <th>Item</th>
+      <th>Variant</th>
+      <th>Qty</th>
+      <th>Price</th>
+      <th>Subtotal</th>
+      </tr>
+      </thead>
+
+      <tbody>
+
+      ${selectedSale.items.map(item => `
+      <tr>
+      <td>
+        <div class="item">
+          <img src="${item.variant_image || item.product_image}">
+          ${item.product_name}
         </div>
+      </td>
+      <td>${item.variant_name}</td>
+      <td>${item.quantity}</td>
+      <td>₱${Number(item.price).toFixed(2)}</td>
+      <td>₱${(item.quantity * item.price).toFixed(2)}</td>
+      </tr>
+      `).join("")}
 
-        <div class="footer">
-          Generated from Oscar D’Gr8 Sales Management System
-        </div>
+      </tbody>
+      </table>
+
+      <div class="total">
+      <div>Thank you for your purchase.</div>
+      <div>Grand Total: ₱${Number(selectedSale.total).toFixed(2)}</div>
+      </div>
+
+      <div class="footer">
+      Generated from Oscar D’Gr8 Management System
+      </div>
+
+      </div>
 
       </body>
       </html>
       `);
-
     reportWindow.document.close();
     reportWindow.focus();
     reportWindow.print();
