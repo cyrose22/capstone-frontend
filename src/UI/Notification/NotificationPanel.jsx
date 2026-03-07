@@ -50,23 +50,6 @@ function NotificationPanel({
     };
   }, [open]);
 
-  const refreshNotifications = async () => {
-    if (!user?.id) return;
-
-    try {
-      const res = await axios.get(
-        `https://capstone-backend-kiax.onrender.com/notifications/user/${user.id}`
-      );
-      setNotifications(res.data || []);
-    } catch (err) {
-      console.error("Failed to refresh notifications:", err);
-    }
-  };
-
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
   const markOneAsRead = async (notificationId) => {
     try {
       await axios.put(
@@ -132,10 +115,15 @@ function NotificationPanel({
   );
 
   return (
-    <>
+    <div
+      style={{
+        position: "relative",
+        display: "inline-block",
+      }}
+    >
       <button
         className="icon-btn"
-        onClick={handleOpen}
+        onClick={() => setOpen((prev) => !prev)}
         style={{
           position: "relative",
           animation: notifBounce ? "bounce 1s infinite" : "none",
@@ -153,34 +141,31 @@ function NotificationPanel({
       </button>
 
       {open && (
-        <div
-          onClick={() => setOpen(false)}
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 3000,
-            padding: "16px",
-          }}
-        >
+        <>
           <div
-            onClick={(e) => e.stopPropagation()}
+            onClick={() => setOpen(false)}
             style={{
-              backgroundColor: "#fff",
-              borderRadius: "16px",
-              padding: "1rem",
-              width: "100%",
-              maxWidth: "560px",
-              maxHeight: "85vh",
+              position: "fixed",
+              inset: 0,
+              background: "transparent",
+              zIndex: 2999,
+            }}
+          />
+
+          <div
+            style={{
+              position: "absolute",
+              top: "calc(100% + 12px)",
+              right: 0,
+              width: "min(420px, 92vw)",
+              maxHeight: "70vh",
               overflowY: "auto",
-              position: "relative",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.18)",
+              backgroundColor: "#fff",
+              borderRadius: "18px",
+              padding: "1rem",
+              boxShadow: "0 18px 45px rgba(0,0,0,0.18)",
+              border: "1px solid rgba(17,24,39,0.08)",
+              zIndex: 3000,
             }}
           >
             <button
@@ -351,9 +336,9 @@ function NotificationPanel({
               </div>
             )}
           </div>
-        </div>
+        </>
       )}
-    </>
+    </div>
   );
 }
 
