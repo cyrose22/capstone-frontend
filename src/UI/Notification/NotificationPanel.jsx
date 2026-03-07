@@ -6,6 +6,22 @@ function NotificationPanel({
   setNewStatusChanges,
 }) {
   const [open, setOpen] = useState(false);
+  const getTimeAgo = (dateString) => {
+    if (!dateString) return "Just now";
+
+    const now = new Date();
+    const past = new Date(dateString);
+    const diffMs = now - past;
+
+    const minutes = Math.floor(diffMs / 60000);
+    const hours = Math.floor(diffMs / 3600000);
+    const days = Math.floor(diffMs / 86400000);
+
+    if (minutes < 1) return "Just now";
+    if (minutes < 60) return `${minutes} min${minutes > 1 ? "s" : ""} ago`;
+    if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    return `${days} day${days > 1 ? "s" : ""} ago`;
+  };
 
   // prevent background scroll when open (mobile-friendly)
   useEffect(() => {
@@ -156,6 +172,16 @@ function NotificationPanel({
                             was <strong>Cancelled</strong>.
                           </p>
                         )}
+
+                        <p
+                          style={{
+                            margin: "0.2rem 0 0",
+                            fontSize: "0.82rem",
+                            color: "#888",
+                          }}
+                        >
+                          {getTimeAgo(change.createdAt)}
+                        </p>
                       </div>
                     </div>
                   </div>

@@ -131,8 +131,12 @@ function ConsumerDashboard() {
         const prevStatus = previousStatusesRef.current[sale.id];
         if (prevStatus && prevStatus !== sale.status) {
           setNewStatusChanges((prev) => [
+            {
+              id: sale.id,
+              status: sale.status,
+              createdAt: new Date().toISOString(),
+            },
             ...prev,
-            { id: sale.id, status: sale.status },
           ]);
           setNotifBounce(true);
           setTimeout(() => setNotifBounce(false), 1000);
