@@ -131,21 +131,20 @@ function ConsumerDashboard() {
   };
 
   const addToCart = (product, variant = null) => {
-    if (!user) {
-      navigate("/?redirect=/dashboard/consumer");
-      return;
-    }
+    const resolvedVariantId =
+      variant?.variantId ?? product.variantId ?? null;
 
     setCart((prev) => {
       const existing = prev.find(
         (item) =>
           item.id === product.id &&
-          item.variantId === variant?.variantId
+          item.variantId === resolvedVariantId
       );
 
       if (existing) {
         return prev.map((item) =>
-          item === existing
+          item.id === product.id &&
+          item.variantId === resolvedVariantId
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -156,28 +155,28 @@ function ConsumerDashboard() {
         {
           id: product.id,
           name: product.name,
-          price: variant ? variant.price : product.price,
-          image: product.image,
-          variantId: variant?.variantId || null,
-          variantName: variant?.variantName,
+          price: variant?.price ?? product.price,
+          image: product.image || null,
+          variantId: resolvedVariantId,
+          variantName: variant?.variantName ?? product.variantName ?? null,
+          variantImage: variant?.variantImage ?? product.variantImage ?? null,
           quantity: 1,
         },
       ];
     });
+
+    setToastType("success");
+    setToastMessage("✅ Added to cart");
+    setShowToast(true);
   };
 
   const handleOpenCart = () => {
-    if (!user?.token) {
-      navigate("/?redirect=/dashboard/consumer");
-      return;
-    }
-
     setShowCartModal(true);
   };
 
   const handleOpenPayment = (value) => {
     if (!user?.token) {
-      navigate("/?redirect=/dashboard/consumer");
+      navigate("/login?redirect=/");
       return;
     }
 
@@ -186,7 +185,7 @@ function ConsumerDashboard() {
 
   const handleCheckout = (payload) => {
     if (!user?.token) {
-      navigate("/?redirect=/dashboard/consumer");
+      navigate("/login?redirect=/");
       return;
     }
 
@@ -309,21 +308,50 @@ function ConsumerDashboard() {
 
               {showProfileMenu && (
                 <div className="profile-dropdown">
-                  <button>Change Password</button>
+                  {!user?.token ? (
+                    <>
+                      <button
+                        onClick={() => {
+                          setShowProfileMenu(false);
+                          navigate("/login?redirect=/");
+                        }}
+                      >
+                        Login
+                      </button>
 
-                  <button
-                    className="logout-btn"
-                    onClick={() => {
-                      localStorage.removeItem("user");
-                      navigate("/");
-                    }}
-                  >
-                    Logout
-                  </button>
+                      <button
+                        onClick={() => {
+                          setShowProfileMenu(false);
+                          navigate("/register?redirect=/");
+                        }}
+                      >
+                        Register
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button onClick={() => setActiveTab("profile")}>
+                        My Profile
+                      </button>
+
+                      <button>Change Password</button>
+
+                      <button
+                        className="logout-btn"
+                        onClick={() => {
+                          localStorage.removeItem("user");
+                          setUser(null);
+                          setShowProfileMenu(false);
+                          navigate("/");
+                        }}
+                      >
+                        Logout
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
             </div>
-
           </div>
 
         </div>
