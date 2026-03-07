@@ -39,7 +39,6 @@ function Chatbot() {
     { label: "Products", icon: <ShoppingBag size={14} /> },
     { label: "Order Status", icon: <Truck size={14} /> },
     { label: "Payment", icon: <CreditCard size={14} /> },
-    { label: "Delivery", icon: <Truck size={14} /> },
     { label: "Contact", icon: <Phone size={14} /> },
   ];
 
@@ -47,7 +46,6 @@ function Chatbot() {
     `🤔 I didn't quite understand that.<br/><br/>
      You can ask me about:<br/>
      • 🛍️ Products<br/>
-     • 🚚 Delivery<br/>
      • 💳 Payment methods<br/>
      • 📞 Contact information`;
 
@@ -265,21 +263,23 @@ function Chatbot() {
             ))}
           </div>
           {message.text.footer && (
-            <div
-              style={{
-                marginTop: "12px",
-                textAlign: "center",
-                fontWeight: 700,
-                fontSize: "12px",
-                color: "#4f46e5",
-                cursor: "pointer",
-                background: "#eef2ff",
-                padding: "8px 12px",
-                borderRadius: "999px"
-              }}
-              onClick={() => window.location.href = "/products"}
-            >
-              {message.text.footer}
+            <div style={{ marginTop: "12px", textAlign: "center" }}>
+              <button
+                onClick={() => (window.location.href = "/products")}
+                style={{
+                  border: "none",
+                  background: "linear-gradient(135deg, #6366f1, #7c3aed)",
+                  color: "#fff",
+                  padding: "9px 14px",
+                  borderRadius: "999px",
+                  fontWeight: 700,
+                  fontSize: "12px",
+                  cursor: "pointer",
+                  boxShadow: "0 8px 18px rgba(99,102,241,0.22)",
+                }}
+              >
+                {message.text.footer}
+              </button>
             </div>
           )}
         </div>
@@ -487,7 +487,7 @@ function Chatbot() {
                 fontWeight: 600,
               }}
             >
-              Ask about products, delivery, payments, or contact details.
+              Ask about products, payments, or contact details.
             </div>
 
             <div
