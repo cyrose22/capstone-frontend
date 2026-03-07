@@ -1,4 +1,3 @@
-// AdminDashboard.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './admin-dashboard.css';
@@ -10,24 +9,28 @@ function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [hovered, setHovered] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
-  const navigate = useNavigate();
+
   const [editingUser, setEditingUser] = useState(null);
   const [newPassword, setNewPassword] = useState('');
   const [saving, setSaving] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const [showRegisterModal, setShowRegisterModal] = useState(false);
-  const [newStaff, setNewStaff] = useState({ fullname: '', username: '', password: '' });
+  const [newStaff, setNewStaff] = useState({
+    fullname: '',
+    username: '',
+    password: '',
+  });
   const [registering, setRegistering] = useState(false);
   const [showStaffPassword, setShowStaffPassword] = useState(false);
 
+  const navigate = useNavigate();
 
   const storedUser = localStorage.getItem('user');
   const user = storedUser ? JSON.parse(storedUser) : null;
 
   const loggedInUser = user?.username || '';
   const loggedInRole = user?.role || '';
-  const fullname = user?.fullname || '';
 
   useEffect(() => {
     if (!user?.token) {
@@ -37,85 +40,145 @@ function AdminDashboard() {
     }
   }, [user, navigate]);
 
+  useEffect(() => {
+    if (user?.token && user.role === 'admin') {
+      fetchUsers();
+    }
+  }, [user]);
+
   if (!user?.token || user.role !== 'admin') {
     return null;
   }
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get('https://capstone-backend-kiax.onrender.com/users');
-      setUsers(res.data);
-    } catch {
+      const res = await axios.get(
+        'https://capstone-backend-kiax.onrender.com/users'
+      );
+      setUsers(res.data || []);
+    } catch (err) {
+      console.error('Failed to load users:', err);
       alert('Failed to load users');
     }
   };
 
   const deleteUser = async (id) => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
+
     try {
       setDeletingId(id);
-      await axios.delete(`https://capstone-backend-kiax.onrender.com/users/${id}`);
-      fetchUsers();
-    } catch {
+      await axios.delete(
+        `https://capstone-backend-kiax.onrender.com/users/${id}`
+      );
+      await fetchUsers();
+    } catch (err) {
+      console.error('Delete failed:', err);
       alert('Delete failed');
     } finally {
       setDeletingId(null);
     }
   };
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const toggleUserRole = (user) => {
-    if (user.role === 'user') {
+  const toggleUserRole = async (selectedUser) => {
+    if (selectedUser.role === 'user') {
       alert('Only staff can be promoted or demoted.');
       return;
     }
 
-    if (user.role === 'admin') {
-      // If user is admin, allow demotion only if it's NOT the logged-in admin themselves
-      if (user.username === loggedInUser) {
+    if (selectedUser.role === 'admin') {
+      if (selectedUser.username === loggedInUser) {
         alert('You cannot demote yourself.');
         return;
       }
-      // demote admin to staff
-      axios.put(`https://capstone-backend-kiax.onrender.com/users/${user.id}/role`, { role: 'staff' })
-        .then(() => {
-          alert('Admin demoted to Staff');
-          fetchUsers();
-        })
-        .catch(() => alert('Error updating role'));
+
+      try {
+        await axios.put(
+          `https://capstone-backend-kiax.onrender.com/users/${selectedUser.id}/role`,
+          { role: 'staff' }
+        );
+        alert('Admin demoted to Staff');
+        await fetchUsers();
+      } catch (err) {
+        console.error('Error updating role:', err);
+        alert('Error updating role');
+      }
       return;
     }
 
-    if (user.role === 'staff') {
-      // promote staff to admin
-      axios.put(`https://capstone-backend-kiax.onrender.com/users/${user.id}/role`, { role: 'admin' })
-        .then(() => {
-          alert('Staff promoted to Admin');
-          fetchUsers();
-        })
-        .catch(() => alert('Error updating role'));
-      return;
+    if (selectedUser.role === 'staff') {
+      try {
+        await axios.put(
+          `https://capstone-backend-kiax.onrender.com/users/${selectedUser.id}/role`,
+          { role: 'admin' }
+        );
+        alert('Staff promoted to Admin');
+        await fetchUsers();
+      } catch (err) {
+        console.error('Error updating role:', err);
+        alert('Error updating role');
+      }
     }
   };
 
+  const handleSavePassword = async () => {
+    if (!editingUser) return;
+
+    if (!newPassword || newPassword.trim().length < 6) {
+      alert('Password must be at least 6 characters.');
+      return;
+    }
+
+    try {
+      setSaving(true);
+
+      await axios.put(
+        `https://capstone-backend-kiax.onrender.com/users/${editingUser.id}/password`,
+        { password: newPassword }
+      );
+
+      alert('Password updated successfully!');
+      setEditingUser(null);
+      setNewPassword('');
+      setShowPassword(false);
+    } catch (err) {
+      console.error('Failed to update password:', err);
+      alert('Failed to update password');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleStaffRegister = async () => {
+    if (
+      !newStaff.fullname.trim() ||
+      !newStaff.username.trim() ||
+      !newStaff.password.trim()
+    ) {
+      alert('Please complete all fields.');
+      return;
+    }
+
+    if (newStaff.password.trim().length < 6) {
+      alert('Password must be at least 6 characters.');
+      return;
+    }
+
     try {
       setRegistering(true);
+
       await axios.post('https://capstone-backend-kiax.onrender.com/register', {
         fullname: newStaff.fullname,
         username: newStaff.username,
         password: newStaff.password,
         role: 'staff',
-        contact: null
+        contact: null,
       });
+
       alert('Staff registered successfully!');
       setNewStaff({ fullname: '', username: '', password: '' });
-      fetchUsers();
-      setShowRegisterModal(false);  // <-- Close the modal here
+      setShowRegisterModal(false);
+      setShowStaffPassword(false);
+      await fetchUsers();
     } catch (err) {
       console.error('Error registering staff:', err);
       alert('Failed to register staff');
@@ -124,100 +187,113 @@ function AdminDashboard() {
     }
   };
 
-  const renderUserCard = (user) => {
-    const isSelf = user.username === loggedInUser;
+  const renderUserCard = (listedUser) => {
+    const isSelf = listedUser.username === loggedInUser;
 
     const canEditPassword =
       loggedInRole === 'admin' ||
-      (loggedInRole === 'staff' && (user.role === 'user' || isSelf))
-    // const canEditPassword = loggedInRole === 'user' && isSelf;
-      
+      (loggedInRole === 'staff' &&
+        (listedUser.role === 'user' || isSelf));
+
     return (
       <>
         <div className="user-header">
-          <h3>{user.fullname}</h3>
-          <span className={`role-badge ${user.role || 'null'}`}>{user.role || 'pending'}</span>
+          <h3>{listedUser.fullname}</h3>
+          <span className={`role-badge ${listedUser.role || 'null'}`}>
+            {listedUser.role || 'pending'}
+          </span>
         </div>
-        <p><strong>Username:</strong> {user.username}</p>
+
+        <p>
+          <strong>Username:</strong> {listedUser.username}
+        </p>
 
         <div className="user-actions">
           {canEditPassword && (
             <div
               className="button-with-toast"
-              onMouseEnter={() => setHovered(`edit-${user.id}`)}
+              onMouseEnter={() => setHovered(`edit-${listedUser.id}`)}
               onMouseLeave={() => setHovered(null)}
             >
-              <button onClick={() => setEditingUser(user)} className="edit-user">
+              <button
+                onClick={() => {
+                  setEditingUser(listedUser);
+                  setNewPassword('');
+                  setShowPassword(false);
+                }}
+                className="edit-user"
+                type="button"
+              >
                 <FaEdit />
               </button>
-              {hovered === `edit-${user.id}` && <span className="toast">Change Password</span>}
+              {hovered === `edit-${listedUser.id}` && (
+                <span className="toast">Change Password</span>
+              )}
             </div>
           )}
 
-          {/* Admin-only actions like delete, promote/demote, but exclude self */}
           {loggedInRole === 'admin' && !isSelf && (
             <>
-              {/* Promote button for staff only */}
-              {user.role === 'staff' && (
+              {listedUser.role === 'staff' && (
                 <div
                   className="button-with-toast"
-                  onMouseEnter={() => setHovered(`toggle-${user.id}`)}
+                  onMouseEnter={() => setHovered(`toggle-${listedUser.id}`)}
                   onMouseLeave={() => setHovered(null)}
                 >
-                  <button className="toggle-role" onClick={() => toggleUserRole(user)}>
+                  <button
+                    className="toggle-role"
+                    onClick={() => toggleUserRole(listedUser)}
+                    type="button"
+                  >
                     Make Admin
                   </button>
-                  {hovered === `toggle-${user.id}` && <span className="toast">Make Admin</span>}
+                  {hovered === `toggle-${listedUser.id}` && (
+                    <span className="toast">Make Admin</span>
+                  )}
                 </div>
               )}
 
-              {/* Demote button for admins except self */}
-              {user.role === 'admin' && user.username !== loggedInUser && (
-                <div
-                  className="button-with-toast"
-                  onMouseEnter={() => setHovered(`toggle-${user.id}`)}
-                  onMouseLeave={() => setHovered(null)}
-                >
-                  <button className="toggle-role" onClick={() => toggleUserRole(user)}>
-                    Demote to Staff
-                  </button>
-                  {hovered === `toggle-${user.id}` && <span className="toast">Remove as Admin</span>}
-                </div>
-              )}
+              {listedUser.role === 'admin' &&
+                listedUser.username !== loggedInUser && (
+                  <div
+                    className="button-with-toast"
+                    onMouseEnter={() => setHovered(`toggle-${listedUser.id}`)}
+                    onMouseLeave={() => setHovered(null)}
+                  >
+                    <button
+                      className="toggle-role"
+                      onClick={() => toggleUserRole(listedUser)}
+                      type="button"
+                    >
+                      Demote to Staff
+                    </button>
+                    {hovered === `toggle-${listedUser.id}` && (
+                      <span className="toast">Remove as Admin</span>
+                    )}
+                  </div>
+                )}
 
-              {/* Delete button for staff */}
-              {user.role === 'staff' && (
+              {(listedUser.role === 'staff' || listedUser.role === 'user') && (
                 <div
                   className="button-with-toast"
-                  onMouseEnter={() => setHovered(`delete-${user.id}`)}
+                  onMouseEnter={() => setHovered(`delete-${listedUser.id}`)}
                   onMouseLeave={() => setHovered(null)}
                 >
                   <button
                     className="delete-user"
-                    onClick={() => deleteUser(user.id)}
-                    disabled={deletingId === user.id}
+                    onClick={() => deleteUser(listedUser.id)}
+                    disabled={deletingId === listedUser.id}
+                    type="button"
                   >
                     <FaTrash />
                   </button>
-                  {hovered === `delete-${user.id}` && <span className="toast">Delete Staff</span>}
-                </div>
-              )}
-
-              {/* Delete button for users */}
-              {user.role === 'user' && (
-                <div
-                  className="button-with-toast"
-                  onMouseEnter={() => setHovered(`delete-${user.id}`)}
-                  onMouseLeave={() => setHovered(null)}
-                >
-                  <button
-                    className="delete-user"
-                    onClick={() => deleteUser(user.id)}
-                    disabled={deletingId === user.id}
-                  >
-                    <FaTrash />
-                  </button>
-                  {hovered === `delete-${user.id}` && <span className="toast">Delete User</span>}
+                  {hovered === `delete-${listedUser.id}` && (
+                    <span className="toast">
+                      {listedUser.role === 'staff'
+                        ? 'Delete Staff'
+                        : 'Delete User'}
+                    </span>
+                  )}
                 </div>
               )}
             </>
@@ -227,14 +303,23 @@ function AdminDashboard() {
     );
   };
 
+  const adminUsers = users.filter((listedUser) => listedUser.role === 'admin');
+  const staffUsers = users.filter((listedUser) => listedUser.role === 'staff');
+  const consumerUsers = users.filter(
+    (listedUser) => listedUser.role === 'user'
+  );
+
   return (
     <div className="admin-dashboard">
       <Header title="🧑‍💼 Admin Dashboard" />
 
       {loggedInRole === 'admin' && (
         <div className="register-staff-container">
-          <br/>
-          <button className="register-staff-btn" onClick={() => setShowRegisterModal(true)}>
+          <button
+            className="register-staff-btn"
+            onClick={() => setShowRegisterModal(true)}
+            type="button"
+          >
             <FaUserPlus /> Register New Staff
           </button>
         </div>
@@ -244,12 +329,10 @@ function AdminDashboard() {
         <>
           <h2>🛡️ Admins</h2>
           <div className="user-card-grid">
-            {users
-              .filter(user => user.role === 'admin')
-              .map((user) => (
-                <div key={user.id} className="user-card">
-                  {renderUserCard(user)}
-                </div>
+            {adminUsers.map((listedUser) => (
+              <div key={listedUser.id} className="user-card">
+                {renderUserCard(listedUser)}
+              </div>
             ))}
           </div>
         </>
@@ -257,124 +340,192 @@ function AdminDashboard() {
 
       <h2>👨‍💼 Staff</h2>
       <div className="user-card-grid">
-        {users
-          .filter(user => user.role === 'staff')
-          .map((user) => (
-            <div key={user.id} className="user-card">
-              {renderUserCard(user)}
-            </div>
-        ))}
-      </div>
-
-      <h2>👤 Customer</h2>
-      <div className="user-card-grid">
-        {users.filter(user => user.role === 'user').map((user) => (
-          <div key={user.id} className="user-card">
-            {renderUserCard(user)}
+        {staffUsers.map((listedUser) => (
+          <div key={listedUser.id} className="user-card">
+            {renderUserCard(listedUser)}
           </div>
         ))}
       </div>
 
-      {/* Password Modal */}
+      <h2>👥 Consumers</h2>
+      <div className="user-card-grid">
+        {consumerUsers.map((listedUser) => (
+          <div key={listedUser.id} className="user-card">
+            {renderUserCard(listedUser)}
+          </div>
+        ))}
+      </div>
+
       {editingUser && (
-        <div className="modal-overlay" onClick={() => setEditingUser(null)}>
-          <div className="modal-content animated-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setEditingUser(null)}>&times;</button>
+        <div
+          className="modal-overlay"
+          onClick={() => {
+            setEditingUser(null);
+            setNewPassword('');
+            setShowPassword(false);
+          }}
+        >
+          <div
+            className="modal-content animated-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="modal-close"
+              type="button"
+              onClick={() => {
+                setEditingUser(null);
+                setNewPassword('');
+                setShowPassword(false);
+              }}
+            >
+              ×
+            </button>
+
             <div className="modal-header">
-              <h2>🔐 Update Password</h2>
-              <p>Updating password for <strong>{editingUser.fullname}</strong></p>
+              <h2>Change Password</h2>
+              <p>Update password for {editingUser.fullname}</p>
             </div>
+
             <input
               type={showPassword ? 'text' : 'password'}
+              className="modal-input styled-input"
               placeholder="Enter new password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="modal-input styled-input"
             />
+
             <div className="show-password-toggle">
               <input
-                type="checkbox"
                 id="showPassword"
+                type="checkbox"
                 checked={showPassword}
                 onChange={() => setShowPassword((prev) => !prev)}
               />
               <label htmlFor="showPassword">Show Password</label>
             </div>
+
             <div className="modal-actions">
-              <button className="cancel-btn" onClick={() => setEditingUser(null)}>❌ Cancel</button>
+              <button
+                className="cancel-btn"
+                type="button"
+                onClick={() => {
+                  setEditingUser(null);
+                  setNewPassword('');
+                  setShowPassword(false);
+                }}
+              >
+                Cancel
+              </button>
+
               <button
                 className="save-btn"
-                onClick={async () => {
-                  if (!newPassword.trim()) return alert("Password can't be empty");
-                  try {
-                    setSaving(true);
-                    await axios.put(`https://capstone-backend-kiax.onrender.com/users/${editingUser.id}/password`, {
-                      password: newPassword,
-                    });
-                    alert('Password updated!');
-                    setEditingUser(null);
-                    setNewPassword('');
-                  } catch {
-                    alert('Failed to update password.');
-                  } finally {
-                    setSaving(false);
-                  }
-                }}
+                type="button"
+                onClick={handleSavePassword}
                 disabled={saving}
               >
-                {saving ? 'Saving...' : '💾 Save'}
+                {saving ? 'Saving...' : 'Save Password'}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Register Staff Modal */}
       {showRegisterModal && (
-        <div className="modal-overlay" onClick={() => setShowRegisterModal(false)}>
-          <div className="modal-content animated-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowRegisterModal(false)}>&times;</button>
+        <div
+          className="modal-overlay"
+          onClick={() => {
+            setShowRegisterModal(false);
+            setShowStaffPassword(false);
+          }}
+        >
+          <div
+            className="modal-content animated-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="modal-close"
+              type="button"
+              onClick={() => {
+                setShowRegisterModal(false);
+                setShowStaffPassword(false);
+              }}
+            >
+              ×
+            </button>
+
             <div className="modal-header">
-              <h2>🆕 New Staff</h2>
+              <h2>Register New Staff</h2>
+              <p>Create a new staff account.</p>
             </div>
+
             <input
               type="text"
-              placeholder="Full Name"
+              className="modal-input styled-input"
+              placeholder="Full name"
               value={newStaff.fullname}
-              onChange={(e) => setNewStaff({ ...newStaff, fullname: e.target.value })}
-              className="modal-input styled-input"
+              onChange={(e) =>
+                setNewStaff((prev) => ({
+                  ...prev,
+                  fullname: e.target.value,
+                }))
+              }
             />
+
             <input
-              type="text"
-              placeholder="Username"
+              type="email"
+              className="modal-input styled-input"
+              placeholder="Email / Username"
               value={newStaff.username}
-              onChange={(e) => setNewStaff({ ...newStaff, username: e.target.value })}
-              className="modal-input styled-input"
+              onChange={(e) =>
+                setNewStaff((prev) => ({
+                  ...prev,
+                  username: e.target.value,
+                }))
+              }
             />
+
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showStaffPassword ? 'text' : 'password'}
+              className="modal-input styled-input"
               placeholder="Password"
               value={newStaff.password}
-              onChange={(e) => setNewStaff({ ...newStaff, password: e.target.value })}
-              className="modal-input styled-input"
+              onChange={(e) =>
+                setNewStaff((prev) => ({
+                  ...prev,
+                  password: e.target.value,
+                }))
+              }
             />
+
             <div className="show-password-toggle">
               <input
+                id="showStaffPassword"
                 type="checkbox"
-                id="showPassword"
-                checked={showPassword}
-                onChange={() => setShowPassword((prev) => !prev)}
+                checked={showStaffPassword}
+                onChange={() => setShowStaffPassword((prev) => !prev)}
               />
-              <label htmlFor="showPassword">Show Password</label>
+              <label htmlFor="showStaffPassword">Show Password</label>
             </div>
+
             <div className="modal-actions">
-              <button className="cancel-btn" onClick={() => setShowRegisterModal(false)}>❌ Cancel</button>
+              <button
+                className="cancel-btn"
+                type="button"
+                onClick={() => {
+                  setShowRegisterModal(false);
+                  setShowStaffPassword(false);
+                }}
+              >
+                Cancel
+              </button>
+
               <button
                 className="save-btn"
+                type="button"
                 onClick={handleStaffRegister}
                 disabled={registering}
               >
-                {registering ? 'Registering...' : '✅ Register'}
+                {registering ? 'Registering...' : 'Register Staff'}
               </button>
             </div>
           </div>
