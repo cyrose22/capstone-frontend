@@ -475,16 +475,12 @@ function ProfileTab({ user, setUser }) {
               />
             </div>
 
-            <label
-              htmlFor="showPassword"
+            <div
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: "10px",
                 marginBottom: "22px",
-                fontSize: "0.92rem",
-                color: "#374151",
-                cursor: "pointer",
               }}
             >
               <input
@@ -492,9 +488,29 @@ function ProfileTab({ user, setUser }) {
                 id="showPassword"
                 checked={showPassword}
                 onChange={() => setShowPassword((prev) => !prev)}
+                style={{
+                  width: "18px",
+                  height: "18px",
+                  margin: 0,
+                  cursor: "pointer",
+                  accentColor: "#22c55e",
+                  flexShrink: 0,
+                }}
               />
-              Show password
-            </label>
+
+              <label
+                htmlFor="showPassword"
+                style={{
+                  fontSize: "0.92rem",
+                  color: "#374151",
+                  cursor: "pointer",
+                  userSelect: "none",
+                  lineHeight: 1.2,
+                }}
+              >
+                Show password
+              </label>
+            </div>
 
             <div
               style={{
@@ -521,18 +537,19 @@ function ProfileTab({ user, setUser }) {
 
               <button
                 onClick={handlePasswordSave}
-                disabled={savingPassword}
+                disabled={savingPassword || !newPassword.trim()}
                 style={{
                   padding: "12px 18px",
                   borderRadius: "14px",
                   border: "none",
-                  background: savingPassword
+                  background: savingPassword || !newPassword.trim()
                     ? "#d1d5db"
                     : "linear-gradient(135deg, #16a34a, #22c55e)",
                   color: "#fff",
                   fontWeight: "800",
-                  cursor: savingPassword ? "not-allowed" : "pointer",
-                  boxShadow: savingPassword
+                  cursor: savingPassword || !newPassword.trim() ? "not-allowed" : "pointer",
+                  opacity: savingPassword || !newPassword.trim() ? 0.7 : 1,
+                  boxShadow: savingPassword || !newPassword.trim()
                     ? "none"
                     : "0 12px 24px rgba(34, 197, 94, 0.22)",
                 }}
