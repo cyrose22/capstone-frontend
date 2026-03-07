@@ -378,11 +378,11 @@ function ConsumerDashboard() {
 
         <div className="hero-right">
           <div className="hero-card">
-            <h3>Free Delivery</h3>
-            <p>Orders over ₱1500</p>
+            <h3>Trusted Pet Supplies</h3>
+            <p>Quality food, treats & accessories</p>
 
             <div className="hero-mini">
-              <span>🕒 8AM–6PM</span>
+              <span>🕒 Open 8AM – 7PM</span>
               <span>📍 Local Store</span>
             </div>
           </div>
