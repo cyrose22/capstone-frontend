@@ -130,6 +130,16 @@ function ConsumerDashboard() {
     }
   };
 
+  const showToastMessage = (message, type = "info") => {
+    setToastMessage(message);
+    setToastType(type);
+    setShowToast(true);
+
+    setTimeout(() => {
+      setShowToast(false);
+    }, 2000);
+  };
+
   const addToCart = (product, variant = null) => {
     const resolvedVariantId =
       variant?.variantId ?? product.variantId ?? null;
@@ -165,9 +175,7 @@ function ConsumerDashboard() {
       ];
     });
 
-    setToastType("success");
-    setToastMessage("✅ Added to cart");
-    setShowToast(true);
+    showToastMessage("✅ Added to cart", "success");
   };
 
   const handleOpenCart = () => {
