@@ -467,14 +467,14 @@ function AdminDashboard() {
       {showRegisterModal && (
         <div className="modal-overlay" onClick={closeRegisterModal}>
           <div
-            className="modal-content animated-modal"
+            className="modal-content register-modal animated-modal"
             onClick={(e) => e.stopPropagation()}
           >
             <button className="modal-close" type="button" onClick={closeRegisterModal}>
               ×
             </button>
 
-            <div className="modal-header">
+            <div className="modal-header compact">
               <div className="modal-chip">👨‍💼 Staff Access</div>
               <h2>Register New Staff</h2>
               <p>
@@ -514,7 +514,7 @@ function AdminDashboard() {
                 }
               />
 
-              <div className="checkbox-row">
+              <div className="checkbox-row register-checkbox">
                 <input
                   type="checkbox"
                   id="showStaffPassword"
@@ -525,7 +525,7 @@ function AdminDashboard() {
               </div>
             </div>
 
-            <div className="modal-actions">
+            <div className="modal-actions register-actions">
               <button className="cancel-btn" type="button" onClick={closeRegisterModal}>
                 Cancel
               </button>
