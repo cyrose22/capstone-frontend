@@ -848,3 +848,37 @@
     text-align: left;
   }
 }
+
+.sd__invoiceBrand{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.sd__invoiceLogo{
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  padding: 6px;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+}
+
+.sd__brandHeader{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.sd__brandLogo{
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  padding: 6px;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+}

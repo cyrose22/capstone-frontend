@@ -3,6 +3,7 @@ import axios from 'axios';
 import './sales.css';
 import Header from '../Header/Header';
 import { useLocation } from 'react-router-dom';
+import logo from "../../assets/logo.png";
 
 function SalesDashboard() {
   const [sales, setSales] = useState([]);
@@ -115,6 +116,8 @@ function SalesDashboard() {
 
   const handlePrint = () => {
     const receiptContent = document.getElementById('receipt-content');
+    const logoUrl = logo;
+
     if (!receiptContent) return;
 
     const style = `
@@ -360,43 +363,132 @@ function SalesDashboard() {
     const reportWindow = window.open('', '_blank');
     reportWindow.document.write(`
       <html>
-        <head>
-          <title>Sales Report</title>
-          ${style}
-        </head>
-        <body>
-          <h1>Oscar D’Gr8 Sales Report</h1>
-          <div class="meta"><strong>Filter:</strong> ${filterLabel}</div>
-          <div class="meta"><strong>Generated on:</strong> ${new Date().toLocaleString()}</div>
+      <head>
+        <title>Sales Report</title>
+        ${style}
+        <style>
+          .report-header{
+            display:flex;
+            align-items:center;
+            gap:16px;
+            margin-bottom:20px;
+            border-bottom:2px solid #e5e7eb;
+            padding-bottom:12px;
+          }
 
-          <table>
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Customer</th>
-                <th>Date</th>
-                <th>Items</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${
-                rows ||
-                '<tr><td colspan="5">No completed sales found for this filter.</td></tr>'
-              }
-            </tbody>
-          </table>
+          .report-logo{
+            width:60px;
+            height:60px;
+            object-fit:contain;
+            border-radius:10px;
+            border:1px solid #e5e7eb;
+            padding:6px;
+          }
 
-          <div class="summary">
-            📊 Total Sales: ₱${filteredTotalSalesAmount.toLocaleString('en-PH', {
-              minimumFractionDigits: 2,
-            })}<br/>
-            🛍️ Total Items Sold: ${filteredTotalItemsSold}<br/>
-            📦 Items Left in Stock: ${totalItemsLeft}
+          .report-title{
+            font-size:22px;
+            font-weight:900;
+            margin:0;
+            color:#111827;
+          }
+
+          .report-sub{
+            margin:4px 0 0;
+            color:#64748b;
+            font-size:13px;
+          }
+
+          .meta{
+            margin-top:6px;
+            font-size:13px;
+            color:#374151;
+          }
+
+          table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:18px;
+          }
+
+          th{
+            background:#f8fafc;
+            text-align:left;
+            font-weight:800;
+          }
+
+          th, td{
+            padding:10px 8px;
+            border:1px solid #e5e7eb;
+            font-size:13px;
+          }
+
+          .summary{
+            margin-top:20px;
+            padding:12px;
+            border-radius:10px;
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+            font-size:14px;
+            font-weight:700;
+            line-height:1.7;
+          }
+
+          .footer{
+            margin-top:30px;
+            text-align:center;
+            font-size:12px;
+            color:#6b7280;
+          }
+        </style>
+      </head>
+
+      <body>
+
+        <div class="report-header">
+          <img src="${logoUrl}" class="report-logo" />
+
+          <div>
+            <h1 class="report-title">Oscar D’Gr8 Sales Report</h1>
+            <p class="report-sub">Pet supplies and essentials</p>
+            <div class="meta"><strong>Filter:</strong> ${filterLabel}</div>
+            <div class="meta"><strong>Generated on:</strong> ${new Date().toLocaleString()}</div>
           </div>
-        </body>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Date</th>
+              <th>Items</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${
+              rows ||
+              '<tr><td colspan="5" style="text-align:center;">No completed sales found for this filter.</td></tr>'
+            }
+          </tbody>
+        </table>
+
+        <div class="summary">
+          📊 Total Sales: ₱${filteredTotalSalesAmount.toLocaleString('en-PH', {
+            minimumFractionDigits: 2,
+          })}<br/>
+          🛍️ Total Items Sold: ${filteredTotalItemsSold}<br/>
+          📦 Items Left in Stock: ${totalItemsLeft}
+        </div>
+
+        <div class="footer">
+          Generated from Oscar D’Gr8 Sales Management System
+        </div>
+
+      </body>
       </html>
-    `);
+      `);
 
     reportWindow.document.close();
     reportWindow.focus();
@@ -409,11 +501,14 @@ function SalesDashboard() {
 
       <div className="sd__container">
         <div className="sd__topbar">
-          <div className="sd__topbarLeft">
-            <h2 className="sd__title">Sales Overview</h2>
-            <p className="sd__subtitle">
-              Monitor orders, update statuses, and print receipts.
-            </p>
+          <div className="sd__topbarLeft sd__brandHeader">
+            <img src={logo} alt="Oscar D’Gr8 Logo" className="sd__brandLogo" />
+            <div>
+              <h2 className="sd__title">Sales Overview</h2>
+              <p className="sd__subtitle">
+                Monitor orders, update statuses, and print receipts.
+              </p>
+            </div>
           </div>
 
           <div className="sd__topbarRight">
@@ -767,11 +862,13 @@ function SalesDashboard() {
 
               <div id="receipt-content" className="sd__invoiceCard">
                 <div className="sd__invoiceHeader">
-                  <div>
-                    <h2>Oscar D’Gr8</h2>
-                    <p>Pet supplies and essentials</p>
+                  <div className="sd__invoiceBrand">
+                    <img src={logo} alt="Oscar D’Gr8 Logo" className="sd__invoiceLogo" />
+                    <div>
+                      <h2>Oscar D’Gr8</h2>
+                      <p>Pet supplies and essentials</p>
+                    </div>
                   </div>
-
                   <div className="sd__invoiceMeta">
                     <div>
                       <span>Receipt No.</span>
