@@ -115,10 +115,6 @@ function ConsumerDashboard() {
     return () => clearInterval(interval);
   }, [user]);
 
-  useEffect(() => {
-    if (user?.id) fetchSales();
-  }, [user]);
-
   const fetchProducts = async () => {
     try {
       const res = await axios.get(
@@ -141,7 +137,12 @@ function ConsumerDashboard() {
       updatedSales.forEach((sale) => {
         const prevStatus = previousStatusesRef.current[sale.id];
 
-        if (prevStatus && prevStatus !== sale.status) {
+        if (prevStatus === undefined) {
+          previousStatusesRef.current[sale.id] = sale.status;
+          return;
+        }
+
+        if (prevStatus !== sale.status) {
           setNewStatusChanges((prev) => [
             {
               id: sale.id,
