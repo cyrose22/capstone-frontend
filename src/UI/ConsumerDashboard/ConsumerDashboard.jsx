@@ -453,7 +453,7 @@ function ConsumerDashboard() {
 
             <div className="hero-mini">
               <span>🕒 Open 8AM – 7PM</span>
-              <span>📍 Local Store</span>
+              <span>📍 Liloan, Cebu</span>
             </div>
           </div>
         </div>
