@@ -55,6 +55,7 @@ function ConsumerDashboard() {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const productsRef = useRef(null);
+  const [cartBounce, setCartBounce] = useState(false);
 
   const goToProducts = () => {
     setActiveTab("shop");
@@ -174,6 +175,9 @@ function ConsumerDashboard() {
         },
       ];
     });
+
+    setCartBounce(true);
+    setTimeout(() => setCartBounce(false), 350);
 
     showToastMessage("✅ Added to cart", "success");
   };
