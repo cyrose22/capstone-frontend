@@ -943,40 +943,24 @@ html, body {
   }
 
   .store-hero {
-    padding: 20px 14px;
+    padding: 18px 14px;
+    text-align: center;
   }
 
   .store-hero-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 22px;
+    grid-template-columns: 1fr;
     text-align: center;
-    max-width: 100%;
-  }
-
-  .hero-left,
-  .hero-right {
-    width: 100%;
-    max-width: 100%;
-    text-align: center;
+    gap: 20px;
   }
 
   .hero-left {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    text-align: center;
   }
 
-  .hero-logo {
-    width: 150px;
-    margin: 0 auto 10px;
-  }
-
-  .hero-subtitle {
-    margin: 0 auto;
-    max-width: 300px;
+  .hero-right {
+    width: 100%;
+    justify-content: center;
+    margin-top: 20px;
   }
 
   .hero-features {
@@ -984,30 +968,19 @@ html, body {
   }
 
   .hero-buttons {
-    width: 100%;
     display: flex;
-    justify-content: center;
-    align-items: center;
     gap: 10px;
     flex-wrap: wrap;
-    margin: 18px auto 0;
-  }
-
-  .hero-buttons .btn,
-  .hero-buttons button {
-    min-width: 120px;
-  }
-
-  .hero-right {
-    display: flex;
     justify-content: center;
-    margin-top: 0;
   }
 
   .hero-card {
     width: 100%;
-    max-width: 320px;
-    margin: 0 auto;
+    max-width: 360px;
+  }
+
+  .hero-logo {
+    width: 220px;
   }
 
   .category-grid {
@@ -1456,80 +1429,5 @@ html, body {
   .order-item-image {
     width: 64px;
     height: 64px;
-  }
-}
-
-@media (max-width: 768px) {
-  .store-hero {
-    padding: 20px 14px;
-  }
-
-  .store-hero-inner {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 22px;
-    text-align: center;
-    max-width: 100%;
-  }
-
-  .hero-left,
-  .hero-right {
-    width: 100%;
-    max-width: 100%;
-    text-align: center;
-  }
-
-  .hero-left {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .hero-logo {
-    width: 150px !important;
-    margin: 0 auto 10px;
-  }
-
-  .hero-subtitle {
-    margin: 0 auto;
-    max-width: 320px;
-  }
-
-  .hero-features {
-    justify-content: center;
-  }
-
-  .hero-buttons {
-    width: 100%;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin: 18px auto 0;
-  }
-
-  .hero-buttons .btn,
-  .hero-buttons button {
-    min-width: 120px;
-    flex: 0 0 auto;
-  }
-
-  .hero-right {
-    display: flex;
-    justify-content: center;
-    margin-top: 0;
-  }
-
-  .hero-card {
-    width: 100%;
-    max-width: 320px;
-    margin: 0 auto;
-  }
-
-  .shop-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 }
