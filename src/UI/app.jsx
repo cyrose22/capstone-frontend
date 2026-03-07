@@ -55,7 +55,7 @@ function ProtectedRoute({ children }) {
   if (!user?.token) {
     return (
       <Navigate
-        to={`/?redirect=${encodeURIComponent(location.pathname)}`}
+        to={`/login?redirect=${encodeURIComponent(location.pathname)}`}
         replace
       />
     );
@@ -74,7 +74,7 @@ function AppWrapper() {
   const user = storedUser ? JSON.parse(storedUser) : null;
 
   const hideChatBot =
-    location.pathname === '/' ||
+    location.pathname === '/login' ||
     location.pathname === '/register' ||
     !user?.token;
 
@@ -82,7 +82,8 @@ function AppWrapper() {
     <>
       <Routes>
         {/* Public routes */}
-        <Route path="/" element={<LoginForm />} />
+        <Route path="/" element={<ConsumerDashboard />} />
+        <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<Registration />} />
 
         {/* Protected routes */}
@@ -97,6 +98,8 @@ function AppWrapper() {
           <Route path="admin" element={<AdminDashboard />} />
           <Route path="sales" element={<SalesDashboard />} />
           <Route path="products" element={<ProductDashboard />} />
+
+          {/* optional, keep this if you still want the old route */}
           <Route path="consumer" element={<ConsumerDashboard />} />
         </Route>
 
