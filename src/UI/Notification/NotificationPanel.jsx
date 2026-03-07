@@ -1,11 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
 
 function NotificationPanel({
   notifBounce,
-  newStatusChanges,
-  setNewStatusChanges,
+  notifications,
+  setNotifications,
+  user,
 }) {
   const [open, setOpen] = useState(false);
+
+  const unreadCount = useMemo(
+    () => (notifications || []).filter((item) => !item.is_read).length,
+    [notifications]
+  );
+
   const getTimeAgo = (dateString) => {
     if (!dateString) return "Just now";
 
@@ -23,37 +31,127 @@ function NotificationPanel({
     return `${days} day${days > 1 ? "s" : ""} ago`;
   };
 
-  // prevent background scroll when open (mobile-friendly)
+  const getStatusIcon = (status) => {
+    const value = (status || "").toLowerCase();
+
+    if (value === "processing") return "⏳";
+    if (value === "to receive") return "📦";
+    if (value === "completed") return "✅";
+    if (value === "cancelled") return "❌";
+    return "🔔";
+  };
+
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => (document.body.style.overflow = prev);
+    return () => {
+      document.body.style.overflow = prev;
+    };
   }, [open]);
+
+  const refreshNotifications = async () => {
+    if (!user?.id) return;
+
+    try {
+      const res = await axios.get(
+        `https://capstone-backend-kiax.onrender.com/notifications/user/${user.id}`
+      );
+      setNotifications(res.data || []);
+    } catch (err) {
+      console.error("Failed to refresh notifications:", err);
+    }
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const markOneAsRead = async (notificationId) => {
+    try {
+      await axios.put(
+        `https://capstone-backend-kiax.onrender.com/notifications/${notificationId}/read`
+      );
+
+      setNotifications((prev) =>
+        prev.map((item) =>
+          item.id === notificationId ? { ...item, is_read: true } : item
+        )
+      );
+    } catch (err) {
+      console.error("Failed to mark notification as read:", err);
+    }
+  };
+
+  const markAllAsRead = async () => {
+    if (!user?.id) return;
+
+    try {
+      await axios.put(
+        `https://capstone-backend-kiax.onrender.com/notifications/user/${user.id}/read-all`
+      );
+
+      setNotifications((prev) =>
+        prev.map((item) => ({ ...item, is_read: true }))
+      );
+    } catch (err) {
+      console.error("Failed to mark all notifications as read:", err);
+    }
+  };
+
+  const deleteOne = async (notificationId) => {
+    try {
+      await axios.delete(
+        `https://capstone-backend-kiax.onrender.com/notifications/${notificationId}`
+      );
+
+      setNotifications((prev) =>
+        prev.filter((item) => item.id !== notificationId)
+      );
+    } catch (err) {
+      console.error("Failed to delete notification:", err);
+    }
+  };
+
+  const deleteAll = async () => {
+    if (!user?.id) return;
+
+    try {
+      await axios.delete(
+        `https://capstone-backend-kiax.onrender.com/notifications/user/${user.id}/clear`
+      );
+
+      setNotifications([]);
+    } catch (err) {
+      console.error("Failed to clear notifications:", err);
+    }
+  };
+
+  const sortedNotifications = [...(notifications || [])].sort(
+    (a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)
+  );
 
   return (
     <>
-      {/* 🔔 Bell Icon (same as before) */}
       <button
         className="icon-btn"
-        onClick={() => setOpen(true)}
+        onClick={handleOpen}
         style={{
           position: "relative",
           animation: notifBounce ? "bounce 1s infinite" : "none",
         }}
       >
         🔔
-        {newStatusChanges.length > 0 && (
+        {unreadCount > 0 && (
           <span
             className="icon-badge"
             style={{ top: "-6px", right: "-6px" }}
           >
-            {newStatusChanges.length}
+            {unreadCount}
           </span>
         )}
       </button>
 
-      {/* ✅ MODAL (same style as cart) */}
       {open && (
         <div
           onClick={() => setOpen(false)}
@@ -75,103 +173,167 @@ function NotificationPanel({
             onClick={(e) => e.stopPropagation()}
             style={{
               backgroundColor: "#fff",
-              borderRadius: "12px",
+              borderRadius: "16px",
               padding: "1rem",
               width: "100%",
-              maxWidth: "520px",
+              maxWidth: "560px",
               maxHeight: "85vh",
               overflowY: "auto",
               position: "relative",
-              boxShadow: "0 6px 14px rgba(0,0,0,0.15)",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.18)",
             }}
           >
-            {/* Close */}
-            <span
+            <button
+              onClick={() => setOpen(false)}
               style={{
                 position: "absolute",
                 top: "0.75rem",
                 right: "1rem",
+                border: "none",
+                background: "transparent",
                 fontSize: "1.5rem",
                 fontWeight: "bold",
                 cursor: "pointer",
                 color: "#555",
               }}
-              onClick={() => setOpen(false)}
             >
               ×
-            </span>
+            </button>
 
-            <h3 style={{ marginBottom: "1rem" }}>
-              🔔 Notifications ({newStatusChanges.length})
-            </h3>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "12px",
+                paddingRight: "28px",
+                marginBottom: "1rem",
+                flexWrap: "wrap",
+              }}
+            >
+              <h3 style={{ margin: 0 }}>
+                🔔 Notifications ({notifications.length})
+              </h3>
 
-            {newStatusChanges.length === 0 ? (
+              {notifications.length > 0 && (
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  <button
+                    onClick={markAllAsRead}
+                    style={{
+                      border: "1px solid #ddd",
+                      background: "#fff",
+                      borderRadius: "10px",
+                      padding: "8px 12px",
+                      cursor: "pointer",
+                      fontWeight: "600",
+                    }}
+                  >
+                    Mark all as read
+                  </button>
+
+                  <button
+                    onClick={deleteAll}
+                    style={{
+                      border: "1px solid #fecaca",
+                      background: "#fff5f5",
+                      color: "#dc2626",
+                      borderRadius: "10px",
+                      padding: "8px 12px",
+                      cursor: "pointer",
+                      fontWeight: "600",
+                    }}
+                  >
+                    Clear all
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {sortedNotifications.length === 0 ? (
               <p style={{ textAlign: "center", color: "#777" }}>
-                No recent status changes
+                No recent notifications
               </p>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                {newStatusChanges.map((change, index) => (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.75rem",
+                }}
+              >
+                {sortedNotifications.map((change) => (
                   <div
-                    key={`${change.id}-${change.status}-${index}`}
+                    key={change.id}
                     style={{
-                      border: "1px solid #eee",
-                      borderRadius: "10px",
-                      padding: "0.75rem",
+                      border: change.is_read
+                        ? "1px solid #eee"
+                        : "1px solid #fde68a",
+                      background: change.is_read ? "#fff" : "#fffdf4",
+                      borderRadius: "12px",
+                      padding: "0.85rem",
                       position: "relative",
                     }}
                   >
-                    <button
-                      onClick={() =>
-                        setNewStatusChanges((prev) =>
-                          prev.filter((_, i) => i !== index)
-                        )
-                      }
+                    <div
                       style={{
                         position: "absolute",
                         top: "10px",
                         right: "10px",
-                        border: "none",
-                        background: "transparent",
-                        cursor: "pointer",
-                        color: "#aaa",
-                        fontSize: "1.1rem",
+                        display: "flex",
+                        gap: "6px",
                       }}
                     >
-                      ×
-                    </button>
+                      {!change.is_read && (
+                        <button
+                          onClick={() => markOneAsRead(change.id)}
+                          style={{
+                            border: "none",
+                            background: "#eff6ff",
+                            color: "#2563eb",
+                            cursor: "pointer",
+                            borderRadius: "8px",
+                            padding: "4px 8px",
+                            fontSize: "12px",
+                            fontWeight: "600",
+                          }}
+                        >
+                          Read
+                        </button>
+                      )}
 
-                    <div style={{ display: "flex", gap: "0.6rem" }}>
-                      <div style={{ fontSize: "1.3rem" }}>
-                        {change.status === "processing" && "⏳"}
-                        {change.status === "to receive" && "📦"}
-                        {change.status === "cancelled" && "❌"}
-                        {change.status === "completed" && "✅"}
+                      <button
+                        onClick={() => deleteOne(change.id)}
+                        style={{
+                          border: "none",
+                          background: "transparent",
+                          cursor: "pointer",
+                          color: "#aaa",
+                          fontSize: "1.1rem",
+                        }}
+                      >
+                        ×
+                      </button>
+                    </div>
+
+                    <div style={{ display: "flex", gap: "0.75rem" }}>
+                      <div style={{ fontSize: "1.3rem", marginTop: "2px" }}>
+                        {getStatusIcon(change.status)}
                       </div>
 
-                      <div style={{ flex: 1 }}>
-                        <strong>Order #{change.id}</strong>
+                      <div style={{ flex: 1, paddingRight: "64px" }}>
+                        <strong style={{ display: "block", marginBottom: "4px" }}>
+                          Order #{change.sale_id}
+                        </strong>
 
-                        {change.status === "processing" && (
-                          <p style={{ margin: "0.3rem 0" }}>
-                            has been <strong>processed</strong>.
-                          </p>
-                        )}
-                        {change.status === "to receive" && (
-                          <p style={{ margin: "0.3rem 0" }}>
-                            is now <strong>To Receive</strong>.
-                          </p>
-                        )}
-                        {change.status === "completed" && (
-                          <p style={{ margin: "0.3rem 0" }}>
-                            has been <strong>Completed</strong>.
-                          </p>
-                        )}
-                        {change.status === "cancelled" && (
-                          <p style={{ margin: "0.3rem 0" }}>
-                            was <strong>Cancelled</strong>.
-                          </p>
-                        )}
+                        <p
+                          style={{
+                            margin: "0.25rem 0",
+                            color: "#374151",
+                            lineHeight: 1.45,
+                          }}
+                        >
+                          {change.message}
+                        </p>
 
                         <p
                           style={{
@@ -180,7 +342,7 @@ function NotificationPanel({
                             color: "#888",
                           }}
                         >
-                          {getTimeAgo(change.createdAt)}
+                          {getTimeAgo(change.created_at)}
                         </p>
                       </div>
                     </div>

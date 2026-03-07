@@ -56,6 +56,7 @@ function ConsumerDashboard() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const productsRef = useRef(null);
   const [cartBounce, setCartBounce] = useState(false);
+  const [notifications, setNotifications] = useState([]);
 
   const goToProducts = () => {
     setActiveTab("shop");
@@ -64,6 +65,31 @@ function ConsumerDashboard() {
       productsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 50);
   };
+
+  const fetchNotifications = async () => {
+    if (!user?.id) return;
+
+    try {
+      const res = await axios.get(
+        `https://capstone-backend-kiax.onrender.com/notifications/user/${user.id}`
+      );
+      setNotifications(res.data || []);
+    } catch (err) {
+      console.error("Failed to fetch notifications:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    fetchNotifications();
+
+    const interval = setInterval(() => {
+      fetchNotifications();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [user]);
 
   useEffect(() => {
     const stored = localStorage.getItem("user");
@@ -147,11 +173,12 @@ function ConsumerDashboard() {
             {
               id: sale.id,
               status: sale.status,
+              message,
               createdAt: new Date().toISOString(),
+              read: false,
             },
             ...prev,
           ]);
-
           setNotifBounce(true);
           setTimeout(() => setNotifBounce(false), 1000);
         }
@@ -300,8 +327,9 @@ function ConsumerDashboard() {
           <div className="store-icons">
             <NotificationPanel
               notifBounce={notifBounce}
-              newStatusChanges={newStatusChanges}
-              setNewStatusChanges={setNewStatusChanges}
+              notifications={notifications}
+              setNotifications={setNotifications}
+              user={user}
             />
 
             <button
