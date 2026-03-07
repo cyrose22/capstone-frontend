@@ -105,6 +105,17 @@ function ConsumerDashboard() {
   }, [user]);
 
   useEffect(() => {
+    if (!user?.id) return;
+
+    fetchSales();
+    const interval = setInterval(() => {
+      fetchSales();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [user]);
+
+  useEffect(() => {
     if (user?.id) fetchSales();
   }, [user]);
 
@@ -129,6 +140,7 @@ function ConsumerDashboard() {
 
       updatedSales.forEach((sale) => {
         const prevStatus = previousStatusesRef.current[sale.id];
+
         if (prevStatus && prevStatus !== sale.status) {
           setNewStatusChanges((prev) => [
             {
@@ -138,9 +150,11 @@ function ConsumerDashboard() {
             },
             ...prev,
           ]);
+
           setNotifBounce(true);
           setTimeout(() => setNotifBounce(false), 1000);
         }
+
         previousStatusesRef.current[sale.id] = sale.status;
       });
 
