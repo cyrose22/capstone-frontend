@@ -42,41 +42,13 @@ function OrdersTab({
     return status || "Unknown";
   };
 
-  const getStatusStyles = (status) => {
+  const getStatusClass = (status) => {
     const normalized = normalizeStatus(status);
-
-    if (normalized === "processing") {
-      return {
-        backgroundColor: "#fff7ed",
-        color: "#ea580c",
-      };
-    }
-
-    if (normalized === "to receive") {
-      return {
-        backgroundColor: "#eff6ff",
-        color: "#2563eb",
-      };
-    }
-
-    if (normalized === "completed") {
-      return {
-        backgroundColor: "#ecfdf3",
-        color: "#16a34a",
-      };
-    }
-
-    if (normalized === "cancelled") {
-      return {
-        backgroundColor: "#fef2f2",
-        color: "#dc2626",
-      };
-    }
-
-    return {
-      backgroundColor: "#f3f4f6",
-      color: "#374151",
-    };
+    if (normalized === "processing") return "order-status processing";
+    if (normalized === "to receive") return "order-status to-receive";
+    if (normalized === "completed") return "order-status completed";
+    if (normalized === "cancelled") return "order-status cancelled";
+    return "order-status";
   };
 
   const tabs = [
@@ -88,26 +60,10 @@ function OrdersTab({
   ];
 
   return (
-    <div style={{ padding: "1rem" }}>
-      <h3
-        style={{
-          marginBottom: "1rem",
-          fontSize: "1.65rem",
-          fontWeight: "800",
-          color: "#1f2937",
-        }}
-      >
-        📜 Order History
-      </h3>
+    <div className="orders-wrap">
+      <h3 className="orders-title">📜 Order History</h3>
 
-      <div
-        style={{
-          display: "flex",
-          gap: "10px",
-          flexWrap: "wrap",
-          marginBottom: "1.25rem",
-        }}
-      >
+      <div className="orders-filters">
         {tabs.map((tab) => {
           const isActive = statusFilter === tab.value;
 
@@ -115,19 +71,7 @@ function OrdersTab({
             <button
               key={tab.value}
               onClick={() => setStatusFilter(tab.value)}
-              style={{
-                padding: "10px 14px",
-                borderRadius: "999px",
-                border: isActive ? "none" : "1px solid #e5e7eb",
-                background: isActive ? "#ff6b35" : "#ffffff",
-                color: isActive ? "#fff" : "#111827",
-                fontWeight: "700",
-                cursor: "pointer",
-                boxShadow: isActive
-                  ? "0 10px 20px rgba(255,107,53,0.18)"
-                  : "none",
-                transition: "all 0.18s ease",
-              }}
+              className={`orders-filter-btn ${isActive ? "active" : ""}`}
             >
               {tab.label}
             </button>
@@ -136,17 +80,7 @@ function OrdersTab({
       </div>
 
       {filteredSales.length === 0 && (
-        <div
-          style={{
-            background: "#fff",
-            border: "1px dashed #d1d5db",
-            borderRadius: "18px",
-            padding: "32px 20px",
-            textAlign: "center",
-            color: "#6b7280",
-            fontWeight: "600",
-          }}
-        >
+        <div className="orders-empty">
           No orders in this category.
         </div>
       )}
@@ -162,94 +96,27 @@ function OrdersTab({
           );
 
         return (
-          <div
-            key={sale.id}
-            style={{
-              background: "rgba(255,255,255,0.96)",
-              borderRadius: "20px",
-              padding: "1rem 1rem 1.1rem",
-              marginBottom: "1rem",
-              boxShadow: "0 10px 26px rgba(15,23,42,0.07)",
-              border: "1px solid rgba(15,23,42,0.06)",
-            }}
-          >
-            {/* Header */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-                gap: "1rem",
-                flexWrap: "wrap",
-                marginBottom: "0.8rem",
-              }}
-            >
+          <div key={sale.id} className="order-card">
+            <div className="order-card-header">
               <div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.6rem",
-                    flexWrap: "wrap",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontWeight: "800",
-                      fontSize: "1.02rem",
-                      color: "#111827",
-                    }}
-                  >
-                    Order #{sale.id}
-                  </span>
-
-                  <span
-                    style={{
-                      ...getStatusStyles(sale.status),
-                      padding: "6px 10px",
-                      borderRadius: "999px",
-                      fontSize: "0.82rem",
-                      fontWeight: "800",
-                    }}
-                  >
+                <div className="order-card-topline">
+                  <span className="order-id">Order #{sale.id}</span>
+                  <span className={getStatusClass(sale.status)}>
                     {getStatusLabel(sale.status)}
                   </span>
                 </div>
 
-                <div
-                  style={{
-                    marginTop: "6px",
-                    fontSize: "0.9rem",
-                    color: "#6b7280",
-                  }}
-                >
+                <div className="order-date">
                   {new Date(sale.created_at).toLocaleString()}
                 </div>
               </div>
 
-              <div
-                style={{
-                  backgroundColor: "#e0f7fa",
-                  color: "#007b8a",
-                  padding: "7px 12px",
-                  borderRadius: "999px",
-                  fontSize: "0.88rem",
-                  fontWeight: "700",
-                  whiteSpace: "nowrap",
-                }}
-              >
+              <div className="order-payment-pill">
                 💳 Payment: {sale.payment_method || "N/A"}
               </div>
             </div>
 
-            {/* Items */}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.75rem",
-              }}
-            >
+            <div className="order-items">
               {items.map((item, i) => {
                 const product = (products || []).find(
                   (p) =>
@@ -279,33 +146,8 @@ function OrdersTab({
                   variantLabel.toLowerCase() !== "original";
 
                 return (
-                  <div
-                    key={i}
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "72px 1fr auto",
-                      gap: "0.9rem",
-                      alignItems: "center",
-                      border: "1px solid #f1f5f9",
-                      borderRadius: "16px",
-                      padding: "0.8rem",
-                      backgroundColor: "#fafafa",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: "72px",
-                        height: "72px",
-                        backgroundColor: "#fff",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        border: "1px solid #eee",
-                        borderRadius: "12px",
-                        overflow: "hidden",
-                        flexShrink: 0,
-                      }}
-                    >
+                  <div key={i} className="order-item-row">
+                    <div className="order-item-image">
                       {imageSrc ? (
                         <img
                           src={imageSrc}
@@ -314,69 +156,29 @@ function OrdersTab({
                             item.variant_name ||
                             item.product_name
                           }
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                          }}
                         />
                       ) : (
-                        <span style={{ fontSize: "0.75rem", color: "#aaa" }}>
-                          No Image
-                        </span>
+                        <span>No Image</span>
                       )}
                     </div>
 
-                    <div style={{ minWidth: 0 }}>
-                      <div
-                        style={{
-                          fontWeight: "800",
-                          color: "#111827",
-                          fontSize: "1rem",
-                          lineHeight: 1.35,
-                        }}
-                      >
-                        {item.product_name}
-                      </div>
+                    <div className="order-item-main">
+                      <div className="order-item-name">{item.product_name}</div>
 
                       {showVariant && (
-                        <div
-                          style={{
-                            fontSize: "0.83rem",
-                            color: "#6b7280",
-                            marginTop: "3px",
-                          }}
-                        >
+                        <div className="order-item-variant">
                           Variant: {variantLabel}
                         </div>
                       )}
 
-                      <div
-                        style={{
-                          marginTop: "6px",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                          flexWrap: "wrap",
-                          fontSize: "0.87rem",
-                          color: "#6b7280",
-                        }}
-                      >
+                      <div className="order-item-meta">
                         <span>x{item.quantity}</span>
                         <span>•</span>
                         <span>{formatCurrency(item.price)}</span>
                       </div>
                     </div>
 
-                    <div
-                      style={{
-                        textAlign: "right",
-                        minWidth: "90px",
-                        fontWeight: "800",
-                        fontSize: "1.05rem",
-                        color: "#111827",
-                      }}
-                    >
+                    <div className="order-item-total">
                       {formatCurrency(
                         Number(item.price) * Number(item.quantity)
                       )}
@@ -386,40 +188,16 @@ function OrdersTab({
               })}
             </div>
 
-            {/* Total + Actions */}
-            <div
-              style={{
-                marginTop: "0.95rem",
-                paddingTop: "0.9rem",
-                borderTop: "1px solid #f1f5f9",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: "1rem",
-                flexWrap: "wrap",
-              }}
-            >
-              <div
-                style={{
-                  fontWeight: "900",
-                  fontSize: "1.08rem",
-                  color: "#111827",
-                }}
-              >
+            <div className="order-footer">
+              <div className="order-grand-total">
                 Total: {formatCurrency(total)}
               </div>
 
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "0.6rem",
-                  flexWrap: "wrap",
-                }}
-              >
+              <div className="order-actions">
                 {(normalizeStatus(sale.status) === "completed" ||
                   normalizeStatus(sale.status) === "cancelled") && (
                   <button
+                    className="order-btn order-btn-buy"
                     onClick={() => {
                       if (!sale.items) return;
 
@@ -465,15 +243,6 @@ function OrdersTab({
                       setActiveTab("shop");
                       setShowCartModal(true);
                     }}
-                    style={{
-                      padding: "0.7rem 1rem",
-                      backgroundColor: "#ff9800",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: "12px",
-                      cursor: "pointer",
-                      fontWeight: "700",
-                    }}
                   >
                     🔁 Buy Again
                   </button>
@@ -481,6 +250,7 @@ function OrdersTab({
 
                 {normalizeStatus(sale.status) === "to receive" && (
                   <button
+                    className="order-btn order-btn-receive"
                     onClick={async () => {
                       try {
                         await axios.put(
@@ -499,15 +269,6 @@ function OrdersTab({
                         alert("Failed to mark as received");
                       }
                     }}
-                    style={{
-                      padding: "0.7rem 1rem",
-                      backgroundColor: "#4caf50",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: "12px",
-                      cursor: "pointer",
-                      fontWeight: "700",
-                    }}
                   >
                     📦 Order Received
                   </button>
@@ -515,19 +276,11 @@ function OrdersTab({
 
                 {normalizeStatus(sale.status) === "processing" && (
                   <button
+                    className="order-btn order-btn-cancel"
                     onClick={() => {
                       setSaleToCancel(sale);
                       setCancelReason("");
                       setCancelModalVisible(true);
-                    }}
-                    style={{
-                      padding: "0.7rem 1rem",
-                      backgroundColor: "#e74c3c",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: "12px",
-                      cursor: "pointer",
-                      fontWeight: "700",
                     }}
                   >
                     ❌ Cancel Order
@@ -536,37 +289,17 @@ function OrdersTab({
               </div>
             </div>
 
-            {/* Cancel reason */}
             {normalizeStatus(sale.status) === "cancelled" &&
               sale.cancel_description && (
-                <div
-                  style={{
-                    backgroundColor: "#fff5f5",
-                    padding: "0.9rem",
-                    borderRadius: "12px",
-                    marginTop: "0.9rem",
-                    border: "1px solid #ffd6d6",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.5rem",
-                    }}
-                  >
-                    <span style={{ color: "#e74c3c", fontSize: "1.1rem" }}>
-                      ❌
-                    </span>
-                    <span style={{ fontWeight: "700" }}>Order Cancelled</span>
-                  </div>
+                <div className="order-cancel-box">
+                  <div className="order-cancel-title">❌ Order Cancelled</div>
 
-                  <p style={{ margin: "0.5rem 0", fontSize: "0.9rem" }}>
+                  <p>
                     <strong>Reason:</strong> {sale.cancel_description}
                   </p>
 
                   {sale.cancelled_by_name && (
-                    <p style={{ margin: 0, fontSize: "0.85rem", color: "#555" }}>
+                    <p className="order-cancel-meta">
                       Cancelled by:{" "}
                       <strong>
                         {sale.cancelled_by_role === "admin"
