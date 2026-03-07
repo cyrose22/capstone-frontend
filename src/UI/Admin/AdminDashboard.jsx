@@ -3,7 +3,7 @@ import axios from 'axios';
 import './admin-dashboard.css';
 import { useNavigate } from 'react-router-dom';
 import { FaEdit, FaUserPlus } from 'react-icons/fa';
-import Header from './Header/Header';
+import Header from '../Header/Header';
 
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
