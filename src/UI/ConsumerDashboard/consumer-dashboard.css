@@ -50,11 +50,11 @@ html, body {
   background: #f8fafc;
 }
 
-.store-name{
-  font-weight:800;
-  font-size:18px;
-  margin-left:8px;
-  color:#1f2937;
+.store-name {
+  font-weight: 800;
+  font-size: 18px;
+  margin-left: 8px;
+  color: #1f2937;
 }
 
 /* ================= HEADER ================= */
@@ -227,7 +227,7 @@ html, body {
 }
 
 .hero-logo {
-  width:170px;
+  width: 170px;
   max-width: 100%;
   margin-bottom: 10px;
 }
@@ -265,15 +265,6 @@ html, body {
   flex-wrap: wrap;
 }
 
-.hero-buttons button {
-  padding: 10px 18px;
-  border: none;
-  border-radius: 10px;
-  background: #ff6b35;
-  color: white;
-  font-weight: 700;
-}
-
 .hero-primary-btn {
   padding: 10px 18px;
   border: none;
@@ -304,27 +295,20 @@ html, body {
 
 /* RIGHT */
 .hero-right {
-  min-width:260px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  min-width: 260px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .hero-card {
-  width:100%;
-  max-width:320px;
-  background:rgba(255,255,255,0.95);
-  border-radius:18px;
-  padding:20px;
-  box-shadow:0 20px 45px rgba(0,0,0,0.12);
-  border:1px solid rgba(255,255,255,0.7);
-}
-
-.hero-mini span{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  font-weight:500;
+  width: 100%;
+  max-width: 320px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.7);
 }
 
 .hero-card h3 {
@@ -346,6 +330,13 @@ html, body {
   flex-wrap: wrap;
   color: #666;
   font-size: 0.9rem;
+}
+
+.hero-mini span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
 }
 
 /* ================= CONTENT ================= */
@@ -605,26 +596,21 @@ html, body {
   padding: 16px;
   display: flex;
   flex-direction: column;
-  flex: 1;
 }
 
 .shop-card:hover {
- transform: translateY(-6px);
- box-shadow:0 18px 40px rgba(0,0,0,0.12);
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
 }
 
 .shop-card-image {
-  height:220px;
-  background:linear-gradient(180deg,#fafafa,#f1f5f9);
-  border-radius:12px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-}
-
-.shop-card:hover .shop-card-image img{
-  transform:scale(1.06);
+  height: 220px;
+  background: linear-gradient(180deg, #fafafa, #f1f5f9);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .shop-card-image img {
@@ -635,8 +621,8 @@ html, body {
   transition: transform 0.25s ease;
 }
 
-.shop-card:hover .shop-card-image img{
-  transform:scale(1.06);
+.shop-card:hover .shop-card-image img {
+  transform: scale(1.06);
 }
 
 .shop-card-no-image {
@@ -721,28 +707,23 @@ html, body {
   min-height: 18px;
 }
 
-.shop-card-btn{
-  width:92%;
-  height:44px;
-  margin:14px auto 0;
-  border:none;
-  border-radius:14px;
-  background:linear-gradient(45deg,#ff4e50,#f9d423);
-  color:#fff;
-  font-weight:700;
-  font-size:14px;
-  cursor:pointer;
-  transition:transform .15s ease, box-shadow .15s ease;
-}
-
-.shop-card-btn:hover{
-  transform:translateY(-2px);
-  box-shadow:0 10px 22px rgba(0,0,0,0.18);
+.shop-card-btn {
+  width: 92%;
+  height: 44px;
+  margin: 14px auto 0;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(45deg, #ff4e50, #f9d423);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .shop-card-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
 }
 
 .shop-card-btn:disabled {
@@ -1083,14 +1064,14 @@ html, body {
   }
 }
 
-.cart-bounce{
- animation:cartBounce .35s ease;
+.cart-bounce {
+  animation: cartBounce 0.35s ease;
 }
 
-@keyframes cartBounce{
- 0%{transform:scale(1)}
- 50%{transform:scale(1.25)}
- 100%{transform:scale(1)}
+@keyframes cartBounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+  100% { transform: scale(1); }
 }
 
 /* ================= ORDER HISTORY ================= */
