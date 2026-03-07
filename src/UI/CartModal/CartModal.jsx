@@ -211,7 +211,11 @@ function CartModal({
                     >
                       {item.name}{" "}
                       <span style={{ color: "#64748b", fontWeight: 800 }}>
-                        {item.variantName ? `(${item.variantName})` : ""}
+                        {item.variantName &&
+                        item.variantName !== item.name &&
+                        item.variantName.toLowerCase() !== "original"
+                          ? `(${item.variantName})`
+                          : ""}
                       </span>
                     </div>
 
