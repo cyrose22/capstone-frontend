@@ -369,7 +369,14 @@ function ConsumerDashboard() {
 
             <button
               className="btn btn-secondary"
-              onClick={() => setActiveTab("orders")}
+              onClick={() => {
+                if (!user?.token) {
+                  navigate("/login?redirect=/dashboard/consumer");
+                  return;
+                }
+
+                setActiveTab("orders");
+              }}
             >
               Track Orders
             </button>
