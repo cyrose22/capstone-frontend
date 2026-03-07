@@ -1,39 +1,35 @@
-/* ================= MODERN TOKENS ================= */
 :root{
-  --bg: #f6f7fb;
-  --card: rgba(255,255,255,0.88);
+  --bg: #ffffff;
+  --card: #ffffff;
   --cardSolid: #ffffff;
   --border: rgba(17,24,39,0.08);
   --text: #111827;
   --muted: #6b7280;
-  --shadow: 0 12px 30px rgba(0,0,0,0.08);
-  --shadowHover: 0 20px 50px rgba(0,0,0,0.12);
+  --shadow: 0 10px 28px rgba(15,23,42,0.06);
+  --shadowHover: 0 18px 36px rgba(15,23,42,0.10);
   --radius: 20px;
 
   --blue: #3b82f6;
-  --orange: #f59e0b;
+  --orange: #ff5a36;
   --red: #ef4444;
   --purple: #8b5cf6;
   --green: #22c55e;
-
-  --focus: 0 0 0 4px rgba(59,130,246,0.18);
 }
 
-/* ================= PAGE ================= */
+/* PAGE */
 .admin-dashboard{
-  background:
-    radial-gradient(circle at 20% 10%, rgba(59,130,246,0.08), transparent 40%),
-    radial-gradient(circle at 80% 0%, rgba(245,158,11,0.10), transparent 40%),
-    var(--bg);
+  background: #ffffff;
   min-height: 100vh;
   padding: 0 0 40px;
 }
 
 .register-staff-container{
   margin: 18px 0 8px;
+  display: flex;
+  justify-content: flex-end;
 }
 
-/* ================= SECTION HEADERS ================= */
+/* SECTION HEADERS */
 .admin-dashboard h2{
   display: flex;
   align-items: center;
@@ -54,7 +50,7 @@
   margin-left: 12px;
 }
 
-/* ================= GRID ================= */
+/* GRID */
 .user-card-grid{
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -62,13 +58,11 @@
   margin-top: 14px;
 }
 
-/* ================= CARD ================= */
+/* CARD */
 .user-card{
   position: relative;
   overflow: hidden;
-  background: var(--card);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: #ffffff;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 18px;
@@ -76,40 +70,23 @@
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
 
-.user-card::before{
-  content:"";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 15% 20%, rgba(255,107,53,0.10), transparent 45%),
-    radial-gradient(circle at 85% 30%, rgba(59,130,246,0.08), transparent 45%);
-  pointer-events: none;
-}
-
-.user-card::after{
-  content:"";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
-  pointer-events: none;
-}
-
 .user-card:hover{
-  transform: translateY(-5px);
+  transform: translateY(-4px);
   box-shadow: var(--shadowHover);
   border-color: rgba(17,24,39,0.12);
 }
 
-/* ================= CARD HEADER ================= */
+/* CARD HEADER */
 .user-header{
   display:flex;
   justify-content:space-between;
   align-items:flex-start;
   gap: 12px;
   margin-bottom: 10px;
-  position: relative;
-  z-index: 1;
+}
+
+.user-main{
+  min-width: 0;
 }
 
 .user-header h3{
@@ -118,37 +95,51 @@
   font-weight: 800;
   color: var(--text);
   line-height: 1.25;
-  max-width: 72%;
 }
 
-/* ================= BODY TEXT ================= */
-.user-card p{
-  margin: 7px 0 0;
+.user-meta{
+  margin: 7px 0 0 !important;
   color: var(--muted);
   font-size: 0.93rem;
   line-height: 1.45;
-  position: relative;
-  z-index: 1;
 }
 
-.user-card p strong{
+.user-meta strong{
   color: var(--text);
   font-weight: 700;
 }
 
-/* ================= ROLE BADGE ================= */
-.role-badge{
+.staff-note{
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  background: #f8fafc;
+  border: 1px solid rgba(17,24,39,0.06);
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+
+/* BADGES */
+.user-badges{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.role-badge,
+.status-badge{
   padding: 6px 10px;
   border-radius: 999px;
   font-size: 0.72rem;
   font-weight: 900;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   border: 1px solid rgba(255,255,255,0.45);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.06);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
   white-space: nowrap;
-  position: relative;
-  z-index: 1;
 }
 
 .role-badge.admin{
@@ -173,57 +164,75 @@
   color: #111827;
 }
 
-/* ================= ACTIONS ================= */
+.status-badge.active{
+  background: linear-gradient(135deg, rgba(34,197,94,0.95), rgba(187,247,208,0.88));
+  color: #053018;
+}
+
+.status-badge.inactive{
+  background: linear-gradient(135deg, rgba(107,114,128,0.95), rgba(229,231,235,0.92));
+  color: #111827;
+}
+
+/* ACTIONS */
 .user-actions{
-  margin-top: 15px;
+  margin-top: 16px;
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
   position: relative;
-  z-index: 1;
 }
 
 .button-with-toast{
   position: relative;
 }
 
-/* ================= ACTION BUTTONS ================= */
-.user-actions button.edit-user,
-.user-actions button.delete-user{
+/* TOOLTIP */
+.button-with-toast .toast{
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  background: rgba(17,24,39,0.94);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  white-space: nowrap;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+  z-index: 5;
+}
+
+/* ACTION BUTTONS */
+.user-actions button{
+  cursor: pointer;
+}
+
+.user-actions button.edit-user{
   width: 42px;
   height: 42px;
   padding: 0;
   border-radius: 12px;
   border: 1px solid rgba(17,24,39,0.10);
-  background: rgba(255,255,255,0.92);
+  background: #ffffff;
   display: inline-flex;
   align-items:center;
   justify-content:center;
   font-size: 16px;
-  box-shadow: 0 10px 18px rgba(0,0,0,0.06);
+  color: #d97706;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
   transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease;
 }
 
 .user-actions button.edit-user:hover{
   transform: translateY(-1px);
   border-color: rgba(245,158,11,0.45);
-  box-shadow: 0 14px 26px rgba(245,158,11,0.18);
+  box-shadow: 0 14px 26px rgba(245,158,11,0.16);
   background: #fffaf0;
 }
 
-.user-actions button.delete-user:hover{
-  transform: translateY(-1px);
-  border-color: rgba(239,68,68,0.45);
-  box-shadow: 0 14px 26px rgba(239,68,68,0.18);
-  background: #fff5f5;
-}
-
-.user-actions button.delete-user:disabled{
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-/* ================= PROMOTE / DEMOTE BUTTON ================= */
+/* TOGGLE ROLE */
 button.toggle-role{
   padding: 10px 13px;
   border-radius: 12px;
@@ -242,51 +251,78 @@ button.toggle-role:hover{
   box-shadow: 0 14px 26px rgba(139,92,246,0.18);
 }
 
-/* ================= TOOLTIP ================= */
-.button-with-toast .toast{
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translate(-50%, -100%);
-  background: rgba(17,24,39,0.92);
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.12);
-  padding: 6px 10px;
-  border-radius: 10px;
-  font-size: 12px;
-  white-space: nowrap;
-  box-shadow: 0 12px 24px rgba(0,0,0,0.18);
-  z-index: 5;
+/* TOGGLE STATUS */
+button.toggle-status{
+  padding: 10px 13px;
+  border-radius: 12px;
+  font-weight: 900;
+  font-size: 0.84rem;
+  border: 1px solid transparent;
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
 }
 
-/* ================= REGISTER STAFF BUTTON ================= */
+button.toggle-status.activate{
+  background: rgba(34,197,94,0.12);
+  border-color: rgba(34,197,94,0.25);
+  color: #065f46;
+  box-shadow: 0 12px 24px rgba(34,197,94,0.12);
+}
+
+button.toggle-status.activate:hover{
+  transform: translateY(-1px);
+  background: rgba(34,197,94,0.18);
+  box-shadow: 0 16px 28px rgba(34,197,94,0.16);
+}
+
+button.toggle-status.deactivate{
+  background: rgba(239,68,68,0.10);
+  border-color: rgba(239,68,68,0.22);
+  color: #991b1b;
+  box-shadow: 0 12px 24px rgba(239,68,68,0.10);
+}
+
+button.toggle-status.deactivate:hover{
+  transform: translateY(-1px);
+  background: rgba(239,68,68,0.16);
+  box-shadow: 0 16px 28px rgba(239,68,68,0.16);
+}
+
+button.toggle-role:disabled,
+button.toggle-status:disabled{
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* REGISTER STAFF BUTTON */
 .register-staff-btn{
   display: inline-flex;
   align-items:center;
   gap: 10px;
   padding: 11px 16px;
   border-radius: 14px;
-  border: 1px solid rgba(34,197,94,0.25);
-  background: rgba(34,197,94,0.12);
-  color: #065f46;
+  border: 1px solid rgba(255,90,54,0.20);
+  background: rgba(255,90,54,0.10);
+  color: #c2410c;
   font-weight: 900;
-  box-shadow: 0 12px 24px rgba(34,197,94,0.14);
+  box-shadow: 0 12px 24px rgba(255,90,54,0.12);
   transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
 }
 
 .register-staff-btn:hover{
   transform: translateY(-1px);
-  background: rgba(34,197,94,0.16);
-  box-shadow: 0 16px 28px rgba(34,197,94,0.18);
+  background: rgba(255,90,54,0.16);
+  box-shadow: 0 16px 28px rgba(255,90,54,0.16);
 }
 
-/* ================= MODAL ================= */
+/* MODAL */
 .modal-overlay{
   position: fixed;
   inset: 0;
   background: rgba(17,24,39,0.55);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -296,10 +332,10 @@ button.toggle-role:hover{
 
 .modal-content{
   width: min(520px, 96vw);
-  background: rgba(255,255,255,0.96);
+  background: rgba(255,255,255,0.98);
   border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.14);
-  box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+  border: 1px solid rgba(17,24,39,0.08);
+  box-shadow: 0 24px 70px rgba(0,0,0,0.22);
   position: relative;
   padding: 22px;
 }
@@ -319,11 +355,37 @@ button.toggle-role:hover{
   }
 }
 
+.modal-close{
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.modal-chip{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,90,54,0.12);
+  color: #c2410c;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.84rem;
+  margin-bottom: 14px;
+}
+
 .modal-header h2{
   margin: 0 0 6px;
   font-size: 1.2rem;
   color: var(--text);
-  border: none;
 }
 
 .modal-header p{
@@ -332,34 +394,57 @@ button.toggle-role:hover{
   line-height: 1.45;
 }
 
-/* ================= INPUTS ================= */
+/* INPUTS */
+.form-stack{
+  display: grid;
+  gap: 12px;
+}
+
 .modal-input.styled-input{
   width: 100%;
   border-radius: 14px;
   border: 1px solid rgba(17,24,39,0.12);
-  padding: 12px 14px;
+  background: #ffffff;
+  padding: 14px 15px;
+  font-size: 0.95rem;
+  color: var(--text);
   outline: none;
-  font-size: 14px;
-  margin-bottom: 12px;
-  background: #fff;
   transition: border-color .15s ease, box-shadow .15s ease;
+  box-sizing: border-box;
 }
 
 .modal-input.styled-input:focus{
-  border-color: rgba(59,130,246,0.55);
-  box-shadow: var(--focus);
+  border-color: rgba(59,130,246,0.45);
+  box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
 }
 
-.show-password-toggle{
+/* CHECKBOX */
+.checkbox-row{
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 6px 0 14px;
-  color: var(--muted);
-  font-size: 0.92rem;
+  gap: 10px;
+  margin-top: 8px;
+  margin-bottom: 18px;
 }
 
-/* ================= MODAL ACTIONS ================= */
+.checkbox-row input[type="checkbox"]{
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #22c55e;
+  flex-shrink: 0;
+}
+
+.checkbox-row label{
+  font-size: 0.92rem;
+  color: #374151;
+  cursor: pointer;
+  user-select: none;
+  line-height: 1.2;
+}
+
+/* MODAL BUTTONS */
 .modal-actions{
   display: flex;
   justify-content: flex-end;
@@ -367,95 +452,57 @@ button.toggle-role:hover{
   flex-wrap: wrap;
 }
 
-.modal-actions .cancel-btn{
-  border-radius: 12px;
-  padding: 10px 14px;
-  background: rgba(107,114,128,0.12);
-  border: 1px solid rgba(107,114,128,0.20);
+.cancel-btn{
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
   color: #111827;
-  font-weight: 900;
+  font-weight: 800;
 }
 
-.modal-actions .save-btn{
-  border-radius: 12px;
-  padding: 10px 16px;
-  background: rgba(59,130,246,0.92);
-  border: 1px solid rgba(59,130,246,0.30);
-  color: white;
-  font-weight: 900;
-  box-shadow: 0 14px 26px rgba(59,130,246,0.22);
+.save-btn{
+  padding: 12px 18px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #fff;
+  font-weight: 800;
+  box-shadow: 0 12px 24px rgba(34,197,94,0.20);
 }
 
-.modal-actions .save-btn:hover,
-.modal-actions .cancel-btn:hover{
-  transform: translateY(-1px);
+.save-btn:disabled{
+  background: #d1d5db;
+  cursor: not-allowed;
+  opacity: 0.75;
+  box-shadow: none;
 }
 
-/* ================= CLOSE BUTTON ================= */
-.modal-close{
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.18);
-  background: rgba(17,24,39,0.08);
-  color: #111827;
-  line-height: 1;
-  font-size: 24px;
-}
-
-.modal-close:hover{
-  background: rgba(17,24,39,0.12);
-}
-
-/* ================= RESPONSIVE ================= */
-@media (max-width: 768px){
-  .admin-dashboard h2{
-    font-size: 1.2rem;
-    margin: 22px 0 12px;
+/* RESPONSIVE */
+@media (max-width: 640px){
+  .register-staff-container{
+    justify-content: stretch;
   }
 
-  .user-card-grid{
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-
-  .user-card{
-    padding: 16px;
-    border-radius: 18px;
+  .register-staff-btn{
+    width: 100%;
+    justify-content: center;
   }
 
   .user-header{
-    gap: 8px;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .user-header h3{
-    max-width: 100%;
-    font-size: 1rem;
-  }
-
-  .role-badge{
-    font-size: 0.68rem;
-    padding: 6px 9px;
-  }
-
-  .user-actions{
-    gap: 8px;
-  }
-
-  .modal-content{
-    padding: 18px;
-    border-radius: 18px;
+  .user-badges{
+    justify-content: flex-start;
   }
 
   .modal-actions{
-    flex-direction: column-reverse;
+    flex-direction: column;
   }
 
-  .modal-actions .cancel-btn,
-  .modal-actions .save-btn{
+  .modal-actions button{
     width: 100%;
   }
 }

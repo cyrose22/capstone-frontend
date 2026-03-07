@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './admin-dashboard.css';
 import { useNavigate } from 'react-router-dom';
-import { FaTrash, FaEdit, FaUserPlus } from 'react-icons/fa';
-import Header from '../Header/Header';
+import { FaEdit, FaUserPlus } from 'react-icons/fa';
+import Header from './Header/Header';
 
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [hovered, setHovered] = useState(null);
-  const [deletingId, setDeletingId] = useState(null);
+  const [actionLoadingId, setActionLoadingId] = useState(null);
 
   const [editingUser, setEditingUser] = useState(null);
   const [newPassword, setNewPassword] = useState('');
@@ -52,30 +52,51 @@ function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get(
-        'https://capstone-backend-kiax.onrender.com/users'
-      );
-      setUsers(res.data || []);
+      const res = await axios.get('https://capstone-backend-kiax.onrender.com/users');
+
+      const normalizedUsers = (res.data || []).map((listedUser) => ({
+        ...listedUser,
+        status: listedUser.status || 'active',
+      }));
+
+      setUsers(normalizedUsers);
     } catch (err) {
       console.error('Failed to load users:', err);
       alert('Failed to load users');
     }
   };
 
-  const deleteUser = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this user?')) return;
+  const toggleUserStatus = async (selectedUser) => {
+    const isDeactivating = selectedUser.status !== 'inactive';
+
+    const confirmMessage = isDeactivating
+      ? `Are you sure you want to deactivate ${selectedUser.fullname}?`
+      : `Are you sure you want to activate ${selectedUser.fullname}?`;
+
+    if (!window.confirm(confirmMessage)) return;
 
     try {
-      setDeletingId(id);
-      await axios.delete(
-        `https://capstone-backend-kiax.onrender.com/users/${id}`
+      setActionLoadingId(selectedUser.id);
+
+      await axios.put(
+        `https://capstone-backend-kiax.onrender.com/users/${selectedUser.id}/status`,
+        {
+          status: isDeactivating ? 'inactive' : 'active',
+        }
       );
+
       await fetchUsers();
+
+      alert(
+        isDeactivating
+          ? 'User deactivated successfully.'
+          : 'User activated successfully.'
+      );
     } catch (err) {
-      console.error('Delete failed:', err);
-      alert('Delete failed');
+      console.error('Failed to update status:', err);
+      alert('Failed to update account status');
     } finally {
-      setDeletingId(null);
+      setActionLoadingId(null);
     }
   };
 
@@ -92,6 +113,7 @@ function AdminDashboard() {
       }
 
       try {
+        setActionLoadingId(selectedUser.id);
         await axios.put(
           `https://capstone-backend-kiax.onrender.com/users/${selectedUser.id}/role`,
           { role: 'staff' }
@@ -101,12 +123,15 @@ function AdminDashboard() {
       } catch (err) {
         console.error('Error updating role:', err);
         alert('Error updating role');
+      } finally {
+        setActionLoadingId(null);
       }
       return;
     }
 
     if (selectedUser.role === 'staff') {
       try {
+        setActionLoadingId(selectedUser.id);
         await axios.put(
           `https://capstone-backend-kiax.onrender.com/users/${selectedUser.id}/role`,
           { role: 'admin' }
@@ -116,6 +141,8 @@ function AdminDashboard() {
       } catch (err) {
         console.error('Error updating role:', err);
         alert('Error updating role');
+      } finally {
+        setActionLoadingId(null);
       }
     }
   };
@@ -172,6 +199,12 @@ function AdminDashboard() {
         password: newStaff.password,
         role: 'staff',
         contact: null,
+        address: null,
+        province: null,
+        municipality: null,
+        barangay: null,
+        street: null,
+        block: null,
       });
 
       alert('Staff registered successfully!');
@@ -187,26 +220,52 @@ function AdminDashboard() {
     }
   };
 
+  const closePasswordModal = () => {
+    setEditingUser(null);
+    setNewPassword('');
+    setShowPassword(false);
+  };
+
+  const closeRegisterModal = () => {
+    setShowRegisterModal(false);
+    setNewStaff({ fullname: '', username: '', password: '' });
+    setShowStaffPassword(false);
+  };
+
   const renderUserCard = (listedUser) => {
     const isSelf = listedUser.username === loggedInUser;
+    const isInactive = listedUser.status === 'inactive';
 
     const canEditPassword =
       loggedInRole === 'admin' ||
-      (loggedInRole === 'staff' &&
-        (listedUser.role === 'user' || isSelf));
+      (loggedInRole === 'staff' && (listedUser.role === 'user' || isSelf));
 
     return (
       <>
         <div className="user-header">
-          <h3>{listedUser.fullname}</h3>
-          <span className={`role-badge ${listedUser.role || 'null'}`}>
-            {listedUser.role || 'pending'}
-          </span>
+          <div className="user-main">
+            <h3>{listedUser.fullname}</h3>
+            <p className="user-meta">
+              <strong>Username:</strong> {listedUser.username}
+            </p>
+          </div>
+
+          <div className="user-badges">
+            <span className={`status-badge ${isInactive ? 'inactive' : 'active'}`}>
+              {isInactive ? 'Inactive' : 'Active'}
+            </span>
+
+            <span className={`role-badge ${listedUser.role || 'null'}`}>
+              {listedUser.role || 'pending'}
+            </span>
+          </div>
         </div>
 
-        <p>
-          <strong>Username:</strong> {listedUser.username}
-        </p>
+        {listedUser.role === 'staff' && (
+          <p className="staff-note">
+            Internal staff account only. No customer registration address required.
+          </p>
+        )}
 
         <div className="user-actions">
           {canEditPassword && (
@@ -237,18 +296,19 @@ function AdminDashboard() {
               {listedUser.role === 'staff' && (
                 <div
                   className="button-with-toast"
-                  onMouseEnter={() => setHovered(`toggle-${listedUser.id}`)}
+                  onMouseEnter={() => setHovered(`toggle-role-${listedUser.id}`)}
                   onMouseLeave={() => setHovered(null)}
                 >
                   <button
                     className="toggle-role"
                     onClick={() => toggleUserRole(listedUser)}
                     type="button"
+                    disabled={actionLoadingId === listedUser.id}
                   >
-                    Make Admin
+                    {actionLoadingId === listedUser.id ? 'Please wait...' : 'Make Admin'}
                   </button>
-                  {hovered === `toggle-${listedUser.id}` && (
-                    <span className="toast">Make Admin</span>
+                  {hovered === `toggle-role-${listedUser.id}` && (
+                    <span className="toast">Promote staff to admin</span>
                   )}
                 </div>
               )}
@@ -257,18 +317,21 @@ function AdminDashboard() {
                 listedUser.username !== loggedInUser && (
                   <div
                     className="button-with-toast"
-                    onMouseEnter={() => setHovered(`toggle-${listedUser.id}`)}
+                    onMouseEnter={() => setHovered(`toggle-role-${listedUser.id}`)}
                     onMouseLeave={() => setHovered(null)}
                   >
                     <button
                       className="toggle-role"
                       onClick={() => toggleUserRole(listedUser)}
                       type="button"
+                      disabled={actionLoadingId === listedUser.id}
                     >
-                      Demote to Staff
+                      {actionLoadingId === listedUser.id
+                        ? 'Please wait...'
+                        : 'Demote to Staff'}
                     </button>
-                    {hovered === `toggle-${listedUser.id}` && (
-                      <span className="toast">Remove as Admin</span>
+                    {hovered === `toggle-role-${listedUser.id}` && (
+                      <span className="toast">Remove admin access</span>
                     )}
                   </div>
                 )}
@@ -276,22 +339,24 @@ function AdminDashboard() {
               {(listedUser.role === 'staff' || listedUser.role === 'user') && (
                 <div
                   className="button-with-toast"
-                  onMouseEnter={() => setHovered(`delete-${listedUser.id}`)}
+                  onMouseEnter={() => setHovered(`status-${listedUser.id}`)}
                   onMouseLeave={() => setHovered(null)}
                 >
                   <button
-                    className="delete-user"
-                    onClick={() => deleteUser(listedUser.id)}
-                    disabled={deletingId === listedUser.id}
+                    className={`toggle-status ${isInactive ? 'activate' : 'deactivate'}`}
+                    onClick={() => toggleUserStatus(listedUser)}
+                    disabled={actionLoadingId === listedUser.id}
                     type="button"
                   >
-                    <FaTrash />
+                    {actionLoadingId === listedUser.id
+                      ? 'Please wait...'
+                      : isInactive
+                      ? 'Activate'
+                      : 'Deactivate'}
                   </button>
-                  {hovered === `delete-${listedUser.id}` && (
+                  {hovered === `status-${listedUser.id}` && (
                     <span className="toast">
-                      {listedUser.role === 'staff'
-                        ? 'Delete Staff'
-                        : 'Delete User'}
+                      {isInactive ? 'Restore account access' : 'Disable account access'}
                     </span>
                   )}
                 </div>
@@ -305,38 +370,30 @@ function AdminDashboard() {
 
   const adminUsers = users.filter((listedUser) => listedUser.role === 'admin');
   const staffUsers = users.filter((listedUser) => listedUser.role === 'staff');
-  const consumerUsers = users.filter(
-    (listedUser) => listedUser.role === 'user'
-  );
+  const consumerUsers = users.filter((listedUser) => listedUser.role === 'user');
 
   return (
     <div className="admin-dashboard">
       <Header title="🧑‍💼 Admin Dashboard" />
 
-      {loggedInRole === 'admin' && (
-        <div className="register-staff-container">
-          <button
-            className="register-staff-btn"
-            onClick={() => setShowRegisterModal(true)}
-            type="button"
-          >
-            <FaUserPlus /> Register New Staff
-          </button>
-        </div>
-      )}
+      <div className="register-staff-container">
+        <button
+          className="register-staff-btn"
+          onClick={() => setShowRegisterModal(true)}
+          type="button"
+        >
+          <FaUserPlus /> Register New Staff
+        </button>
+      </div>
 
-      {loggedInRole !== 'staff' && (
-        <>
-          <h2>🛡️ Admins</h2>
-          <div className="user-card-grid">
-            {adminUsers.map((listedUser) => (
-              <div key={listedUser.id} className="user-card">
-                {renderUserCard(listedUser)}
-              </div>
-            ))}
+      <h2>🛡️ Admins</h2>
+      <div className="user-card-grid">
+        {adminUsers.map((listedUser) => (
+          <div key={listedUser.id} className="user-card">
+            {renderUserCard(listedUser)}
           </div>
-        </>
-      )}
+        ))}
+      </div>
 
       <h2>👨‍💼 Staff</h2>
       <div className="user-card-grid">
@@ -357,31 +414,17 @@ function AdminDashboard() {
       </div>
 
       {editingUser && (
-        <div
-          className="modal-overlay"
-          onClick={() => {
-            setEditingUser(null);
-            setNewPassword('');
-            setShowPassword(false);
-          }}
-        >
+        <div className="modal-overlay" onClick={closePasswordModal}>
           <div
             className="modal-content animated-modal"
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              className="modal-close"
-              type="button"
-              onClick={() => {
-                setEditingUser(null);
-                setNewPassword('');
-                setShowPassword(false);
-              }}
-            >
+            <button className="modal-close" type="button" onClick={closePasswordModal}>
               ×
             </button>
 
             <div className="modal-header">
+              <div className="modal-chip">🔐 Security</div>
               <h2>Change Password</h2>
               <p>Update password for {editingUser.fullname}</p>
             </div>
@@ -394,34 +437,25 @@ function AdminDashboard() {
               onChange={(e) => setNewPassword(e.target.value)}
             />
 
-            <div className="show-password-toggle">
+            <div className="checkbox-row">
               <input
-                id="showPassword"
                 type="checkbox"
+                id="showPassword"
                 checked={showPassword}
                 onChange={() => setShowPassword((prev) => !prev)}
               />
-              <label htmlFor="showPassword">Show Password</label>
+              <label htmlFor="showPassword">Show password</label>
             </div>
 
             <div className="modal-actions">
-              <button
-                className="cancel-btn"
-                type="button"
-                onClick={() => {
-                  setEditingUser(null);
-                  setNewPassword('');
-                  setShowPassword(false);
-                }}
-              >
+              <button className="cancel-btn" type="button" onClick={closePasswordModal}>
                 Cancel
               </button>
-
               <button
                 className="save-btn"
                 type="button"
                 onClick={handleSavePassword}
-                disabled={saving}
+                disabled={saving || !newPassword.trim()}
               >
                 {saving ? 'Saving...' : 'Save Password'}
               </button>
@@ -431,94 +465,70 @@ function AdminDashboard() {
       )}
 
       {showRegisterModal && (
-        <div
-          className="modal-overlay"
-          onClick={() => {
-            setShowRegisterModal(false);
-            setShowStaffPassword(false);
-          }}
-        >
+        <div className="modal-overlay" onClick={closeRegisterModal}>
           <div
             className="modal-content animated-modal"
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              className="modal-close"
-              type="button"
-              onClick={() => {
-                setShowRegisterModal(false);
-                setShowStaffPassword(false);
-              }}
-            >
+            <button className="modal-close" type="button" onClick={closeRegisterModal}>
               ×
             </button>
 
             <div className="modal-header">
+              <div className="modal-chip">👨‍💼 Staff Access</div>
               <h2>Register New Staff</h2>
-              <p>Create a new staff account.</p>
+              <p>
+                Staff accounts are for site access only. No customer address details are
+                required.
+              </p>
             </div>
 
-            <input
-              type="text"
-              className="modal-input styled-input"
-              placeholder="Full name"
-              value={newStaff.fullname}
-              onChange={(e) =>
-                setNewStaff((prev) => ({
-                  ...prev,
-                  fullname: e.target.value,
-                }))
-              }
-            />
-
-            <input
-              type="email"
-              className="modal-input styled-input"
-              placeholder="Email / Username"
-              value={newStaff.username}
-              onChange={(e) =>
-                setNewStaff((prev) => ({
-                  ...prev,
-                  username: e.target.value,
-                }))
-              }
-            />
-
-            <input
-              type={showStaffPassword ? 'text' : 'password'}
-              className="modal-input styled-input"
-              placeholder="Password"
-              value={newStaff.password}
-              onChange={(e) =>
-                setNewStaff((prev) => ({
-                  ...prev,
-                  password: e.target.value,
-                }))
-              }
-            />
-
-            <div className="show-password-toggle">
+            <div className="form-stack">
               <input
-                id="showStaffPassword"
-                type="checkbox"
-                checked={showStaffPassword}
-                onChange={() => setShowStaffPassword((prev) => !prev)}
+                type="text"
+                className="modal-input styled-input"
+                placeholder="Full name"
+                value={newStaff.fullname}
+                onChange={(e) =>
+                  setNewStaff((prev) => ({ ...prev, fullname: e.target.value }))
+                }
               />
-              <label htmlFor="showStaffPassword">Show Password</label>
+
+              <input
+                type="text"
+                className="modal-input styled-input"
+                placeholder="Username"
+                value={newStaff.username}
+                onChange={(e) =>
+                  setNewStaff((prev) => ({ ...prev, username: e.target.value }))
+                }
+              />
+
+              <input
+                type={showStaffPassword ? 'text' : 'password'}
+                className="modal-input styled-input"
+                placeholder="Password"
+                value={newStaff.password}
+                onChange={(e) =>
+                  setNewStaff((prev) => ({ ...prev, password: e.target.value }))
+                }
+              />
+
+              <div className="checkbox-row">
+                <input
+                  type="checkbox"
+                  id="showStaffPassword"
+                  checked={showStaffPassword}
+                  onChange={() => setShowStaffPassword((prev) => !prev)}
+                />
+                <label htmlFor="showStaffPassword">Show password</label>
+              </div>
             </div>
 
             <div className="modal-actions">
-              <button
-                className="cancel-btn"
-                type="button"
-                onClick={() => {
-                  setShowRegisterModal(false);
-                  setShowStaffPassword(false);
-                }}
-              >
+              <button className="cancel-btn" type="button" onClick={closeRegisterModal}>
                 Cancel
               </button>
-
               <button
                 className="save-btn"
                 type="button"
