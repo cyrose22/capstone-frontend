@@ -53,9 +53,10 @@
 /* GRID */
 .user-card-grid{
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 320px));
+  gap: 18px;
   margin-top: 14px;
+  justify-content: start;
 }
 
 /* CARD */
@@ -68,11 +69,15 @@
   padding: 18px;
   box-shadow: var(--shadow);
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  width: 320px;
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
 }
 
 .user-card:hover{
   transform: translateY(-4px);
-  box-shadow: var(--shadowHover);
+  box-shadow: 0 16px 32px rgba(0,0,0,0.08);
   border-color: rgba(17,24,39,0.12);
 }
 
@@ -124,7 +129,8 @@
 .user-badges{
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap:6px;
+  align-items:center;
   flex-wrap: wrap;
   justify-content: flex-end;
 }
