@@ -106,7 +106,7 @@ function PaymentModal({
       setShowToast(true);
 
       onClose();
-      navigate("/dashboard/consumer");
+      navigate("/");
     } catch (error) {
       console.error("Payment error:", error);
       setToastType("error");

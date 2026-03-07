@@ -96,6 +96,15 @@ function ConsumerDashboard() {
   }, [user, activeTab]);
 
   useEffect(() => {
+    const shouldOpenOrders = localStorage.getItem("openOrdersTab");
+
+    if (shouldOpenOrders === "true" && user?.token) {
+      setActiveTab("orders");
+      localStorage.removeItem("openOrdersTab");
+    }
+  }, [user]);
+
+  useEffect(() => {
     if (user?.id) fetchSales();
   }, [user]);
 
