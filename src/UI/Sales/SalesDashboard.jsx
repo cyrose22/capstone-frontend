@@ -121,40 +121,44 @@ function SalesDashboard() {
       <style>
         body {
           font-family: Arial, sans-serif;
-          padding: 20px;
+          padding: 24px;
           color: #111827;
         }
-        .receipt-container {
-          max-width: 760px;
-          margin: auto;
+        .print-wrap {
+          max-width: 900px;
+          margin: 0 auto;
         }
-        .receipt-header {
-          text-align: center;
-          margin-bottom: 18px;
-        }
-        .receipt-header h1 {
-          font-size: 24px;
-          margin: 0 0 8px;
+        h2 {
+          margin: 0 0 6px;
+          font-size: 28px;
           color: #111827;
         }
-        .receipt-items {
+        p {
+          margin: 6px 0;
+          font-size: 14px;
+        }
+        table {
           width: 100%;
-          font-size: 13px;
-          margin-top: 16px;
           border-collapse: collapse;
+          margin-top: 18px;
         }
-        .receipt-items th, .receipt-items td {
-          padding: 10px 8px;
+        th, td {
           border: 1px solid #e5e7eb;
+          padding: 10px 8px;
+          text-align: left;
           vertical-align: middle;
+          font-size: 13px;
         }
-        .receipt-items th {
+        th {
           background: #f8fafc;
         }
-        .receipt-items img {
+        img {
+          width: 42px;
+          height: 42px;
+          object-fit: cover;
+          border-radius: 8px;
           vertical-align: middle;
           margin-right: 8px;
-          border-radius: 8px;
         }
       </style>
     `;
@@ -167,7 +171,7 @@ function SalesDashboard() {
           ${style}
         </head>
         <body>
-          <div class="receipt-container">
+          <div class="print-wrap">
             ${receiptContent.innerHTML}
           </div>
         </body>
@@ -740,11 +744,18 @@ function SalesDashboard() {
             onClick={() => setSelectedSale(null)}
           >
             <div
-              className="modal-content fancy-receipt sd__modal sd__modal--wide"
+              className="modal-content sd__modal sd__modal--invoice"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="sd__modalHeader">
-                <h3>Receipt</h3>
+              <div className="sd__invoiceTop">
+                <div>
+                  <div className="sd__invoiceChip">🧾 Receipt Preview</div>
+                  <h3 className="sd__invoiceTitle">Sales Receipt</h3>
+                  <p className="sd__invoiceSub">
+                    Review order details before printing.
+                  </p>
+                </div>
+
                 <button
                   className="sd__modalX"
                   onClick={() => setSelectedSale(null)}
@@ -754,88 +765,123 @@ function SalesDashboard() {
                 </button>
               </div>
 
-              <div id="receipt-content" className="sd__receipt">
-                <h2>Oscar D’Gr8 Sales Receipt</h2>
-                <p>
-                  <strong>Receipt ID:</strong> #{selectedSale.id}
-                </p>
-                <p>
-                  <strong>Customer:</strong> {selectedSale.customer_name || 'N/A'}
-                </p>
-                <p>
-                  <strong>Contact:</strong> {selectedSale.contact || 'N/A'}
-                </p>
-                <p>
-                  <strong>Payment:</strong> {selectedSale.payment_method || 'N/A'}
-                </p>
-                <p>
-                  <strong>Status:</strong> {selectedSale.status}
-                </p>
-                <p>
-                  <strong>Date:</strong>{' '}
-                  {new Date(selectedSale.created_at).toLocaleString()}
-                </p>
+              <div id="receipt-content" className="sd__invoiceCard">
+                <div className="sd__invoiceHeader">
+                  <div>
+                    <h2>Oscar D’Gr8</h2>
+                    <p>Pet supplies and essentials</p>
+                  </div>
 
-                <table className="receipt-items">
-                  <thead>
-                    <tr>
-                      <th>Item</th>
-                      <th>Qty</th>
-                      <th>Price</th>
-                      <th>Subtotal</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {selectedSale.items?.map((item, idx) => (
-                      <tr key={idx}>
-                        <td>
-                          <img
-                            src={item.variant_image || item.product_image}
-                            alt={item.variant_name || item.product_name}
-                            style={{
-                              width: '40px',
-                              height: '40px',
-                              marginRight: '6px',
-                              objectFit: 'cover',
-                              verticalAlign: 'middle',
-                              borderRadius: 8,
-                            }}
-                          />
-                          {item.variant_name || item.product_name}
-                        </td>
-                        <td>{item.quantity}</td>
-                        <td>
-                          ₱
-                          {Number(item.price).toLocaleString('en-PH', {
-                            minimumFractionDigits: 2,
-                          })}
-                        </td>
-                        <td>
-                          ₱
-                          {(Number(item.quantity) * Number(item.price)).toLocaleString('en-PH', {
-                            minimumFractionDigits: 2,
-                          })}
-                        </td>
+                  <div className="sd__invoiceMeta">
+                    <div>
+                      <span>Receipt No.</span>
+                      <strong>#{selectedSale.id}</strong>
+                    </div>
+                    <div>
+                      <span>Date</span>
+                      <strong>{new Date(selectedSale.created_at).toLocaleString()}</strong>
+                    </div>
+                    <div>
+                      <span>Status</span>
+                      <strong className="sd__invoiceStatus">{selectedSale.status}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="sd__invoiceInfoGrid">
+                  <div className="sd__invoiceInfoBox">
+                    <span>Customer</span>
+                    <strong>{selectedSale.customer_name || 'N/A'}</strong>
+                  </div>
+
+                  <div className="sd__invoiceInfoBox">
+                    <span>Contact</span>
+                    <strong>{selectedSale.contact || 'N/A'}</strong>
+                  </div>
+
+                  <div className="sd__invoiceInfoBox">
+                    <span>Payment Method</span>
+                    <strong>{selectedSale.payment_method || 'N/A'}</strong>
+                  </div>
+
+                  <div className="sd__invoiceInfoBox">
+                    <span>Total Amount</span>
+                    <strong>
+                      ₱
+                      {Number(selectedSale.total).toLocaleString('en-PH', {
+                        minimumFractionDigits: 2,
+                      })}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="sd__invoiceItemsWrap">
+                  <table className="sd__invoiceTable">
+                    <thead>
+                      <tr>
+                        <th>Item</th>
+                        <th>Variant</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Subtotal</th>
                       </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td colSpan="3">Total</td>
-                      <td>
-                        ₱
-                        {Number(selectedSale.total).toLocaleString('en-PH', {
-                          minimumFractionDigits: 2,
-                        })}
-                      </td>
-                    </tr>
-                  </tfoot>
-                </table>
+                    </thead>
+                    <tbody>
+                      {selectedSale.items?.map((item, idx) => (
+                        <tr key={idx}>
+                          <td>
+                            <div className="sd__invoiceItemCell">
+                              <img
+                                src={item.variant_image || item.product_image}
+                                alt={item.variant_name || item.product_name}
+                                className="sd__invoiceItemImg"
+                              />
+                              <div className="sd__invoiceItemText">
+                                <strong>{item.product_name || 'Product'}</strong>
+                              </div>
+                            </div>
+                          </td>
+                          <td>{item.variant_name || 'Original'}</td>
+                          <td>{item.quantity}</td>
+                          <td>
+                            ₱
+                            {Number(item.price).toLocaleString('en-PH', {
+                              minimumFractionDigits: 2,
+                            })}
+                          </td>
+                          <td>
+                            ₱
+                            {(Number(item.quantity) * Number(item.price)).toLocaleString(
+                              'en-PH',
+                              { minimumFractionDigits: 2 }
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="sd__invoiceFooter">
+                  <div className="sd__invoiceNote">
+                    Thank you for your purchase.
+                  </div>
+
+                  <div className="sd__invoiceTotalCard">
+                    <span>Grand Total</span>
+                    <strong>
+                      ₱
+                      {Number(selectedSale.total).toLocaleString('en-PH', {
+                        minimumFractionDigits: 2,
+                      })}
+                    </strong>
+                  </div>
+                </div>
               </div>
 
-              <div className="modal-actions sd__modalActions">
+              <div className="sd__modalActions">
                 <button className="sd__btn sd__btn--primary" onClick={handlePrint}>
-                  🖨️ Print
+                  🖨️ Print Receipt
                 </button>
                 <button className="sd__btn" onClick={() => setSelectedSale(null)}>
                   Close

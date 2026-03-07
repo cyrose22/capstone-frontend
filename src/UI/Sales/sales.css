@@ -594,3 +594,257 @@
     width: 100%;
   }
 }
+
+/* Better invoice modal */
+.sd__modal--invoice{
+  width: min(900px, 94vw);
+  padding: 20px;
+  border-radius: 24px;
+}
+
+.sd__invoiceTop{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.sd__invoiceChip{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(37, 99, 235, 0.10);
+  color: #1d4ed8;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.84rem;
+  margin-bottom: 10px;
+}
+
+.sd__invoiceTitle{
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.45rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.sd__invoiceSub{
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 0.93rem;
+  font-weight: 600;
+}
+
+.sd__invoiceCard{
+  border-radius: 22px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
+  padding: 22px;
+}
+
+.sd__invoiceHeader{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  margin-bottom: 18px;
+}
+
+.sd__invoiceHeader h2{
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 950;
+  color: #0f172a;
+}
+
+.sd__invoiceHeader p{
+  margin: 6px 0 0;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.sd__invoiceMeta{
+  display: grid;
+  gap: 10px;
+  min-width: 220px;
+}
+
+.sd__invoiceMeta div{
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.sd__invoiceMeta span{
+  display: block;
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.sd__invoiceMeta strong{
+  color: #0f172a;
+  font-size: 0.92rem;
+  font-weight: 900;
+}
+
+.sd__invoiceStatus{
+  text-transform: capitalize;
+}
+
+.sd__invoiceInfoGrid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.sd__invoiceInfoBox{
+  padding: 14px;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.sd__invoiceInfoBox span{
+  display: block;
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.sd__invoiceInfoBox strong{
+  color: #0f172a;
+  font-size: 0.98rem;
+  font-weight: 900;
+}
+
+.sd__invoiceItemsWrap{
+  overflow-x: auto;
+}
+
+.sd__invoiceTable{
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 6px;
+}
+
+.sd__invoiceTable th,
+.sd__invoiceTable td{
+  text-align: left;
+  padding: 12px 10px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  vertical-align: middle;
+  font-size: 0.92rem;
+}
+
+.sd__invoiceTable th{
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.sd__invoiceItemCell{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 220px;
+}
+
+.sd__invoiceItemImg{
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  flex-shrink: 0;
+}
+
+.sd__invoiceItemText{
+  min-width: 0;
+}
+
+.sd__invoiceItemText strong{
+  color: #0f172a;
+  font-weight: 900;
+}
+
+.sd__invoiceFooter{
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.sd__invoiceNote{
+  color: #64748b;
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.sd__invoiceTotalCard{
+  min-width: 220px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border: 1px solid rgba(37, 99, 235, 0.12);
+  text-align: right;
+}
+
+.sd__invoiceTotalCard span{
+  display: block;
+  color: #1e40af;
+  font-size: 0.84rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.sd__invoiceTotalCard strong{
+  color: #0f172a;
+  font-size: 1.35rem;
+  font-weight: 950;
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 768px){
+  .sd__modal--invoice{
+    width: min(96vw, 96vw);
+    padding: 16px;
+  }
+
+  .sd__invoiceHeader{
+    flex-direction: column;
+  }
+
+  .sd__invoiceMeta{
+    width: 100%;
+    min-width: 0;
+  }
+
+  .sd__invoiceInfoGrid{
+    grid-template-columns: 1fr;
+  }
+
+  .sd__invoiceFooter{
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sd__invoiceTotalCard{
+    width: 100%;
+    text-align: left;
+  }
+}
