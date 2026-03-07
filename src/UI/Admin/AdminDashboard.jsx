@@ -414,50 +414,198 @@ function AdminDashboard() {
       </div>
 
       {editingUser && (
-        <div className="modal-overlay" onClick={closePasswordModal}>
+        <div
+          onClick={closePasswordModal}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(15, 23, 42, 0.45)",
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px",
+            zIndex: 1000,
+          }}
+        >
           <div
-            className="modal-content animated-modal"
             onClick={(e) => e.stopPropagation()}
+            style={{
+              width: "100%",
+              maxWidth: "460px",
+              background: "rgba(255,255,255,0.97)",
+              borderRadius: "24px",
+              border: "1px solid rgba(255,255,255,0.8)",
+              boxShadow: "0 24px 60px rgba(15, 23, 42, 0.20)",
+              padding: "24px",
+              position: "relative",
+            }}
           >
-            <button className="modal-close" type="button" onClick={closePasswordModal}>
-              ×
+            <button
+              onClick={closePasswordModal}
+              style={{
+                position: "absolute",
+                top: "14px",
+                right: "14px",
+                width: "38px",
+                height: "38px",
+                borderRadius: "50%",
+                border: "none",
+                background: "#f3f4f6",
+                color: "#374151",
+                fontSize: "1.1rem",
+                cursor: "pointer",
+                fontWeight: "700",
+              }}
+            >
+              ✕
             </button>
 
-            <div className="modal-header">
-              <div className="modal-chip">🔐 Security</div>
-              <h2>Change Password</h2>
-              <p>Update password for {editingUser.fullname}</p>
+            <div style={{ marginBottom: "18px" }}>
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  background: "rgba(255,107,53,0.12)",
+                  color: "#c2410c",
+                  padding: "8px 12px",
+                  borderRadius: "999px",
+                  fontWeight: "700",
+                  fontSize: "0.84rem",
+                  marginBottom: "14px",
+                }}
+              >
+                🔐 Security
+              </div>
+
+              <h2
+                style={{
+                  margin: 0,
+                  fontSize: "1.4rem",
+                  color: "#111827",
+                  fontWeight: "800",
+                }}
+              >
+                Change Password
+              </h2>
+
+              <p
+                style={{
+                  margin: "8px 0 0",
+                  fontSize: "0.92rem",
+                  color: "#6b7280",
+                  lineHeight: 1.5,
+                }}
+              >
+                Update password for {editingUser.fullname}
+              </p>
             </div>
 
-            <input
-              type={showPassword ? 'text' : 'password'}
-              className="modal-input styled-input"
-              placeholder="Enter new password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
+            <div style={{ marginBottom: "14px" }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter new password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "14px 16px",
+                  borderRadius: "14px",
+                  border: "1px solid #e5e7eb",
+                  background: "#ffffff",
+                  fontSize: "0.95rem",
+                  color: "#111827",
+                  outline: "none",
+                  transition: "all 0.2s ease",
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
 
-            <div className="checkbox-row">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                marginBottom: "22px",
+              }}
+            >
               <input
                 type="checkbox"
                 id="showPassword"
                 checked={showPassword}
                 onChange={() => setShowPassword((prev) => !prev)}
+                style={{
+                  width: "18px",
+                  height: "18px",
+                  margin: 0,
+                  cursor: "pointer",
+                  accentColor: "#22c55e",
+                  flexShrink: 0,
+                }}
               />
-              <label htmlFor="showPassword">Show password</label>
+
+              <label
+                htmlFor="showPassword"
+                style={{
+                  fontSize: "0.92rem",
+                  color: "#374151",
+                  cursor: "pointer",
+                  userSelect: "none",
+                  lineHeight: 1.2,
+                }}
+              >
+                Show password
+              </label>
             </div>
 
-            <div className="modal-actions">
-              <button className="cancel-btn" type="button" onClick={closePasswordModal}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: "10px",
+                flexWrap: "wrap",
+              }}
+            >
+              <button
+                onClick={closePasswordModal}
+                style={{
+                  padding: "12px 16px",
+                  borderRadius: "14px",
+                  border: "1px solid #e5e7eb",
+                  background: "#f9fafb",
+                  color: "#111827",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                }}
+              >
                 Cancel
               </button>
+
               <button
-                className="save-btn"
-                type="button"
                 onClick={handleSavePassword}
                 disabled={saving || !newPassword.trim()}
+                style={{
+                  padding: "12px 18px",
+                  borderRadius: "14px",
+                  border: "none",
+                  background:
+                    saving || !newPassword.trim()
+                      ? "#d1d5db"
+                      : "linear-gradient(135deg, #16a34a, #22c55e)",
+                  color: "#fff",
+                  fontWeight: "800",
+                  cursor: saving || !newPassword.trim() ? "not-allowed" : "pointer",
+                  opacity: saving || !newPassword.trim() ? 0.7 : 1,
+                  boxShadow:
+                    saving || !newPassword.trim()
+                      ? "none"
+                      : "0 12px 24px rgba(34, 197, 94, 0.22)",
+                }}
               >
-                {saving ? 'Saving...' : 'Save Password'}
+                {saving ? "Saving..." : "Save Password"}
               </button>
             </div>
           </div>
