@@ -37,7 +37,7 @@ function Chatbot() {
   const quickReplies = [
     { label: "Home", icon: <House size={14} /> },
     { label: "Products", icon: <ShoppingBag size={14} /> },
-    { label: "Track Order", icon: <Truck size={14} /> },
+    { label: "Order Status", icon: <Truck size={14} /> },
     { label: "Payment", icon: <CreditCard size={14} /> },
     { label: "Delivery", icon: <Truck size={14} /> },
     { label: "Contact", icon: <Phone size={14} /> },
@@ -264,6 +264,24 @@ function Chatbot() {
               </div>
             ))}
           </div>
+          {message.text.footer && (
+            <div
+              style={{
+                marginTop: "12px",
+                textAlign: "center",
+                fontWeight: 700,
+                fontSize: "12px",
+                color: "#4f46e5",
+                cursor: "pointer",
+                background: "#eef2ff",
+                padding: "8px 12px",
+                borderRadius: "999px"
+              }}
+              onClick={() => window.location.href = "/products"}
+            >
+              {message.text.footer}
+            </div>
+          )}
         </div>
       );
     }
