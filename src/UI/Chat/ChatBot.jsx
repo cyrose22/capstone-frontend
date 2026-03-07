@@ -37,6 +37,7 @@ function Chatbot() {
   const quickReplies = [
     { label: "Home", icon: <House size={14} /> },
     { label: "Products", icon: <ShoppingBag size={14} /> },
+    { label: "Track Order", icon: <Truck size={14} /> },
     { label: "Payment", icon: <CreditCard size={14} /> },
     { label: "Delivery", icon: <Truck size={14} /> },
     { label: "Contact", icon: <Phone size={14} /> },
@@ -262,6 +263,71 @@ function Chatbot() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (message.text?.type === "order_status") {
+      const order = message.text.order || {};
+
+      return (
+        <div>
+          <div
+            style={{
+              marginBottom: "10px",
+              fontWeight: 800,
+              color: "#111827",
+            }}
+          >
+            📦 Order #{order.id}
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gap: "8px",
+              background: "#ffffff",
+              border: "1px solid #e5e7eb",
+              borderRadius: "14px",
+              padding: "12px",
+              boxShadow: "0 4px 12px rgba(15,23,42,0.06)",
+            }}
+          >
+            <div>
+              <strong>Status:</strong>{" "}
+              <span
+                style={{
+                  padding: "4px 10px",
+                  borderRadius: "999px",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  background:
+                    order.status === "completed"
+                      ? "rgba(34,197,94,0.15)"
+                      : order.status === "processing"
+                      ? "rgba(245,158,11,0.15)"
+                      : order.status === "cancelled"
+                      ? "rgba(239,68,68,0.15)"
+                      : "rgba(59,130,246,0.15)",
+                  color:
+                    order.status === "completed"
+                      ? "#15803d"
+                      : order.status === "processing"
+                      ? "#b45309"
+                      : order.status === "cancelled"
+                      ? "#b91c1c"
+                      : "#1d4ed8",
+                }}
+              >
+                {order.status}
+              </span>
+            </div>
+            <div><strong>Customer:</strong> {order.customer_name}</div>
+            <div><strong>Contact:</strong> {order.contact}</div>
+            <div><strong>Payment:</strong> {order.payment_method}</div>
+            <div><strong>Total:</strong> {order.total}</div>
+            <div><strong>Date:</strong> {order.created_at}</div>
           </div>
         </div>
       );
