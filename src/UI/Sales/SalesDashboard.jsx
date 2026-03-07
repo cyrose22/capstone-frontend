@@ -361,6 +361,8 @@ function SalesDashboard() {
         : 'All Completed Sales';
 
     const reportWindow = window.open('', '_blank');
+    const logoUrl = logo;
+
     reportWindow.document.write(`
       <html>
       <head>
