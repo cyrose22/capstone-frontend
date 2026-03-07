@@ -44,14 +44,14 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
           : [
               {
                 id: `original-${p.id}`,
-                variant_name: "Original",
+                variant_name: p.name,
                 price: p.price,
                 quantity: toNumber(p.quantity),
                 images: p.image ? [p.image] : [],
               },
             ];
 
-        const hasVariants = finalVariants.length > 0;
+        const hasVariants = variants.length > 0;
 
         const displayPrice = finalVariants.length
           ? toNumber(finalVariants[0].price)
@@ -140,7 +140,7 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
       price: toNumber(variant?.price ?? product.price),
       quantity: 1,
       variantId: variant?.id ?? `original-${product.id}`,
-      variantName: variant?.variant_name ?? "Original",
+      variantName: variant?.variant_name ?? product.name,
       variantImage: variant?.images?.[0] ?? product.image ?? null,
       image: product.image ?? null,
     });

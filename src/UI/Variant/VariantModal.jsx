@@ -228,20 +228,23 @@ function VariantModal({
         </div>
 
         {/* Variant Info */}
+        {variant?.variant_name &&
+          variant.variant_name !== product.name &&
+          variant.variant_name.toLowerCase() !== "original" && (
+            <p
+              style={{
+                margin: "18px 0 6px",
+                fontWeight: "700",
+                fontSize: "1.05rem",
+                color: "#374151",
+              }}
+            >
+              {variant.variant_name}
+            </p>
+          )}
         <p
           style={{
-            margin: "18px 0 6px",
-            fontWeight: "700",
-            fontSize: "1.05rem",
-            color: "#374151",
-          }}
-        >
-          {variant.variant_name}
-        </p>
-
-        <p
-          style={{
-            margin: "0",
+            margin: variant.variant_name ? "0" : "18px 0 0",
             color: "#e74c3c",
             fontWeight: "900",
             fontSize: "1.5rem",
