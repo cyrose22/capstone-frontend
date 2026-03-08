@@ -69,8 +69,6 @@ function PaymentModal({
       return;
     }
 
-    console.log("PAYMENT MODAL cart prop:", cart);
-
     const cleanedCart = cart.map((item) => ({
       productId: Number(item.productId || item.id),
       variantId:
@@ -84,8 +82,6 @@ function PaymentModal({
       variantImage: item.variantImage || item.imageUrl || item.image || null,
     }));
 
-    console.log("CLEANED CART:", cleanedCart);
-
     try {
       const uploadedUrl = await uploadReceipt();
 
@@ -97,9 +93,7 @@ function PaymentModal({
         contact: user.contact,
         customer_name: user.fullname,
       };
-
-      console.log("SALE PAYLOAD:", salePayload);
-
+      
       const createdSale = await axios.post(
         "https://capstone-backend-kiax.onrender.com/sales",
         salePayload

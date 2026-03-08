@@ -204,8 +204,6 @@ function ConsumerDashboard() {
   };
 
   const addToCart = (product, variant = null) => {
-    console.log("ADD TO CART variant:", variant);
-
     const hasVariants =
       Array.isArray(product.variants) && product.variants.length > 0;
 
@@ -243,8 +241,6 @@ function ConsumerDashboard() {
         autoVariant?.variantImage ?? product.variantImage ?? product.image ?? null,
       quantity: 1,
     };
-
-    console.log("CART ITEM TO SAVE:", cartItem);
 
     setCart((prev) => {
       const existing = prev.find(
@@ -290,7 +286,6 @@ function ConsumerDashboard() {
       return;
     }
 
-    console.log("Checkout payload:", payload);
     setCheckoutItems(payload?.items || []);
     setShowCartModal(false);
     setShowPaymentModal(true);
