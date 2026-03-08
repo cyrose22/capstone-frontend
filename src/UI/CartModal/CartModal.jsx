@@ -21,13 +21,18 @@ function CartModal({
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const getAvailableStock = (item) => {
-    return Number(
+    const rawStock =
       item.stock ??
-        item.variantStock ??
-        item.quantity_available ??
-        item.availableStock ??
-        0
-    );
+      item.variantStock ??
+      item.quantity_available ??
+      item.availableStock;
+
+    if (rawStock === undefined || rawStock === null || rawStock === "") {
+      return null;
+    }
+
+    const parsed = Number(rawStock);
+    return Number.isNaN(parsed) ? null : parsed;
   };
 
   const handleSelectPayment = () => {
@@ -37,6 +42,9 @@ function CartModal({
   const handleCheckout = () => {
     const invalidItem = cart.find((item) => {
       const availableStock = getAvailableStock(item);
+
+      if (availableStock === null) return false;
+
       return Number(item.quantity || 0) > availableStock;
     });
 
@@ -59,24 +67,7 @@ function CartModal({
       return;
     }
 
-    const payload = {
-      userId,
-      items: cart.map((item) => ({
-        productId: Number(item.productId || item.id),
-        quantity: Number(item.quantity || 1),
-        price: Number(item.price || 0),
-        variantId:
-          item.variantId !== undefined && item.variantId !== null
-            ? Number(item.variantId)
-            : null,
-        variantName: item.variantName || null,
-        variantImage: item.variantImage || item.image || null,
-      })),
-    };
-
-    if (onCheckout) {
-      onCheckout(payload);
-    } else if (setShowPaymentModal) {
+    if (setShowPaymentModal) {
       setShowPaymentModal(true);
     }
   };
@@ -194,7 +185,13 @@ function CartModal({
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {cart.map((item) => {
                 const availableStock = getAvailableStock(item);
-                const isOverStock = Number(item.quantity || 0) > availableStock;
+                const isOverStock =
+                  availableStock !== null &&
+                  Number(item.quantity || 0) > availableStock;
+
+                const isAtMaxStock =
+                  availableStock !== null &&
+                  Number(item.quantity || 0) >= availableStock;
 
                 return (
                   <div
@@ -275,7 +272,9 @@ function CartModal({
                           {formatCurrency(item.price)}
                         </div>
 
-                        <div style={{ color: "#94a3b8", fontWeight: 800 }}>•</div>
+                        <div style={{ color: "#94a3b8", fontWeight: 800 }}>
+                          •
+                        </div>
 
                         <div
                           style={{
@@ -292,10 +291,15 @@ function CartModal({
                           style={{
                             fontSize: 12,
                             fontWeight: 800,
-                            color: isOverStock ? "#dc2626" : "#16a34a",
+                            color:
+                              availableStock === null
+                                ? "#f59e0b"
+                                : isOverStock
+                                ? "#dc2626"
+                                : "#16a34a",
                           }}
                         >
-                          Stock: {availableStock}
+                          Stock: {availableStock ?? "—"}
                         </div>
                       </div>
 
@@ -379,6 +383,7 @@ function CartModal({
                           />
 
                           <button
+                            disabled={isAtMaxStock}
                             onClick={() =>
                               updateCartQuantity(
                                 item.id,
@@ -392,10 +397,11 @@ function CartModal({
                               height: 34,
                               borderRadius: 12,
                               border: "1px solid rgba(0,0,0,0.08)",
-                              background: "#fff",
-                              cursor: "pointer",
+                              background: isAtMaxStock ? "#e5e7eb" : "#fff",
+                              cursor: isAtMaxStock ? "not-allowed" : "pointer",
                               fontWeight: 900,
                               color: "#0f172a",
+                              opacity: isAtMaxStock ? 0.6 : 1,
                             }}
                           >
                             +
