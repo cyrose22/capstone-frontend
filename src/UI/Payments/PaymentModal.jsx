@@ -69,7 +69,7 @@ function PaymentModal({
       return;
     }
 
-    console.log("CART BEFORE CLEAN:", cart);
+    console.log("PAYMENT MODAL cart prop:", cart);
 
     const cleanedCart = cart.map((item) => ({
       productId: Number(item.productId || item.id),

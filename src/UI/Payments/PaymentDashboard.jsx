@@ -468,18 +468,31 @@ const PaymentDashboard = ({
   const [submitting, setSubmitting] = useState(false);
   const [showGCashModal, setShowGCashModal] = useState(false);
 
-  const createOrder = async (receiptUrl = "", contactOverride = "") => {
+  const createOrder = async (contactOverride = "") => {
     const cleanedCart = cart.map((item) => ({
-      productId: item.productId || item.id,
-      quantity: item.quantity,
-      price: item.price,
+      productId: Number(item.productId || item.id),
+      variantId:
+        item.variantId !== undefined &&
+        item.variantId !== null &&
+        !Number.isNaN(Number(item.variantId))
+          ? Number(item.variantId)
+          : null,
+      quantity: Number(item.quantity || 1),
+      price: Number(item.price || 0),
+      variantName: item.variantName || item.name,
+      variantImage: item.variantImage || item.image || null,
     }));
+
+    if (cleanedCart.some((i) => i.variantId === null)) {
+      console.error("Invalid checkout items:", cleanedCart);
+      alert("A product variant is missing. Please re-add the item.");
+      return;
+    }
 
     const salePayload = {
       userId: user.id,
       items: cleanedCart,
       payment_method: paymentMethod,
-      receipt_url: receiptUrl,
       contact: contactOverride || user.contact,
       customer_name: user.fullname,
     };
@@ -739,7 +752,7 @@ const PaymentDashboard = ({
           user={user}
           onSuccess={async (ref, normalized) => {
             setShowGCashModal(false);
-            await createOrder(ref, normalized);
+            await createOrder(normalized);
           }}
           onCancel={() => setShowGCashModal(false)}
         />
