@@ -211,9 +211,10 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
 
                 <div
                   className="shop-card-image"
-                  onClick={() =>
-                    p.hasVariants ? openVariantModal(p, 0) : handleAddToCart(p)
-                  }
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    p.hasVariants ? openVariantModal(p, 0) : handleAddToCart(p);
+                  }}
                   style={{
                     cursor: p.displayQuantity > 0 ? "pointer" : "default",
                   }}
@@ -253,9 +254,10 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
 
                   <button
                     className="shop-card-btn"
-                    onClick={() =>
-                      p.hasVariants ? openVariantModal(p, 0) : handleAddToCart(p)
-                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      p.hasVariants ? openVariantModal(p, 0) : handleAddToCart(p);
+                    }}
                     disabled={p.displayQuantity <= 0}
                   >
                     🛒 {p.hasVariants ? "Choose Options" : "Add to Cart"}

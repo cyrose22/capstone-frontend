@@ -203,6 +203,7 @@ function ConsumerDashboard() {
   };
 
   const addToCart = (product, variant = null) => {
+    console.log("ADD TO CART variant:", variant);
     const hasVariants = Array.isArray(product.variants) && product.variants.length > 0;
 
     // auto-pick the only variant if there is exactly one
