@@ -51,7 +51,7 @@ function VariantModal({
       variantId: variant?.id ?? null,
       variantName: variant?.variant_name ?? product.name,
       variantImage: variant?.image ?? product.image ?? null,
-      price: toNumber(variant?.price ?? product.price),
+      price: Number(variant?.price ?? product.price),
     });
   };
 
