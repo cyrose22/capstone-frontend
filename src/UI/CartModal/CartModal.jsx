@@ -19,9 +19,7 @@ function CartModal({
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleSelectPayment = () => {
-    if (setShowPaymentModal) {
-      setShowPaymentModal(true);
-    }
+    handleCheckout();
   };
 
   const handleCheckout = () => {
