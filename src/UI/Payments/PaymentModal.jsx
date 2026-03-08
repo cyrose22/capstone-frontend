@@ -93,7 +93,7 @@ function PaymentModal({
         contact: user.contact,
         customer_name: user.fullname,
       };
-      
+
       const createdSale = await axios.post(
         "https://capstone-backend-kiax.onrender.com/sales",
         salePayload
@@ -110,11 +110,14 @@ function PaymentModal({
       if (clearCart) clearCart();
 
       setToastType("success");
-      setToastMessage("✅ Order placed successfully!");
+      setToastMessage("✅ Order has been placed.");
       setShowToast(true);
 
       onClose();
-      navigate("/");
+
+      setTimeout(() => {
+        navigate("/order-history");
+      }, 1500);
     } catch (error) {
       console.error("Payment error:", error);
       setToastType("error");
