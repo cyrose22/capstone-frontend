@@ -79,6 +79,15 @@ function PaymentModal({
       variantImage: item.variantImage || item.imageUrl || item.image || null,
     }));
 
+    const hasMissingVariant = cleanedCart.some((item) => !item.variantId);
+
+    if (hasMissingVariant) {
+      setToastType("error");
+      setToastMessage("❌ Please select a variant before checkout.");
+      setShowToast(true);
+      return;
+    }
+
     try {
       const uploadedUrl = await uploadReceipt();
 
@@ -119,7 +128,7 @@ function PaymentModal({
       setShowToast(true);
     }
   };
-
+  
   return (
     <div
       onClick={onClose}
