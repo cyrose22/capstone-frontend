@@ -9,9 +9,11 @@ function NotificationPanel({
 }) {
   const [open, setOpen] = useState(false);
 
+  const safeNotifications = user?.id ? notifications || [] : [];
+
   const unreadCount = useMemo(
-    () => (notifications || []).filter((item) => !item.is_read).length,
-    [notifications]
+    () => safeNotifications.filter((item) => !item.is_read).length,
+    [safeNotifications]
   );
 
   const getTimeAgo = (dateString) => {
@@ -49,6 +51,13 @@ function NotificationPanel({
       document.body.style.overflow = prev;
     };
   }, [open]);
+
+  useEffect(() => {
+    if (!user?.id) {
+      setOpen(false);
+      setNotifications([]);
+    }
+  }, [user, setNotifications]);
 
   const markOneAsRead = async (notificationId) => {
     try {
@@ -110,9 +119,13 @@ function NotificationPanel({
     }
   };
 
-  const sortedNotifications = [...(notifications || [])].sort(
+  const sortedNotifications = [...safeNotifications].sort(
     (a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)
   );
+
+  if (!user?.id) {
+    return null;
+  }
 
   return (
     <div
@@ -197,10 +210,10 @@ function NotificationPanel({
               }}
             >
               <h3 style={{ margin: 0 }}>
-                🔔 Notifications ({notifications.length})
+                🔔 Notifications ({safeNotifications.length})
               </h3>
 
-              {notifications.length > 0 && (
+              {safeNotifications.length > 0 && (
                 <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                   <button
                     onClick={markAllAsRead}
