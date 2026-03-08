@@ -551,6 +551,7 @@ function ConsumerDashboard() {
           setShowToast={setShowToast}
           onClose={() => setShowPaymentModal(false)}
           clearCart={() => setCart([])}
+          fetchProducts={fetchProducts}
         />
       )}
 

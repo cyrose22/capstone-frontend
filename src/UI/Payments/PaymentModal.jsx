@@ -15,6 +15,7 @@ function PaymentModal({
   setShowToast,
   onClose,
   clearCart,
+  fetchProducts,
 }) {
   const [receiptFile, setReceiptFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -94,6 +95,10 @@ function PaymentModal({
         "https://capstone-backend-kiax.onrender.com/sales",
         salePayload
       );
+
+      if (fetchProducts) {
+        await fetchProducts();
+      }
 
       localStorage.setItem("orderSuccess", "true");
       localStorage.setItem("recentOrderId", String(createdSale.data.saleId));
