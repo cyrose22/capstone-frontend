@@ -204,58 +204,64 @@ function ConsumerDashboard() {
 
   const addToCart = (product, variant = null) => {
     console.log("ADD TO CART variant:", variant);
-    const hasVariants = Array.isArray(product.variants) && product.variants.length > 0;
 
-    // auto-pick the only variant if there is exactly one
+    const hasVariants =
+      Array.isArray(product.variants) && product.variants.length > 0;
+
     const autoVariant =
       !variant && hasVariants && product.variants.length === 1
         ? {
-            variantId: product.variants[0].id,
+            variantId: Number(product.variants[0].id),
             variantName: product.variants[0].variant_name,
-            variantImage: product.variants[0].image || product.image,
-            price: product.variants[0].price,
+            variantImage: product.variants[0].image || product.image || null,
+            price: Number(product.variants[0].price ?? product.price ?? 0),
           }
         : variant;
 
-    // block add-to-cart if product has multiple variants but none selected
     if (hasVariants && !autoVariant?.variantId) {
       showToastMessage("❌ Please choose a variant first", "error");
       return;
     }
 
     const resolvedVariantId =
-      autoVariant?.variantId ?? product.variantId ?? null;
+      autoVariant?.variantId !== undefined && autoVariant?.variantId !== null
+        ? Number(autoVariant.variantId)
+        : product.variantId !== undefined && product.variantId !== null
+        ? Number(product.variantId)
+        : null;
+
+    const cartItem = {
+      id: Number(product.id),
+      productId: Number(product.id),
+      name: product.name,
+      price: Number(autoVariant?.price ?? product.price ?? 0),
+      image: product.image || null,
+      variantId: resolvedVariantId,
+      variantName: autoVariant?.variantName ?? product.variantName ?? product.name,
+      variantImage:
+        autoVariant?.variantImage ?? product.variantImage ?? product.image ?? null,
+      quantity: 1,
+    };
+
+    console.log("CART ITEM TO SAVE:", cartItem);
 
     setCart((prev) => {
       const existing = prev.find(
         (item) =>
-          item.id === product.id &&
-          item.variantId === resolvedVariantId
+          Number(item.productId || item.id) === cartItem.productId &&
+          Number(item.variantId ?? 0) === Number(cartItem.variantId ?? 0)
       );
 
       if (existing) {
         return prev.map((item) =>
-          item.id === product.id &&
-          item.variantId === resolvedVariantId
+          Number(item.productId || item.id) === cartItem.productId &&
+          Number(item.variantId ?? 0) === Number(cartItem.variantId ?? 0)
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       }
 
-      return [
-        ...prev,
-        {
-          id: product.id,
-          productId: product.id,
-          name: product.name,
-          price: autoVariant?.price ?? product.price,
-          image: product.image || null,
-          variantId: resolvedVariantId,
-          variantName: autoVariant?.variantName ?? product.variantName ?? null,
-          variantImage: autoVariant?.variantImage ?? product.variantImage ?? null,
-          quantity: 1,
-        },
-      ];
+      return [...prev, cartItem];
     });
 
     setCartBounce(true);

@@ -48,7 +48,7 @@ function VariantModal({
     if (!product || !variant) return;
 
     addToCart(product, {
-      variantId: variant.id,
+      variantId: variant.id ? Number(variant.id) : null,
       variantName: variant.variant_name,
       variantImage: variant.image || product.image || null,
       price: Number(variant.price ?? product.price ?? 0),

@@ -72,10 +72,13 @@ function PaymentModal({
     console.log("CART BEFORE CLEAN:", cart);
 
     const cleanedCart = cart.map((item) => ({
-      productId: item.productId || item.id,
-      variantId: item.variantId || null,
-      quantity: item.quantity,
-      price: item.price,
+      productId: Number(item.productId || item.id),
+      variantId:
+        item.variantId !== undefined && item.variantId !== null
+          ? Number(item.variantId)
+          : null,
+      quantity: Number(item.quantity || 1),
+      price: Number(item.price || 0),
       variantName:
         item.variantName || item.variant_name || item.name || "Product",
       variantImage: item.variantImage || item.imageUrl || item.image || null,
@@ -125,7 +128,7 @@ function PaymentModal({
       setShowToast(true);
     }
   };
-  
+
   return (
     <div
       onClick={onClose}

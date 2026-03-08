@@ -38,8 +38,11 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
         const finalVariants = variants.length
           ? variants.map((v, idx) => ({
               ...v,
-              id: v.id ?? `${p.id}-variant-${idx}`,
+              id: Number(v.id ?? `${p.id}${idx}`),
+              image: v.image || null,
               images: v.image ? [v.image] : [],
+              price: toNumber(v.price),
+              quantity: toNumber(v.quantity),
             }))
           : [
               {
