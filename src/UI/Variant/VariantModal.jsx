@@ -23,7 +23,7 @@ function VariantModal({
   const variants = product.variants;
   const variant = variants[selectedVariantIndex];
   const stockQty = Number(variant?.quantity || 0);
-  const imageSrc = variant.images?.[0] || product.image || "";
+  const imageSrc = variant.image || product.image || "";
 
   const formatCurrency = (amount) =>
     `₱${Number(amount).toLocaleString("en-PH", {
@@ -50,7 +50,7 @@ function VariantModal({
     addToCart(product, {
       variantId: variant.id,
       variantName: variant.variant_name,
-      variantImage: variant.images?.[0] || product.image,
+      variantImage: variant.image || product.image,
       price: variant.price,
     });
 
