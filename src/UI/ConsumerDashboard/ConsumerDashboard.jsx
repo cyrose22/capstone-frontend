@@ -203,8 +203,27 @@ function ConsumerDashboard() {
   };
 
   const addToCart = (product, variant = null) => {
+    const hasVariants = Array.isArray(product.variants) && product.variants.length > 0;
+
+    // auto-pick the only variant if there is exactly one
+    const autoVariant =
+      !variant && hasVariants && product.variants.length === 1
+        ? {
+            variantId: product.variants[0].id,
+            variantName: product.variants[0].variant_name,
+            variantImage: product.variants[0].image || product.image,
+            price: product.variants[0].price,
+          }
+        : variant;
+
+    // block add-to-cart if product has multiple variants but none selected
+    if (hasVariants && !autoVariant?.variantId) {
+      showToastMessage("❌ Please choose a variant first", "error");
+      return;
+    }
+
     const resolvedVariantId =
-      variant?.variantId ?? product.variantId ?? null;
+      autoVariant?.variantId ?? product.variantId ?? null;
 
     setCart((prev) => {
       const existing = prev.find(
@@ -226,12 +245,13 @@ function ConsumerDashboard() {
         ...prev,
         {
           id: product.id,
+          productId: product.id,
           name: product.name,
-          price: variant?.price ?? product.price,
+          price: autoVariant?.price ?? product.price,
           image: product.image || null,
           variantId: resolvedVariantId,
-          variantName: variant?.variantName ?? product.variantName ?? null,
-          variantImage: variant?.variantImage ?? product.variantImage ?? null,
+          variantName: autoVariant?.variantName ?? product.variantName ?? null,
+          variantImage: autoVariant?.variantImage ?? product.variantImage ?? null,
           quantity: 1,
         },
       ];

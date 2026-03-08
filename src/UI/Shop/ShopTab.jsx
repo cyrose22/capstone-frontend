@@ -139,9 +139,9 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
       name: product.name,
       price: toNumber(variant?.price ?? product.price),
       quantity: 1,
-      variantId: variant?.id ?? `original-${product.id}`,
+      variantId: variant?.id ?? null,
       variantName: variant?.variant_name ?? product.name,
-      variantImage: variant?.images?.[0] ?? product.image ?? null,
+      variantImage: variant?.image ?? product.image ?? null,
       image: product.image ?? null,
     });
   };
