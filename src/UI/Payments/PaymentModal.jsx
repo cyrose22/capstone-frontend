@@ -64,10 +64,12 @@ function PaymentModal({
 
     if (!isValidPhone(user.contact)) {
       setToastType("error");
-      setToastMessage("❌ Invalid contact number. Use 09 / 639 / +639 format.");
+      setToastMessage("❌ Invalid contact number.");
       setShowToast(true);
       return;
     }
+
+    console.log("CART BEFORE CLEAN:", cart);
 
     const cleanedCart = cart.map((item) => ({
       productId: item.productId || item.id,
@@ -78,6 +80,8 @@ function PaymentModal({
         item.variantName || item.variant_name || item.name || "Product",
       variantImage: item.variantImage || item.imageUrl || item.image || null,
     }));
+
+    console.log("CLEANED CART:", cleanedCart);
 
     try {
       const uploadedUrl = await uploadReceipt();
@@ -90,6 +94,8 @@ function PaymentModal({
         contact: user.contact,
         customer_name: user.fullname,
       };
+
+      console.log("SALE PAYLOAD:", salePayload);
 
       const createdSale = await axios.post(
         "https://capstone-backend-kiax.onrender.com/sales",
@@ -119,7 +125,7 @@ function PaymentModal({
       setShowToast(true);
     }
   };
-
+  
   return (
     <div
       onClick={onClose}
