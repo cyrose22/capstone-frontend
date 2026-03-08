@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./consumer-dashboard.css";
-
+import { User, LogOut } from "lucide-react";
 import ShopTab from "../Shop/ShopTab";
 import OrdersTab from "../Orders/OrderTab";
 import ProfileTab from "../Profile/ProfileTab";
@@ -387,7 +387,7 @@ function ConsumerDashboard() {
                           navigate("/login?redirect=/");
                         }}
                       >
-                        Login
+                        🔑 Login
                       </button>
                       <button
                         onClick={() => {
@@ -395,7 +395,7 @@ function ConsumerDashboard() {
                           navigate("/register?redirect=/");
                         }}
                       >
-                        Register
+                        📝 Register
                       </button>
                     </>
                   ) : (
@@ -406,7 +406,8 @@ function ConsumerDashboard() {
                           setActiveTab("profile");
                         }}
                       >
-                        My Profile
+                        <User size={18} />
+                        <span>My Profile</span>
                       </button>
 
                       <button
@@ -419,7 +420,8 @@ function ConsumerDashboard() {
                           navigate("/");
                         }}
                       >
-                        Logout
+                         <LogOut size={18} />
+                         <span>Logout</span>
                       </button>
                     </>
                   )}
