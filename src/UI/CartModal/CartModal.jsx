@@ -28,10 +28,13 @@ function CartModal({
     const payload = {
       userId,
       items: cart.map((item) => ({
-        productId: item.id,
-        quantity: item.quantity,
-        price: item.price,
-        variantId: item.variantId || null,
+        productId: Number(item.productId || item.id),
+        variantId:
+          item.variantId !== undefined && item.variantId !== null
+            ? Number(item.variantId)
+            : null,
+        quantity: Number(item.quantity || 1),
+        price: Number(item.price || 0),
         variantName: item.variantName || null,
         variantImage: item.variantImage || item.image || null,
       })),
