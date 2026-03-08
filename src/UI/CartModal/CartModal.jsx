@@ -10,6 +10,9 @@ function CartModal({
   formatCurrency,
   userId,
   onCheckout,
+  setToastMessage,
+  setToastType,
+  setShowToast,
 }) {
   const cartTotal = cart.reduce(
     (sum, item) => sum + (Number(item.price) || 0) * item.quantity,
@@ -18,11 +21,45 @@ function CartModal({
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  const getAvailableStock = (item) => {
+    return Number(
+      item.stock ??
+        item.variantStock ??
+        item.quantity_available ??
+        item.availableStock ??
+        0
+    );
+  };
+
   const handleSelectPayment = () => {
     handleCheckout();
   };
 
   const handleCheckout = () => {
+    const invalidItem = cart.find((item) => {
+      const availableStock = getAvailableStock(item);
+      return Number(item.quantity || 0) > availableStock;
+    });
+
+    if (invalidItem) {
+      const availableStock = getAvailableStock(invalidItem);
+
+      if (setToastType) setToastType("error");
+      if (setToastMessage) {
+        setToastMessage(
+          `❌ Not enough stock for ${invalidItem.name}${
+            invalidItem.variantName &&
+            invalidItem.variantName !== invalidItem.name &&
+            invalidItem.variantName.toLowerCase() !== "original"
+              ? ` (${invalidItem.variantName})`
+              : ""
+          }. Only ${availableStock} left in stock.`
+        );
+      }
+      if (setShowToast) setShowToast(true);
+      return;
+    }
+
     const payload = {
       userId,
       items: cart.map((item) => ({
@@ -156,210 +193,240 @@ function CartModal({
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {cart.map((item) => (
-                <div
-                  key={`${item.id}-${item.variantId || "default"}`}
-                  style={{
-                    display: "flex",
-                    gap: 12,
-                    alignItems: "center",
-                    padding: 12,
-                    borderRadius: 16,
-                    background: "rgba(255,255,255,0.9)",
-                    border: "1px solid rgba(15,23,42,0.06)",
-                    boxShadow: "0 8px 20px rgba(15,23,42,0.06)",
-                  }}
-                >
+              {cart.map((item) => {
+                const availableStock = getAvailableStock(item);
+                const isOverStock = Number(item.quantity || 0) > availableStock;
+
+                return (
                   <div
+                    key={`${item.id}-${item.variantId || "default"}`}
                     style={{
-                      width: 72,
-                      height: 72,
+                      display: "flex",
+                      gap: 12,
+                      alignItems: "center",
+                      padding: 12,
                       borderRadius: 16,
-                      overflow: "hidden",
-                      background: "#f1f5f9",
-                      border: "1px solid rgba(0,0,0,0.06)",
-                      flexShrink: 0,
-                      display: "grid",
-                      placeItems: "center",
+                      background: "rgba(255,255,255,0.9)",
+                      border: isOverStock
+                        ? "1px solid rgba(239,68,68,0.35)"
+                        : "1px solid rgba(15,23,42,0.06)",
+                      boxShadow: "0 8px 20px rgba(15,23,42,0.06)",
                     }}
                   >
-                    {item.variantImage || item.image ? (
-                      <img
-                        src={item.variantImage || item.image}
-                        alt={item.variantName || item.name}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
-                      />
-                    ) : (
-                      <span style={{ fontSize: 12, color: "#94a3b8" }}>
-                        No image
-                      </span>
-                    )}
-                  </div>
-
-                  <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                       style={{
-                        fontWeight: 900,
-                        color: "#0f172a",
-                        whiteSpace: "nowrap",
+                        width: 72,
+                        height: 72,
+                        borderRadius: 16,
                         overflow: "hidden",
-                        textOverflow: "ellipsis",
+                        background: "#f1f5f9",
+                        border: "1px solid rgba(0,0,0,0.06)",
+                        flexShrink: 0,
+                        display: "grid",
+                        placeItems: "center",
                       }}
                     >
-                      {item.name}{" "}
-                      <span style={{ color: "#64748b", fontWeight: 800 }}>
-                        {item.variantName &&
-                        item.variantName !== item.name &&
-                        item.variantName.toLowerCase() !== "original"
-                          ? `(${item.variantName})`
-                          : ""}
-                      </span>
-                    </div>
-
-                    <div
-                      style={{
-                        marginTop: 6,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      <div style={{ fontWeight: 900, color: "#ef4444" }}>
-                        {formatCurrency(item.price)}
-                      </div>
-
-                      <div style={{ color: "#94a3b8", fontWeight: 800 }}>•</div>
-
-                      <div
-                        style={{
-                          fontSize: 12,
-                          color: "#64748b",
-                          fontWeight: 800,
-                        }}
-                      >
-                        Subtotal:{" "}
-                        {formatCurrency(Number(item.price) * item.quantity)}
-                      </div>
-                    </div>
-
-                    <div
-                      style={{
-                        marginTop: 10,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 8,
-                          padding: 6,
-                          borderRadius: 14,
-                          background: "rgba(241,245,249,0.9)",
-                          border: "1px solid rgba(0,0,0,0.06)",
-                        }}
-                      >
-                        <button
-                          onClick={() =>
-                            updateCartQuantity(
-                              item.id,
-                              item.quantity - 1,
-                              item.variantId,
-                              item.variantName
-                            )
-                          }
+                      {item.variantImage || item.image ? (
+                        <img
+                          src={item.variantImage || item.image}
+                          alt={item.variantName || item.name}
                           style={{
-                            width: 34,
-                            height: 34,
-                            borderRadius: 12,
-                            border: "1px solid rgba(0,0,0,0.08)",
-                            background: "#fff",
-                            cursor: "pointer",
-                            fontWeight: 900,
-                            color: "#0f172a",
-                          }}
-                        >
-                          −
-                        </button>
-
-                        <input
-                          type="number"
-                          min="1"
-                          value={item.quantity}
-                          onChange={(e) =>
-                            updateCartQuantity(
-                              item.id,
-                              parseInt(e.target.value, 10),
-                              item.variantId,
-                              item.variantName
-                            )
-                          }
-                          style={{
-                            width: 56,
-                            height: 34,
-                            borderRadius: 12,
-                            border: "1px solid rgba(0,0,0,0.08)",
-                            textAlign: "center",
-                            fontWeight: 900,
-                            outline: "none",
-                            background: "#fff",
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
                           }}
                         />
+                      ) : (
+                        <span style={{ fontSize: 12, color: "#94a3b8" }}>
+                          No image
+                        </span>
+                      )}
+                    </div>
 
-                        <button
-                          onClick={() =>
-                            updateCartQuantity(
-                              item.id,
-                              item.quantity + 1,
-                              item.variantId,
-                              item.variantName
-                            )
-                          }
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div
+                        style={{
+                          fontWeight: 900,
+                          color: "#0f172a",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {item.name}{" "}
+                        <span style={{ color: "#64748b", fontWeight: 800 }}>
+                          {item.variantName &&
+                          item.variantName !== item.name &&
+                          item.variantName.toLowerCase() !== "original"
+                            ? `(${item.variantName})`
+                            : ""}
+                        </span>
+                      </div>
+
+                      <div
+                        style={{
+                          marginTop: 6,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <div style={{ fontWeight: 900, color: "#ef4444" }}>
+                          {formatCurrency(item.price)}
+                        </div>
+
+                        <div style={{ color: "#94a3b8", fontWeight: 800 }}>•</div>
+
+                        <div
                           style={{
-                            width: 34,
-                            height: 34,
-                            borderRadius: 12,
-                            border: "1px solid rgba(0,0,0,0.08)",
-                            background: "#fff",
-                            cursor: "pointer",
-                            fontWeight: 900,
-                            color: "#0f172a",
+                            fontSize: 12,
+                            color: "#64748b",
+                            fontWeight: 800,
                           }}
                         >
-                          +
-                        </button>
+                          Subtotal:{" "}
+                          {formatCurrency(Number(item.price) * item.quantity)}
+                        </div>
+
+                        <div
+                          style={{
+                            fontSize: 12,
+                            fontWeight: 800,
+                            color: isOverStock ? "#dc2626" : "#16a34a",
+                          }}
+                        >
+                          Stock: {availableStock}
+                        </div>
+                      </div>
+
+                      {isOverStock && (
+                        <div
+                          style={{
+                            marginTop: 8,
+                            fontSize: 12,
+                            fontWeight: 800,
+                            color: "#dc2626",
+                          }}
+                        >
+                          Quantity exceeds available stock.
+                        </div>
+                      )}
+
+                      <div
+                        style={{
+                          marginTop: 10,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 8,
+                            padding: 6,
+                            borderRadius: 14,
+                            background: "rgba(241,245,249,0.9)",
+                            border: "1px solid rgba(0,0,0,0.06)",
+                          }}
+                        >
+                          <button
+                            onClick={() =>
+                              updateCartQuantity(
+                                item.id,
+                                item.quantity - 1,
+                                item.variantId,
+                                item.variantName
+                              )
+                            }
+                            style={{
+                              width: 34,
+                              height: 34,
+                              borderRadius: 12,
+                              border: "1px solid rgba(0,0,0,0.08)",
+                              background: "#fff",
+                              cursor: "pointer",
+                              fontWeight: 900,
+                              color: "#0f172a",
+                            }}
+                          >
+                            −
+                          </button>
+
+                          <input
+                            type="number"
+                            min="1"
+                            value={item.quantity}
+                            onChange={(e) =>
+                              updateCartQuantity(
+                                item.id,
+                                parseInt(e.target.value, 10),
+                                item.variantId,
+                                item.variantName
+                              )
+                            }
+                            style={{
+                              width: 56,
+                              height: 34,
+                              borderRadius: 12,
+                              border: "1px solid rgba(0,0,0,0.08)",
+                              textAlign: "center",
+                              fontWeight: 900,
+                              outline: "none",
+                              background: "#fff",
+                            }}
+                          />
+
+                          <button
+                            onClick={() =>
+                              updateCartQuantity(
+                                item.id,
+                                item.quantity + 1,
+                                item.variantId,
+                                item.variantName
+                              )
+                            }
+                            style={{
+                              width: 34,
+                              height: 34,
+                              borderRadius: 12,
+                              border: "1px solid rgba(0,0,0,0.08)",
+                              background: "#fff",
+                              cursor: "pointer",
+                              fontWeight: 900,
+                              color: "#0f172a",
+                            }}
+                          >
+                            +
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <button
-                    onClick={() =>
-                      removeFromCart(item.id, item.variantId, item.variantName)
-                    }
-                    style={{
-                      width: 42,
-                      height: 42,
-                      borderRadius: 14,
-                      border: "1px solid rgba(239,68,68,0.25)",
-                      background: "rgba(239,68,68,0.10)",
-                      cursor: "pointer",
-                      display: "grid",
-                      placeItems: "center",
-                    }}
-                    title="Remove"
-                    aria-label="Remove item"
-                  >
-                    <FaTrashAlt color="#ef4444" size={16} />
-                  </button>
-                </div>
-              ))}
+                    <button
+                      onClick={() =>
+                        removeFromCart(item.id, item.variantId, item.variantName)
+                      }
+                      style={{
+                        width: 42,
+                        height: 42,
+                        borderRadius: 14,
+                        border: "1px solid rgba(239,68,68,0.25)",
+                        background: "rgba(239,68,68,0.10)",
+                        cursor: "pointer",
+                        display: "grid",
+                        placeItems: "center",
+                      }}
+                      title="Remove"
+                      aria-label="Remove item"
+                    >
+                      <FaTrashAlt color="#ef4444" size={16} />
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

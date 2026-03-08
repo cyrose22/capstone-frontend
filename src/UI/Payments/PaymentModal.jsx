@@ -16,6 +16,7 @@ function PaymentModal({
   onClose,
   clearCart,
   fetchProducts,
+  setActiveTab,
 }) {
   const [receiptFile, setReceiptFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -28,6 +29,15 @@ function PaymentModal({
 
   const isValidPhone = (phone) =>
     /^(09\d{9}|639\d{9}|\+639\d{9})$/.test(phone || "");
+
+  const getAvailableStock = (item) =>
+    Number(
+      item.stock ??
+        item.variantStock ??
+        item.quantity_available ??
+        item.availableStock ??
+        0
+    );
 
   const uploadReceipt = async () => {
     if (!receiptFile) return "";
@@ -65,6 +75,27 @@ function PaymentModal({
     if (!isValidPhone(user.contact)) {
       setToastType("error");
       setToastMessage("❌ Invalid contact number.");
+      setShowToast(true);
+      return;
+    }
+
+    const invalidItem = cart.find(
+      (item) => Number(item.quantity || 0) > getAvailableStock(item)
+    );
+
+    if (invalidItem) {
+      const availableStock = getAvailableStock(invalidItem);
+      const itemLabel =
+        invalidItem.variantName &&
+        invalidItem.variantName !== invalidItem.name &&
+        invalidItem.variantName.toLowerCase() !== "original"
+          ? `${invalidItem.name} (${invalidItem.variantName})`
+          : invalidItem.name || "this product";
+
+      setToastType("error");
+      setToastMessage(
+        `❌ Not enough stock for ${itemLabel}. Only ${availableStock} left in stock.`
+      );
       setShowToast(true);
       return;
     }
@@ -116,12 +147,23 @@ function PaymentModal({
       onClose();
 
       setTimeout(() => {
-        navigate("/order-history");
+        if (setActiveTab) setActiveTab("orders");
+        navigate("/");
       }, 1500);
     } catch (error) {
       console.error("Payment error:", error);
+
+      const backendMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        "";
+
       setToastType("error");
-      setToastMessage("❌ Failed to process payment.");
+      setToastMessage(
+        backendMessage
+          ? `❌ ${backendMessage}`
+          : "❌ Failed to process payment."
+      );
       setShowToast(true);
     }
   };
