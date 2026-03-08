@@ -407,7 +407,7 @@ function ConsumerDashboard() {
                         }}
                       >
                         <User size={18} />
-                        <span>My Profile</span>
+                        <span> My Profile</span>
                       </button>
 
                       <button
@@ -421,7 +421,7 @@ function ConsumerDashboard() {
                         }}
                       >
                          <LogOut size={18} />
-                         <span>Logout</span>
+                         <span> Logout</span>
                       </button>
                     </>
                   )}
