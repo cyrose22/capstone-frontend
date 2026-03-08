@@ -61,8 +61,12 @@ function LoginForm() {
       ? 'https://capstone-backend-kiax.onrender.com/forgot-password'
       : 'https://capstone-backend-kiax.onrender.com/send-login-otp';
 
+    const payload = recoverMode
+      ? { email: username }       // forgot-password expects email
+      : { username: username };   // send-login-otp expects username
+
     await toast.promise(
-      axios.post(endpoint, { email: username }),
+      axios.post(endpoint, payload),
       {
         pending: 'Sending OTP...',
         success: 'OTP sent successfully!',
