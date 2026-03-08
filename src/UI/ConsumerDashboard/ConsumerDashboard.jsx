@@ -235,11 +235,20 @@ function ConsumerDashboard() {
       name: product.name,
       price: Number(autoVariant?.price ?? product.price ?? 0),
       image: product.image || null,
+
       variantId: resolvedVariantId,
       variantName: autoVariant?.variantName ?? product.variantName ?? product.name,
       variantImage:
         autoVariant?.variantImage ?? product.variantImage ?? product.image ?? null,
+
       quantity: 1,
+
+      // ⭐ THIS IS THE FIX
+      variantStock:
+        autoVariant?.variantStock ??
+        product.variantStock ??
+        product.quantity ??
+        null,
     };
 
     setCart((prev) => {
