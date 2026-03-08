@@ -204,20 +204,35 @@ function OrdersTab({
                       const updatedCart = [...cart];
 
                       sale.items.forEach((item) => {
+                        const product = (products || []).find(
+                          (p) =>
+                            p?.name?.toLowerCase() ===
+                            (item?.product_name || "").toLowerCase()
+                        );
+
+                        const variant =
+                          product?.variants?.find(
+                            (v) =>
+                              String(v.id) === String(item.variantId || item.variant_id) ||
+                              v.variant_name === item.variantName ||
+                              v.variant_name === item.variant_name
+                          ) || null;
+
+                        const imageSrc =
+                          item.variant_image ||
+                          item.product_image ||
+                          variant?.images?.[0] ||
+                          product?.image ||
+                          null;
+
                         const cartItem = {
                           id: item.product_id,
                           name: item.product_name,
                           price: Number(item.price) || 0,
                           quantity: Number(item.quantity) || 1,
                           variantId: item.variantId || item.variant_id || null,
-                          variantName:
-                            item.variantName || item.variant_name || null,
-                          variantImage:
-                            item.variantImage ||
-                            item.variant_image ||
-                            item.image ||
-                            null,
-                          image: item.image || null,
+                          variantName: item.variantName || item.variant_name || null,
+                          image: imageSrc,
                         };
 
                         const existingIndex = updatedCart.findIndex(
@@ -231,8 +246,7 @@ function OrdersTab({
                           updatedCart[existingIndex] = {
                             ...updatedCart[existingIndex],
                             quantity:
-                              updatedCart[existingIndex].quantity +
-                              cartItem.quantity,
+                              updatedCart[existingIndex].quantity + cartItem.quantity,
                           };
                         } else {
                           updatedCart.push(cartItem);
@@ -245,45 +259,6 @@ function OrdersTab({
                     }}
                   >
                     🔁 Buy Again
-                  </button>
-                )}
-
-                {normalizeStatus(sale.status) === "to receive" && (
-                  <button
-                    className="order-btn order-btn-receive"
-                    onClick={async () => {
-                      try {
-                        await axios.put(
-                          `https://capstone-backend-kiax.onrender.com/sales/${sale.id}/status`,
-                          { status: "completed" }
-                        );
-
-                        const updated = await axios.get(
-                          `https://capstone-backend-kiax.onrender.com/sales/user/${user.id}`
-                        );
-
-                        setSalesHistory(
-                          enrichSalesWithImages(updated.data, products)
-                        );
-                      } catch {
-                        alert("Failed to mark as received");
-                      }
-                    }}
-                  >
-                    📦 Order Received
-                  </button>
-                )}
-
-                {normalizeStatus(sale.status) === "processing" && (
-                  <button
-                    className="order-btn order-btn-cancel"
-                    onClick={() => {
-                      setSaleToCancel(sale);
-                      setCancelReason("");
-                      setCancelModalVisible(true);
-                    }}
-                  >
-                    ❌ Cancel Order
                   </button>
                 )}
               </div>
