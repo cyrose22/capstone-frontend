@@ -132,17 +132,13 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
 
   // Add-to-Cart helper for non-variant products
   const handleAddToCart = (product, variantIndex = 0) => {
-    const variant = product.variants?.[variantIndex];
+    const variant = product.variants?.[variantIndex] || null;
 
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: toNumber(variant?.price ?? product.price),
-      quantity: 1,
+    addToCart(product, {
       variantId: variant?.id ?? null,
       variantName: variant?.variant_name ?? product.name,
       variantImage: variant?.image ?? product.image ?? null,
-      image: product.image ?? null,
+      price: toNumber(variant?.price ?? product.price),
     });
   };
 
