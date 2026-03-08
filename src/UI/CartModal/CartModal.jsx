@@ -22,8 +22,9 @@ function CartModal({
 
   const getAvailableStock = (item) => {
     const rawStock =
-      item.stock ??
       item.variantStock ??
+      item.stock ??
+      item.quantity ??
       item.quantity_available ??
       item.availableStock;
 
@@ -35,6 +36,14 @@ function CartModal({
     return Number.isNaN(parsed) ? null : parsed;
   };
 
+  const getItemLabel = (item) => {
+    return item.variantName &&
+      item.variantName !== item.name &&
+      item.variantName.toLowerCase() !== "original"
+      ? `${item.name} (${item.variantName})`
+      : item.name || "Product";
+  };
+
   const handleSelectPayment = () => {
     handleCheckout();
   };
@@ -42,9 +51,7 @@ function CartModal({
   const handleCheckout = () => {
     const invalidItem = cart.find((item) => {
       const availableStock = getAvailableStock(item);
-
       if (availableStock === null) return false;
-
       return Number(item.quantity || 0) > availableStock;
     });
 
@@ -54,13 +61,9 @@ function CartModal({
       if (setToastType) setToastType("error");
       if (setToastMessage) {
         setToastMessage(
-          `❌ Not enough stock for ${invalidItem.name}${
-            invalidItem.variantName &&
-            invalidItem.variantName !== invalidItem.name &&
-            invalidItem.variantName.toLowerCase() !== "original"
-              ? ` (${invalidItem.variantName})`
-              : ""
-          }. Only ${availableStock} left in stock.`
+          `❌ Not enough stock for ${getItemLabel(
+            invalidItem
+          )}. Only ${availableStock} left in stock.`
         );
       }
       if (setShowToast) setShowToast(true);
@@ -313,6 +316,19 @@ function CartModal({
                           }}
                         >
                           Quantity exceeds available stock.
+                        </div>
+                      )}
+
+                      {!isOverStock && isAtMaxStock && (
+                        <div
+                          style={{
+                            marginTop: 8,
+                            fontSize: 12,
+                            fontWeight: 800,
+                            color: "#f59e0b",
+                          }}
+                        >
+                          Stock limit reached.
                         </div>
                       )}
 
