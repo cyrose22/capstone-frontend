@@ -52,6 +52,7 @@ function VariantModal({
       variantName: variant.variant_name,
       variantImage: variant.image || product.image || null,
       price: Number(variant.price ?? product.price ?? 0),
+      variantStock: stockQty,
     });
 
     onClose();
@@ -86,7 +87,6 @@ function VariantModal({
           animation: "fadeIn 0.3s ease",
         }}
       >
-        {/* Close button */}
         <button
           onClick={onClose}
           style={{
@@ -110,7 +110,6 @@ function VariantModal({
           ×
         </button>
 
-        {/* Out of Stock Badge */}
         {stockQty <= 0 && (
           <span
             style={{
@@ -129,7 +128,6 @@ function VariantModal({
           </span>
         )}
 
-        {/* Product Name */}
         <h4
           style={{
             margin: "6px 0 16px",
@@ -143,7 +141,6 @@ function VariantModal({
           {product.name}
         </h4>
 
-        {/* Navigation + Image */}
         <div
           style={{
             display: "grid",
@@ -227,7 +224,6 @@ function VariantModal({
           </button>
         </div>
 
-        {/* Variant Info */}
         {variant?.variant_name &&
           variant.variant_name !== product.name &&
           variant.variant_name.toLowerCase() !== "original" && (
@@ -242,6 +238,7 @@ function VariantModal({
               {variant.variant_name}
             </p>
           )}
+
         <p
           style={{
             margin: variant.variant_name ? "0" : "18px 0 0",
@@ -253,7 +250,6 @@ function VariantModal({
           {formatCurrency(variant.price)}
         </p>
 
-        {/* Stock pill */}
         <div style={{ marginTop: "12px" }}>
           <span
             style={{
@@ -272,7 +268,6 @@ function VariantModal({
           </span>
         </div>
 
-        {/* Variant dots */}
         {variants.length > 1 && (
           <div
             style={{
@@ -304,7 +299,6 @@ function VariantModal({
           </div>
         )}
 
-        {/* Add to Cart */}
         <button
           onClick={handleAddToCart}
           disabled={stockQty <= 0}

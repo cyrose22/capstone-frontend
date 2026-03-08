@@ -24,7 +24,6 @@ function CartModal({
     const rawStock =
       item.variantStock ??
       item.stock ??
-      item.quantity ??
       item.quantity_available ??
       item.availableStock;
 
