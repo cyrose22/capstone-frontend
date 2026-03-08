@@ -94,6 +94,23 @@ function OrdersTab({
               sum + Number(item.price || 0) * Number(item.quantity || 0),
             0
           );
+        const canBuyAgain = (sale.items || []).some((item) => {
+          const product = (products || []).find(
+            (p) =>
+              p?.name?.toLowerCase() ===
+              (item?.product_name || "").toLowerCase()
+          );
+
+          const variant =
+            product?.variants?.find(
+              (v) =>
+                String(v.id) === String(item.variantId || item.variant_id) ||
+                v.variant_name === item.variantName ||
+                v.variant_name === item.variant_name
+            ) || null;
+
+          return Number(variant?.quantity || 0) > 0;
+        });
 
         return (
           <div key={sale.id} className="order-card">
@@ -198,10 +215,12 @@ function OrdersTab({
                   normalizeStatus(sale.status) === "cancelled") && (
                   <button
                     className="order-btn order-btn-buy"
+                    disabled={!canBuyAgain}
                     onClick={() => {
                       if (!sale.items) return;
 
                       const updatedCart = [...cart];
+                      let hasAddedItem = false;
 
                       sale.items.forEach((item) => {
                         const product = (products || []).find(
@@ -209,6 +228,8 @@ function OrdersTab({
                             p?.name?.toLowerCase() ===
                             (item?.product_name || "").toLowerCase()
                         );
+
+                        if (!product) return;
 
                         const variant =
                           product?.variants?.find(
@@ -218,47 +239,64 @@ function OrdersTab({
                               v.variant_name === item.variant_name
                           ) || null;
 
+                        // skip if no variant or no stock
+                        if (!variant || Number(variant.quantity) <= 0) {
+                          return;
+                        }
+
+                        const availableQty = Number(variant.quantity) || 0;
+                        const requestedQty = Number(item.quantity) || 1;
+                        const finalQty = Math.min(requestedQty, availableQty);
+
                         const imageSrc =
+                          variant?.image ||
                           item.variant_image ||
                           item.product_image ||
-                          variant?.images?.[0] ||
                           product?.image ||
                           null;
 
                         const cartItem = {
-                          id: item.product_id,
-                          name: item.product_name,
-                          price: Number(item.price) || 0,
-                          quantity: Number(item.quantity) || 1,
-                          variantId: item.variantId || item.variant_id || null,
-                          variantName: item.variantName || item.variant_name || null,
+                          id: product.id,
+                          name: product.name,
+                          price: Number(variant.price ?? item.price) || 0,
+                          quantity: finalQty,
+                          variantId: variant.id,
+                          variantName: variant.variant_name,
                           image: imageSrc,
                         };
 
                         const existingIndex = updatedCart.findIndex(
                           (c) =>
                             c.id === cartItem.id &&
-                            c.variantId === cartItem.variantId &&
-                            c.variantName === cartItem.variantName
+                            String(c.variantId) === String(cartItem.variantId)
                         );
 
                         if (existingIndex >= 0) {
+                          const currentQty = Number(updatedCart[existingIndex].quantity) || 0;
+                          const mergedQty = Math.min(currentQty + finalQty, availableQty);
+
                           updatedCart[existingIndex] = {
                             ...updatedCart[existingIndex],
-                            quantity:
-                              updatedCart[existingIndex].quantity + cartItem.quantity,
+                            quantity: mergedQty,
                           };
                         } else {
                           updatedCart.push(cartItem);
                         }
+
+                        hasAddedItem = true;
                       });
+
+                      if (!hasAddedItem) {
+                        alert("Selected items are out of stock.");
+                        return;
+                      }
 
                       setCart(updatedCart);
                       setActiveTab("shop");
                       setShowCartModal(true);
                     }}
                   >
-                    🔁 Buy Again
+                    {canBuyAgain ? "🔁 Buy Again" : "Out of Stock"}
                   </button>
                 )}
               </div>
