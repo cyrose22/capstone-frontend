@@ -263,6 +263,9 @@ function OrdersTab({
                           variantId: variant.id,
                           variantName: variant.variant_name,
                           image: imageSrc,
+
+                          // ⭐ ADD THIS
+                          variantStock: Number(variant.quantity) || 0,
                         };
 
                         const existingIndex = updatedCart.findIndex(
