@@ -1,166 +1,99 @@
-/* ===== HEADER ===== */
-
 .modern-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px 32px;
   background: #ffffff;
-  border-bottom: 1px solid #f1f1f1;
+  border-bottom: 1px solid #f3f4f6;
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
-/* LEFT */
-
 .header-title {
   font-size: 1.6rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #1f2937;
+  margin: 0;
 }
 
 .header-title span {
   color: #ff5722;
-  font-weight: 700;
 }
-
-/* RIGHT */
 
 .header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
-/* ICON BUTTONS */
-
-.icon-btn {
-  background: #f3f4f6;
+/* Bell like your sample */
+.bell-modern {
+  width: 52px;
+  height: 52px;
   border: none;
-  padding: 10px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
+  border-radius: 999px;
+  background: #fff1eb;
+  color: #b45309;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: 0.2s ease;
-}
-
-.icon-btn:hover {
-  background: #e5e7eb;
-  transform: translateY(-2px);
-}
-
-/* AVATAR */
-
-.avatar {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #ff7a18, #ff5722);
-  color: white;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font-size: 1rem;
-}
-
-/* LOGOUT */
-
-.logout-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border: none;
-  background: #111827;
-  color: white;
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 0.85rem;
   cursor: pointer;
-  transition: 0.25s ease;
-}
-
-.logout-btn:hover {
-  background: #1f2937;
-}
-
-/* MOBILE */
-
-@media (max-width: 768px) {
-
-  .modern-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 16px;
-  }
-
-  .header-right {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .header-title {
-    font-size: 1.2rem;
-  }
-
-  .logout-btn span {
-    display: none;
-  }
-}
-
-.notification-btn {
   position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.bell-modern:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  background: #ffe8de;
+}
+
+.bell-modern:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 .notif-badge {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  background: #ff5722;
-  color: white;
-  font-size: 10px;
+  top: -2px;
+  right: -1px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: #ff4d4f;
+  color: #fff;
+  font-size: 11px;
   font-weight: 800;
-  padding: 2px 6px;
   border-radius: 999px;
-  border: 2px solid white;
+  border: 2px solid #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
 }
 
-@keyframes pop {
-  0% { transform: scale(1); }
-  35% { transform: scale(1.12); }
-  100% { transform: scale(1); }
-}
-.notification-btn.has-new {
-  animation: pop 0.35s ease;
-}
-
-/* Modern Logout Button */
+/* Logout pill like your sample */
 .logout-modern {
+  height: 52px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid #d7dce3;
+  background: #ffffff;
+  color: #1f2937;
+  font-weight: 700;
+  font-size: 0.95rem;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  background: rgba(255, 255, 255, 0.85);
-  color: #0f172a;
-  font-weight: 700;
-  font-size: 0.9rem;
+  gap: 10px;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
-  backdrop-filter: blur(8px);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .logout-modern:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
-  border-color: rgba(239, 68, 68, 0.25);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  border-color: #cfd6df;
 }
 
 .logout-modern:active {
@@ -169,15 +102,46 @@
 }
 
 .logout-modern svg {
-  color: #ef4444; /* red logout icon */
+  color: #ff5a5f;
 }
 
-/* Mobile: hide text, keep icon */
+@keyframes pop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.bell-modern.has-new {
+  animation: pop 0.35s ease;
+}
+
+/* Mobile */
 @media (max-width: 768px) {
-  .logout-modern span {
-    display: none;
+  .modern-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
   }
+
+  .header-title {
+    font-size: 1.2rem;
+  }
+
+  .header-right {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  .bell-modern {
+    width: 48px;
+    height: 48px;
+  }
+
   .logout-modern {
-    padding: 10px;
+    height: 48px;
+    padding: 0 16px;
+    font-size: 0.92rem;
   }
 }

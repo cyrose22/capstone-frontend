@@ -15,7 +15,6 @@ function Header() {
 
   const [newOrdersCount, setNewOrdersCount] = useState(0);
 
-  // Store last time admin checked notifications
   const getSince = () =>
     localStorage.getItem("admin_last_seen_orders") ||
     new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
@@ -36,16 +35,16 @@ function Header() {
             since
           )}`
         );
+
         if (!isMounted) return;
         setNewOrdersCount(res.data.count || 0);
       } catch (err) {
-        // keep silent (optional)
         console.error("Failed to fetch new orders count", err);
       }
     };
 
     fetchCount();
-    const interval = setInterval(fetchCount, 15000); // every 15s
+    const interval = setInterval(fetchCount, 15000);
 
     return () => {
       isMounted = false;
@@ -59,11 +58,8 @@ function Header() {
   };
 
   const handleBellClick = () => {
-    // mark notifications as seen
     setSinceNow();
     setNewOrdersCount(0);
-
-    // go to sales page and open Processing tab
     navigate("/dashboard/sales", { state: { status: "processing" } });
   };
 
@@ -76,15 +72,14 @@ function Header() {
       </div>
 
       <div className="header-right">
-        {/* Bell ONLY for admin */}
         {role === "admin" && (
           <button
-            className={`icon-btn notification-btn ${newOrdersCount > 0 ? "has-new" : ""}`}
+            className={`bell-modern ${newOrdersCount > 0 ? "has-new" : ""}`}
             onClick={handleBellClick}
             aria-label="Notifications"
             title="New Orders"
           >
-            <Bell size={18} />
+            <Bell size={20} strokeWidth={2.2} />
             {newOrdersCount > 0 && (
               <span className="notif-badge">
                 {newOrdersCount > 99 ? "99+" : newOrdersCount}
@@ -93,10 +88,8 @@ function Header() {
           </button>
         )}
 
-        {/* ✅ removed avatar */}
-
         <button className="logout-modern" onClick={handleLogout}>
-          <LogOut size={16} />
+          <LogOut size={18} />
           <span>Logout</span>
         </button>
       </div>
