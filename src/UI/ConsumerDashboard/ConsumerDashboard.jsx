@@ -57,6 +57,7 @@ function ConsumerDashboard() {
   const productsRef = useRef(null);
   const [cartBounce, setCartBounce] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [checkoutItems, setCheckoutItems] = useState([]);
 
   const goToProducts = () => {
     setActiveTab("shop");
@@ -290,6 +291,8 @@ function ConsumerDashboard() {
     }
 
     console.log("Checkout payload:", payload);
+    setCheckoutItems(payload?.items || []);
+    setShowCartModal(false);
     setShowPaymentModal(true);
   };
 
@@ -567,7 +570,7 @@ function ConsumerDashboard() {
 
       {showPaymentModal && (
         <PaymentModal
-          cart={cart}
+          cart={checkoutItems}
           user={user}
           paymentMethod={paymentMethod}
           setPaymentMethod={setPaymentMethod}
@@ -577,7 +580,10 @@ function ConsumerDashboard() {
           setToastType={setToastType}
           setShowToast={setShowToast}
           onClose={() => setShowPaymentModal(false)}
-          clearCart={() => setCart([])}
+          clearCart={() => {
+            setCart([]);
+            setCheckoutItems([]);
+          }}
           fetchProducts={fetchProducts}
         />
       )}
