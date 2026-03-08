@@ -47,11 +47,13 @@ function VariantModal({
   const handleAddToCart = (product, variantIndex = 0) => {
     const variant = product.variants?.[variantIndex] || null;
 
+    const price = Number(variant?.price ?? product.price ?? 0);
+
     addToCart(product, {
       variantId: variant?.id ?? null,
       variantName: variant?.variant_name ?? product.name,
       variantImage: variant?.image ?? product.image ?? null,
-      price: Number(variant?.price ?? product.price),
+      price: price,
     });
   };
 
