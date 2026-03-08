@@ -578,7 +578,7 @@ function ConsumerDashboard() {
 
       {showPaymentModal && (
         <PaymentModal
-          cart={checkoutItems}
+          cart={cart}
           user={user}
           paymentMethod={paymentMethod}
           setPaymentMethod={setPaymentMethod}
@@ -590,9 +590,9 @@ function ConsumerDashboard() {
           onClose={() => setShowPaymentModal(false)}
           clearCart={() => {
             setCart([]);
-            setCheckoutItems([]);
           }}
           fetchProducts={fetchProducts}
+          setActiveTab={setActiveTab}
         />
       )}
 

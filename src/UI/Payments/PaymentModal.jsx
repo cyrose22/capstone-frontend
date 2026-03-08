@@ -156,14 +156,10 @@ function PaymentModal({
       const backendMessage =
         error?.response?.data?.message ||
         error?.response?.data?.error ||
-        "";
+        "Failed to process payment.";
 
       setToastType("error");
-      setToastMessage(
-        backendMessage
-          ? `❌ ${backendMessage}`
-          : "❌ Failed to process payment."
-      );
+      setToastMessage(`❌ ${backendMessage}`);
       setShowToast(true);
     }
   };
