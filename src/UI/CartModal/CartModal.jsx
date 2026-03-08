@@ -92,11 +92,11 @@ function CartModal({
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          width: "min(720px, 96vw)",
+          width: "min(760px, 96vw)",
           maxHeight: "88vh",
-          borderRadius: 18,
+          borderRadius: 20,
           overflow: "hidden",
-          background: "rgba(255,255,255,0.92)",
+          background: "rgba(255,255,255,0.96)",
           backdropFilter: "blur(10px)",
           boxShadow: "0 22px 70px rgba(0,0,0,0.35)",
           border: "1px solid rgba(255,255,255,0.6)",
@@ -106,9 +106,9 @@ function CartModal({
       >
         <div
           style={{
-            padding: "14px 16px",
+            padding: "16px 18px",
             background:
-              "linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.75))",
+              "linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.84))",
             borderBottom: "1px solid rgba(0,0,0,0.06)",
             display: "flex",
             alignItems: "center",
@@ -116,23 +116,24 @@ function CartModal({
             gap: 12,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div
               style={{
-                width: 38,
-                height: 38,
-                borderRadius: 12,
+                width: 42,
+                height: 42,
+                borderRadius: 14,
                 background: "rgba(59,130,246,0.12)",
                 display: "grid",
                 placeItems: "center",
                 fontSize: 18,
+                flexShrink: 0,
               }}
             >
               🛒
             </div>
 
-            <div style={{ lineHeight: 1.1 }}>
-              <div style={{ fontWeight: 900, color: "#0f172a", fontSize: 16 }}>
+            <div style={{ lineHeight: 1.15 }}>
+              <div style={{ fontWeight: 900, color: "#0f172a", fontSize: 17 }}>
                 Shopping Cart
               </div>
               <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>
@@ -155,6 +156,7 @@ function CartModal({
               fontSize: 20,
               lineHeight: "20px",
               color: "#0f172a",
+              flexShrink: 0,
             }}
           >
             ×
@@ -166,7 +168,7 @@ function CartModal({
             padding: 16,
             overflowY: "auto",
             background:
-              "linear-gradient(180deg, rgba(248,250,252,0.9), rgba(255,255,255,0.9))",
+              "linear-gradient(180deg, rgba(248,250,252,0.92), rgba(255,255,255,0.96))",
           }}
         >
           {cart.length === 0 ? (
@@ -174,7 +176,7 @@ function CartModal({
               style={{
                 padding: 18,
                 borderRadius: 16,
-                background: "rgba(255,255,255,0.8)",
+                background: "rgba(255,255,255,0.85)",
                 border: "1px dashed rgba(0,0,0,0.12)",
                 textAlign: "center",
                 color: "#64748b",
@@ -184,7 +186,7 @@ function CartModal({
               No items in cart.
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               {cart.map((item) => {
                 const availableStock = getAvailableStock(item);
                 const isOverStock =
@@ -200,24 +202,24 @@ function CartModal({
                     key={`${item.id}-${item.variantId || "default"}`}
                     style={{
                       display: "flex",
-                      gap: 12,
+                      gap: 14,
                       alignItems: "center",
-                      padding: 12,
-                      borderRadius: 16,
-                      background: "rgba(255,255,255,0.9)",
+                      padding: 14,
+                      borderRadius: 18,
+                      background: "#fff",
                       border: isOverStock
-                        ? "1px solid rgba(239,68,68,0.35)"
+                        ? "1px solid rgba(239,68,68,0.30)"
                         : "1px solid rgba(15,23,42,0.06)",
-                      boxShadow: "0 8px 20px rgba(15,23,42,0.06)",
+                      boxShadow: "0 8px 22px rgba(15,23,42,0.05)",
                     }}
                   >
                     <div
                       style={{
-                        width: 72,
-                        height: 72,
+                        width: 78,
+                        height: 78,
                         borderRadius: 16,
                         overflow: "hidden",
-                        background: "#f1f5f9",
+                        background: "#f8fafc",
                         border: "1px solid rgba(0,0,0,0.06)",
                         flexShrink: 0,
                         display: "grid",
@@ -246,9 +248,9 @@ function CartModal({
                         style={{
                           fontWeight: 900,
                           color: "#0f172a",
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
+                          fontSize: 15,
+                          lineHeight: 1.25,
+                          wordBreak: "break-word",
                         }}
                       >
                         {item.name}{" "}
@@ -263,7 +265,7 @@ function CartModal({
 
                       <div
                         style={{
-                          marginTop: 6,
+                          marginTop: 8,
                           display: "flex",
                           alignItems: "center",
                           gap: 10,
@@ -280,63 +282,41 @@ function CartModal({
 
                         <div
                           style={{
-                            fontSize: 12,
+                            fontSize: 13,
                             color: "#64748b",
-                            fontWeight: 800,
+                            fontWeight: 700,
                           }}
                         >
                           Subtotal:{" "}
                           {formatCurrency(Number(item.price) * item.quantity)}
                         </div>
-
-                        <div
-                          style={{
-                            fontSize: 12,
-                            fontWeight: 800,
-                            color:
-                              availableStock === null
-                                ? "#f59e0b"
-                                : isOverStock
-                                ? "#dc2626"
-                                : "#16a34a",
-                          }}
-                        >
-                          Stock: {availableStock ?? "—"}
-                        </div>
                       </div>
-
-                      {isOverStock && (
-                        <div
-                          style={{
-                            marginTop: 8,
-                            fontSize: 12,
-                            fontWeight: 800,
-                            color: "#dc2626",
-                          }}
-                        >
-                          Quantity exceeds available stock.
-                        </div>
-                      )}
-
-                      {!isOverStock && isAtMaxStock && (
-                        <div
-                          style={{
-                            marginTop: 8,
-                            fontSize: 12,
-                            fontWeight: 800,
-                            color: "#f59e0b",
-                          }}
-                        >
-                          Stock limit reached.
-                        </div>
-                      )}
 
                       <div
                         style={{
-                          marginTop: 10,
+                          marginTop: 8,
+                          fontSize: 13,
+                          fontWeight: 700,
+                          color:
+                            availableStock === null
+                              ? "#f59e0b"
+                              : isOverStock
+                              ? "#dc2626"
+                              : "#16a34a",
+                        }}
+                      >
+                        {availableStock === null
+                          ? "Stock unavailable"
+                          : `${availableStock} available`}
+                      </div>
+
+                      <div
+                        style={{
+                          marginTop: 12,
                           display: "flex",
                           alignItems: "center",
                           gap: 10,
+                          flexWrap: "wrap",
                         }}
                       >
                         <div
@@ -345,9 +325,9 @@ function CartModal({
                             alignItems: "center",
                             gap: 8,
                             padding: 6,
-                            borderRadius: 14,
-                            background: "rgba(241,245,249,0.9)",
-                            border: "1px solid rgba(0,0,0,0.06)",
+                            borderRadius: 16,
+                            background: "#f1f5f9",
+                            border: "1px solid rgba(0,0,0,0.05)",
                           }}
                         >
                           <button
@@ -360,42 +340,37 @@ function CartModal({
                               )
                             }
                             style={{
-                              width: 34,
-                              height: 34,
+                              width: 36,
+                              height: 36,
                               borderRadius: 12,
-                              border: "1px solid rgba(0,0,0,0.08)",
+                              border: "1px solid rgba(0,0,0,0.06)",
                               background: "#fff",
                               cursor: "pointer",
                               fontWeight: 900,
                               color: "#0f172a",
+                              fontSize: 18,
                             }}
                           >
                             −
                           </button>
 
-                          <input
-                            type="number"
-                            min="1"
-                            value={item.quantity}
-                            onChange={(e) =>
-                              updateCartQuantity(
-                                item.id,
-                                parseInt(e.target.value, 10),
-                                item.variantId,
-                                item.variantName
-                              )
-                            }
+                          <div
                             style={{
-                              width: 56,
-                              height: 34,
+                              minWidth: 44,
+                              height: 36,
+                              padding: "0 10px",
                               borderRadius: 12,
-                              border: "1px solid rgba(0,0,0,0.08)",
-                              textAlign: "center",
-                              fontWeight: 900,
-                              outline: "none",
+                              border: "1px solid rgba(0,0,0,0.06)",
                               background: "#fff",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontWeight: 900,
+                              color: "#0f172a",
                             }}
-                          />
+                          >
+                            {item.quantity}
+                          </div>
 
                           <button
                             disabled={isAtMaxStock}
@@ -408,21 +383,48 @@ function CartModal({
                               )
                             }
                             style={{
-                              width: 34,
-                              height: 34,
+                              width: 36,
+                              height: 36,
                               borderRadius: 12,
-                              border: "1px solid rgba(0,0,0,0.08)",
+                              border: "1px solid rgba(0,0,0,0.06)",
                               background: isAtMaxStock ? "#e5e7eb" : "#fff",
                               cursor: isAtMaxStock ? "not-allowed" : "pointer",
                               fontWeight: 900,
                               color: "#0f172a",
                               opacity: isAtMaxStock ? 0.6 : 1,
+                              fontSize: 18,
                             }}
                           >
                             +
                           </button>
                         </div>
                       </div>
+
+                      {isOverStock && (
+                        <div
+                          style={{
+                            marginTop: 8,
+                            fontSize: 12,
+                            fontWeight: 700,
+                            color: "#dc2626",
+                          }}
+                        >
+                          Quantity exceeds available stock.
+                        </div>
+                      )}
+
+                      {!isOverStock && isAtMaxStock && (
+                        <div
+                          style={{
+                            marginTop: 8,
+                            fontSize: 12,
+                            fontWeight: 700,
+                            color: "#f59e0b",
+                          }}
+                        >
+                          Stock limit reached.
+                        </div>
+                      )}
                     </div>
 
                     <button
@@ -430,14 +432,15 @@ function CartModal({
                         removeFromCart(item.id, item.variantId, item.variantName)
                       }
                       style={{
-                        width: 42,
-                        height: 42,
+                        width: 44,
+                        height: 44,
                         borderRadius: 14,
                         border: "1px solid rgba(239,68,68,0.25)",
-                        background: "rgba(239,68,68,0.10)",
+                        background: "rgba(239,68,68,0.08)",
                         cursor: "pointer",
                         display: "grid",
                         placeItems: "center",
+                        flexShrink: 0,
                       }}
                       title="Remove"
                       aria-label="Remove item"
@@ -456,7 +459,7 @@ function CartModal({
             style={{
               padding: 16,
               borderTop: "1px solid rgba(0,0,0,0.06)",
-              background: "rgba(255,255,255,0.92)",
+              background: "rgba(255,255,255,0.96)",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
@@ -464,7 +467,13 @@ function CartModal({
               flexWrap: "wrap",
             }}
           >
-            <div style={{ fontWeight: 950, color: "#0f172a" }}>
+            <div
+              style={{
+                fontWeight: 950,
+                color: "#0f172a",
+                fontSize: 16,
+              }}
+            >
               Total:{" "}
               <span style={{ color: "#0f172a" }}>
                 {formatCurrency(cartTotal)}
@@ -475,7 +484,7 @@ function CartModal({
               <button
                 onClick={handleSelectPayment}
                 style={{
-                  padding: "10px 14px",
+                  padding: "11px 16px",
                   borderRadius: 14,
                   border: "1px solid rgba(59,130,246,0.25)",
                   background: "rgba(59,130,246,0.10)",
@@ -490,7 +499,7 @@ function CartModal({
               <button
                 onClick={handleCheckout}
                 style={{
-                  padding: "10px 16px",
+                  padding: "11px 18px",
                   borderRadius: 14,
                   border: "none",
                   background: "linear-gradient(135deg, #22c55e, #16a34a)",
