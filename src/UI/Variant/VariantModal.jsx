@@ -44,17 +44,17 @@ function VariantModal({
     setCurrentIndex(nextIndex);
   };
 
-  const handleAddToCart = (product, variantIndex = 0) => {
-    const variant = product.variants?.[variantIndex] || null;
-
-    const price = Number(variant?.price ?? product.price ?? 0);
+  const handleAddToCart = () => {
+    if (!product || !variant) return;
 
     addToCart(product, {
-      variantId: variant?.id ?? null,
-      variantName: variant?.variant_name ?? product.name,
-      variantImage: variant?.image ?? product.image ?? null,
-      price: price,
+      variantId: variant.id,
+      variantName: variant.variant_name,
+      variantImage: variant.image || product.image || null,
+      price: Number(variant.price ?? product.price ?? 0),
     });
+
+    onClose();
   };
 
   return (
