@@ -8,6 +8,7 @@ function NotificationPanel({
   user,
 }) {
   const [open, setOpen] = useState(false);
+  const isMobile = window.innerWidth <= 768;
 
   const safeNotifications = user?.id ? notifications || [] : [];
 
@@ -167,15 +168,16 @@ function NotificationPanel({
 
           <div
             style={{
-              position: "absolute",
-              top: "calc(100% + 12px)",
-              right: 0,
-              width: "min(420px, 92vw)",
-              maxHeight: "70vh",
+              position: isMobile ? "fixed" : "absolute",
+              top: isMobile ? "88px" : "calc(100% + 12px)",
+              right: isMobile ? "8px" : 0,
+              left: isMobile ? "8px" : "auto",
+              width: isMobile ? "calc(100vw - 16px)" : "min(420px, 92vw)",
+              maxHeight: isMobile ? "70vh" : "70vh",
               overflowY: "auto",
               backgroundColor: "#fff",
-              borderRadius: "18px",
-              padding: "1rem",
+              borderRadius: isMobile ? "16px" : "18px",
+              padding: isMobile ? "0.85rem" : "1rem",
               boxShadow: "0 18px 45px rgba(0,0,0,0.18)",
               border: "1px solid rgba(17,24,39,0.08)",
               zIndex: 3000,
@@ -185,14 +187,15 @@ function NotificationPanel({
               onClick={() => setOpen(false)}
               style={{
                 position: "absolute",
-                top: "0.75rem",
-                right: "1rem",
+                top: "10px",
+                right: "12px",
                 border: "none",
                 background: "transparent",
-                fontSize: "1.5rem",
+                fontSize: "1.6rem",
                 fontWeight: "bold",
                 cursor: "pointer",
                 color: "#555",
+                zIndex: 5,
               }}
             >
               ×
@@ -202,8 +205,8 @@ function NotificationPanel({
               style={{
                 display: "flex",
                 justifyContent: "space-between",
-                alignItems: "center",
-                gap: "12px",
+                alignItems: "flex-start",
+                gap: "10px",
                 paddingRight: "28px",
                 marginBottom: "1rem",
                 flexWrap: "wrap",
@@ -318,7 +321,12 @@ function NotificationPanel({
                         {getStatusIcon(change.status)}
                       </div>
 
-                      <div style={{ flex: 1, paddingRight: "64px" }}>
+                      <div
+                        style={{
+                          flex: 1,
+                          paddingRight: isMobile ? "52px" : "64px",
+                        }}
+                      >
                         <strong style={{ display: "block", marginBottom: "4px" }}>
                           Order #{change.sale_id}
                         </strong>
@@ -328,6 +336,7 @@ function NotificationPanel({
                             margin: "0.25rem 0",
                             color: "#374151",
                             lineHeight: 1.45,
+                            wordBreak: "break-word",
                           }}
                         >
                           {change.message}
