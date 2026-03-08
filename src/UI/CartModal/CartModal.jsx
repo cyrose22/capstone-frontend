@@ -9,7 +9,6 @@ function CartModal({
   setShowPaymentModal,
   formatCurrency,
   userId,
-  onCheckout,
   setToastMessage,
   setToastType,
   setShowToast,

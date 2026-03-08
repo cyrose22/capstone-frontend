@@ -561,7 +561,6 @@ function ConsumerDashboard() {
           setShowCartModal={setShowCartModal}
           formatCurrency={formatCurrency}
           userId={user?.id}
-          onCheckout={onCheckout}
           setToastMessage={setToastMessage}
           setToastType={setToastType}
           setShowToast={setShowToast}
