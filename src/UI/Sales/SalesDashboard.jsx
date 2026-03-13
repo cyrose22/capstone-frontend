@@ -732,7 +732,7 @@ function SalesDashboard() {
                         await updateStatus(sale.id, 'completed');
                         window.dispatchEvent(new Event('order-status-updated'));
                         setStatusTab('completed');
-                        toast.success('Marked as completed');
+                        toast.success('Order Completed!');
                       }}
                     >
                       ✅
