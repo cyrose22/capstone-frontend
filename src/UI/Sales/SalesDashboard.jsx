@@ -27,7 +27,7 @@ function SalesDashboard() {
   const [reportYear, setReportYear] = useState('');
   const [searchTerm, setSearchTerm] = useState("");
 
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
   const location = useLocation();
 
   // const showToast = (msg) => {
