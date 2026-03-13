@@ -274,25 +274,19 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
 
       {/* Pagination controls */}
       <div className="shop-pagination">
-        <button
-          className="shop-page-btn"
-          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-          disabled={currentPage === 1}
-        >
-          Prev
-        </button>
+        {Array.from({ length: totalPages }, (_, index) => {
+          const page = index + 1;
 
-        <span className="shop-page-text">
-          Page {currentPage} of {totalPages}
-        </span>
-
-        <button
-          className="shop-page-btn"
-          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </button>
+          return (
+            <button
+              key={page}
+              className={`shop-page-btn ${currentPage === page ? "active" : ""}`}
+              onClick={() => setCurrentPage(page)}
+            >
+              {page}
+            </button>
+          );
+        })}
       </div>
 
       {/* Reusable Variant Modal */}

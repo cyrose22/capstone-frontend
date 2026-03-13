@@ -47,7 +47,7 @@ html, body {
 
 .storefront-layout {
   min-height: 100vh;
-  background: #f8fafc;
+  background: #ffffff;
 }
 
 .store-name {
@@ -732,21 +732,36 @@ html, body {
 }
 
 .shop-pagination {
-  margin-top: 18px;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 12px;
+  margin: 28px 0 10px;
 }
 
 .shop-page-btn {
-  padding: 9px 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   border: 1px solid #d1d5db;
-  background: #fff;
-  border-radius: 10px;
+  background: #ffffff;
+  color: #111827;
   font-weight: 700;
+  font-size: 15px;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.shop-page-btn:hover {
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+}
+
+.shop-page-btn.active {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
 }
 
 .shop-page-btn:disabled {
