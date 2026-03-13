@@ -739,7 +739,7 @@ function SalesDashboard() {
                         onClick={() => {
                           setCancelingSaleId(sale.id);
                           setShowCancelModal(true);
-                          toast.success('Order cancelled');
+                          //toast.success('Order cancelled');
                         }}
                       >
                         ❌
