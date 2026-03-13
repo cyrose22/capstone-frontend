@@ -427,6 +427,8 @@
   background: rgba(2, 6, 23, 0.5);
   backdrop-filter: blur(8px);
   z-index: 9999;
+  overflow-y: auto;
+  padding: 20px 0;
 }
 
 .modal-content.sd__modal {
@@ -609,8 +611,11 @@
 }
 
 /* Better invoice modal */
-.sd__modal--invoice{
+.sd__modal--invoice {
   width: min(900px, 94vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 20px;
   border-radius: 24px;
 }
@@ -657,6 +662,7 @@
   background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
   padding: 22px;
+  overflow: visible;
 }
 
 .sd__invoiceHeader{
@@ -741,8 +747,10 @@
   font-weight: 900;
 }
 
-.sd__invoiceItemsWrap{
+.sd__invoiceItemsWrap {
   overflow-x: auto;
+  overflow-y: visible;
+  width: 100%;
 }
 
 .sd__invoiceTable{
