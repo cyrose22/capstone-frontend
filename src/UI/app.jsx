@@ -76,7 +76,8 @@ function AppWrapper() {
   const hideChatBot =
     location.pathname === '/login' ||
     location.pathname === '/register' ||
-    !user?.token;
+    !user?.token ||
+    user?.role === 'admin';
 
   return (
     <>
