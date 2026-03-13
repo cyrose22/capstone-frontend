@@ -121,7 +121,9 @@ function NotificationPanel({
   };
 
   const sortedNotifications = [...safeNotifications].sort(
-    (a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)
+    (a, b) =>
+      new Date(b.created_at || b.createdAt || 0) -
+      new Date(a.created_at || a.createdAt || 0)
   );
 
   if (!user?.id) {
@@ -328,7 +330,7 @@ function NotificationPanel({
                         }}
                       >
                         <strong style={{ display: "block", marginBottom: "4px" }}>
-                          Order #{change.sale_id}
+                          Order #{String(change.sale_id || change.saleId).padStart(6, "0")}
                         </strong>
 
                         <p
@@ -349,7 +351,7 @@ function NotificationPanel({
                             color: "#888",
                           }}
                         >
-                          {getTimeAgo(change.created_at)}
+                          {getTimeAgo(change.created_at || change.createdAt)}
                         </p>
                       </div>
                     </div>
