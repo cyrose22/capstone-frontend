@@ -32,39 +32,36 @@ function AdminDashboard() {
   const loggedInUser = user?.username || '';
   const loggedInRole = user?.role || '';
 
-  useEffect(() => {
-    if (!user?.token) {
-      navigate('/');
-    } else if (user.role !== 'admin') {
-      navigate('/dashboard/consumer');
-    }
-  }, [user, navigate]);
+  const token = user?.token;
+  const role = user?.role;
 
-  useEffect(() => {
-    if (user?.token && user.role === 'admin') {
-      fetchUsers();
-    }
-  }, [user]);
-
-  if (!user?.token || user.role !== 'admin') {
-    return null;
-  }
-
-  const fetchUsers = async () => {
+  const fetchUsers = React.useCallback(async () => {
     try {
       const res = await axios.get('https://capstone-backend-kiax.onrender.com/users');
-
       const normalizedUsers = (res.data || []).map((listedUser) => ({
         ...listedUser,
         status: listedUser.status || 'active',
       }));
-
       setUsers(normalizedUsers);
     } catch (err) {
       console.error('Failed to load users:', err);
       alert('Failed to load users');
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/');
+    } else if (role !== 'admin') {
+      navigate('/dashboard/consumer');
+    }
+  }, [token, role, navigate]);
+
+  useEffect(() => {
+    if (token && role === 'admin') {
+      fetchUsers();
+    }
+  }, [token, role, fetchUsers]);
 
   const toggleUserStatus = async (selectedUser) => {
     const isDeactivating = selectedUser.status !== 'inactive';
