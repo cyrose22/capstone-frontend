@@ -170,6 +170,17 @@ function ConsumerDashboard() {
         }
 
         if (prevStatus !== sale.status) {
+          const statusLabel =
+            sale.status === "to receive"
+              ? "ready to receive"
+              : sale.status === "completed"
+              ? "completed"
+              : sale.status === "cancelled"
+              ? "cancelled"
+              : sale.status;
+
+          const message = `Your order #${sale.id} is ${statusLabel}.`;
+
           setNewStatusChanges((prev) => [
             {
               id: sale.id,
@@ -180,10 +191,10 @@ function ConsumerDashboard() {
             },
             ...prev,
           ]);
+
           setNotifBounce(true);
           setTimeout(() => setNotifBounce(false), 1000);
         }
-
         previousStatusesRef.current[sale.id] = sale.status;
       });
 
