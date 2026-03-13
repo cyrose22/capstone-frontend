@@ -9,21 +9,21 @@
   --shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
 }
 
+/* Mobile Header */
 .mobile-header {
   display: none;
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  height: 58px;
+  width: 100%;
+  height: 64px;
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   align-items: center;
-  padding: 0 12px;
+  padding: 0 1rem;
   border-bottom: 1px solid var(--border);
   z-index: 300;
-  box-sizing: border-box;
 }
 
 .mobile-brand {
@@ -31,31 +31,26 @@
   align-items: center;
   gap: 10px;
   margin: 0 auto;
-  min-width: 0;
 }
 
 .mobile-brand-logo {
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   object-fit: contain;
   border-radius: 10px;
   background: #fff;
   border: 1px solid var(--border);
   padding: 4px;
-  flex-shrink: 0;
 }
 
 .mobile-header h2 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 800;
   color: var(--primary);
-  white-space: nowrap;
 }
 
 .menu-btn {
-  width: 42px;
-  height: 42px;
   background: none;
   border: none;
   cursor: pointer;
@@ -63,10 +58,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
-  flex-shrink: 0;
 }
 
+/* Overlay */
 .overlay {
   position: fixed;
   inset: 0;
@@ -74,6 +68,7 @@
   z-index: 250;
 }
 
+/* Sidebar */
 .sidebar {
   width: 250px;
   height: 100vh;
@@ -129,7 +124,6 @@
 .sidebar-nav {
   padding: 18px 12px;
   flex: 1;
-  overflow-y: auto;
 }
 
 .sidebar ul {
@@ -178,6 +172,7 @@
   color: #ffffff;
 }
 
+/* Responsive */
 @media (max-width: 768px) {
   .mobile-header {
     display: flex;
@@ -185,9 +180,8 @@
 
   .sidebar {
     transform: translateX(-100%);
-    width: 78vw;
-    max-width: 260px;
-    padding-top: 64px;
+    width: 270px;
+    padding-top: 70px;
   }
 
   .sidebar.open {
@@ -195,28 +189,6 @@
   }
 
   .sidebar-brand {
-    padding: 14px 14px 16px;
-  }
-
-  .sidebar-nav {
-    padding: 14px 10px 20px;
-  }
-
-  .sidebar a {
-    padding: 0.85rem 0.9rem;
-    font-size: 0.92rem;
-  }
-
-  .logo {
-    font-size: 1.1rem;
-  }
-
-  .sidebar-subtitle {
-    font-size: 0.78rem;
-  }
-
-  .sidebar-logo-img {
-    width: 40px;
-    height: 40px;
+    padding-top: 10px;
   }
 }
