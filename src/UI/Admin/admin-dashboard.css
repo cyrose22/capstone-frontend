@@ -1,12 +1,10 @@
 :root{
   --bg: #ffffff;
   --card: #ffffff;
-  --cardSolid: #ffffff;
   --border: rgba(17,24,39,0.08);
   --text: #111827;
   --muted: #6b7280;
   --shadow: 0 10px 28px rgba(15,23,42,0.06);
-  --shadowHover: 0 18px 36px rgba(15,23,42,0.10);
   --radius: 20px;
 
   --blue: #3b82f6;
@@ -16,11 +14,18 @@
   --green: #22c55e;
 }
 
-/* PAGE */
 .admin-dashboard{
   background: #ffffff;
   min-height: 100vh;
   padding: 0 0 40px;
+}
+
+.admin-dashboard-content{
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 18px 20px 40px;
+  box-sizing: border-box;
 }
 
 .register-staff-container{
@@ -29,7 +34,6 @@
   justify-content: flex-end;
 }
 
-/* SECTION HEADERS */
 .admin-dashboard h2{
   display: flex;
   align-items: center;
@@ -38,8 +42,6 @@
   font-weight: 800;
   margin: 28px 0 14px;
   color: var(--text);
-  border: none;
-  padding-left: 0;
 }
 
 .admin-dashboard h2::after{
@@ -50,16 +52,13 @@
   margin-left: 12px;
 }
 
-/* GRID */
 .user-card-grid{
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 320px));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
   margin-top: 14px;
-  justify-content: start;
 }
 
-/* CARD */
 .user-card{
   position: relative;
   overflow: hidden;
@@ -69,10 +68,12 @@
   padding: 18px;
   box-shadow: var(--shadow);
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-  width: 320px;
   min-height: 210px;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
 }
 
 .user-card:hover{
@@ -81,7 +82,6 @@
   border-color: rgba(17,24,39,0.12);
 }
 
-/* CARD HEADER */
 .user-header{
   display:flex;
   justify-content:space-between;
@@ -92,6 +92,7 @@
 
 .user-main{
   min-width: 0;
+  flex: 1;
 }
 
 .user-header h3{
@@ -100,6 +101,7 @@
   font-weight: 800;
   color: var(--text);
   line-height: 1.25;
+  word-break: break-word;
 }
 
 .user-meta{
@@ -107,6 +109,7 @@
   color: var(--muted);
   font-size: 0.93rem;
   line-height: 1.45;
+  word-break: break-word;
 }
 
 .user-meta strong{
@@ -125,14 +128,12 @@
   padding: 10px 12px;
 }
 
-/* BADGES */
 .user-badges{
   display: flex;
-  align-items: center;
-  gap:6px;
-  align-items:center;
+  gap: 6px;
   flex-wrap: wrap;
   justify-content: flex-end;
+  flex-shrink: 0;
 }
 
 .role-badge,
@@ -180,20 +181,18 @@
   color: #111827;
 }
 
-/* ACTIONS */
 .user-actions{
   margin-top: 16px;
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  position: relative;
+  align-items: stretch;
 }
 
 .button-with-toast{
   position: relative;
 }
 
-/* TOOLTIP */
 .button-with-toast .toast{
   position: absolute;
   top: -12px;
@@ -210,7 +209,6 @@
   z-index: 5;
 }
 
-/* ACTION BUTTONS */
 .user-actions button{
   cursor: pointer;
 }
@@ -238,7 +236,6 @@
   background: #fffaf0;
 }
 
-/* TOGGLE ROLE */
 button.toggle-role{
   padding: 10px 13px;
   border-radius: 12px;
@@ -257,7 +254,6 @@ button.toggle-role:hover{
   box-shadow: 0 14px 26px rgba(139,92,246,0.18);
 }
 
-/* TOGGLE STATUS */
 button.toggle-status{
   padding: 10px 13px;
   border-radius: 12px;
@@ -274,23 +270,11 @@ button.toggle-status.activate{
   box-shadow: 0 12px 24px rgba(34,197,94,0.12);
 }
 
-button.toggle-status.activate:hover{
-  transform: translateY(-1px);
-  background: rgba(34,197,94,0.18);
-  box-shadow: 0 16px 28px rgba(34,197,94,0.16);
-}
-
 button.toggle-status.deactivate{
   background: rgba(239,68,68,0.10);
   border-color: rgba(239,68,68,0.22);
   color: #991b1b;
   box-shadow: 0 12px 24px rgba(239,68,68,0.10);
-}
-
-button.toggle-status.deactivate:hover{
-  transform: translateY(-1px);
-  background: rgba(239,68,68,0.16);
-  box-shadow: 0 16px 28px rgba(239,68,68,0.16);
 }
 
 button.toggle-role:disabled,
@@ -301,10 +285,10 @@ button.toggle-status:disabled{
   box-shadow: none;
 }
 
-/* REGISTER STAFF BUTTON */
 .register-staff-btn{
   display: inline-flex;
   align-items:center;
+  justify-content: center;
   gap: 10px;
   padding: 11px 16px;
   border-radius: 14px;
@@ -322,8 +306,8 @@ button.toggle-status:disabled{
   box-shadow: 0 16px 28px rgba(255,90,54,0.16);
 }
 
-/* MODAL */
-.modal-overlay{
+.modal-overlay,
+.password-modal-overlay{
   position: fixed;
   inset: 0;
   background: rgba(17,24,39,0.55);
@@ -336,14 +320,18 @@ button.toggle-status:disabled{
   z-index: 9999;
 }
 
-.modal-content{
+.modal-content,
+.password-modal{
   width: min(520px, 96vw);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
   background: rgba(255,255,255,0.98);
   border-radius: 20px;
   border: 1px solid rgba(17,24,39,0.08);
   box-shadow: 0 24px 70px rgba(0,0,0,0.22);
   position: relative;
   padding: 22px;
+  box-sizing: border-box;
 }
 
 .animated-modal{
@@ -361,7 +349,8 @@ button.toggle-status:disabled{
   }
 }
 
-.modal-close{
+.modal-close,
+.password-modal-close{
   position: absolute;
   top: 14px;
   right: 14px;
@@ -375,7 +364,8 @@ button.toggle-status:disabled{
   cursor: pointer;
 }
 
-.modal-chip{
+.modal-chip,
+.password-modal-chip{
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -388,25 +378,27 @@ button.toggle-status:disabled{
   margin-bottom: 14px;
 }
 
-.modal-header h2{
+.modal-header h2,
+.password-modal-head h2{
   margin: 0 0 6px;
   font-size: 1.2rem;
   color: var(--text);
 }
 
-.modal-header p{
+.modal-header p,
+.password-modal-head p{
   margin: 0 0 14px;
   color: var(--muted);
   line-height: 1.45;
 }
 
-/* INPUTS */
 .form-stack{
   display: grid;
   gap: 12px;
 }
 
-.modal-input.styled-input{
+.modal-input.styled-input,
+.password-modal-input{
   width: 100%;
   border-radius: 14px;
   border: 1px solid rgba(17,24,39,0.12);
@@ -419,13 +411,14 @@ button.toggle-status:disabled{
   box-sizing: border-box;
 }
 
-.modal-input.styled-input:focus{
+.modal-input.styled-input:focus,
+.password-modal-input:focus{
   border-color: rgba(59,130,246,0.45);
   box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
 }
 
-/* CHECKBOX */
-.checkbox-row{
+.checkbox-row,
+.password-modal-checkbox{
   display: flex;
   align-items: center;
   gap: 10px;
@@ -433,7 +426,8 @@ button.toggle-status:disabled{
   margin-bottom: 18px;
 }
 
-.checkbox-row input[type="checkbox"]{
+.checkbox-row input[type="checkbox"],
+.password-modal-checkbox input[type="checkbox"]{
   width: 18px;
   height: 18px;
   margin: 0;
@@ -442,7 +436,8 @@ button.toggle-status:disabled{
   flex-shrink: 0;
 }
 
-.checkbox-row label{
+.checkbox-row label,
+.password-modal-checkbox label{
   font-size: 0.92rem;
   color: #374151;
   cursor: pointer;
@@ -450,15 +445,16 @@ button.toggle-status:disabled{
   line-height: 1.2;
 }
 
-/* MODAL BUTTONS */
-.modal-actions{
+.modal-actions,
+.password-modal-actions{
   display: flex;
   justify-content: flex-end;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.cancel-btn{
+.cancel-btn,
+.password-cancel-btn{
   padding: 12px 16px;
   border-radius: 14px;
   border: 1px solid #e5e7eb;
@@ -467,7 +463,8 @@ button.toggle-status:disabled{
   font-weight: 800;
 }
 
-.save-btn{
+.save-btn,
+.password-save-btn{
   padding: 12px 18px;
   border-radius: 14px;
   border: none;
@@ -477,40 +474,12 @@ button.toggle-status:disabled{
   box-shadow: 0 12px 24px rgba(34,197,94,0.20);
 }
 
-.save-btn:disabled{
+.save-btn:disabled,
+.password-save-btn:disabled{
   background: #d1d5db;
   cursor: not-allowed;
   opacity: 0.75;
   box-shadow: none;
-}
-
-/* RESPONSIVE */
-@media (max-width: 640px){
-  .register-staff-container{
-    justify-content: stretch;
-  }
-
-  .register-staff-btn{
-    width: 100%;
-    justify-content: center;
-  }
-
-  .user-header{
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .user-badges{
-    justify-content: flex-start;
-  }
-
-  .modal-actions{
-    flex-direction: column;
-  }
-
-  .modal-actions button{
-    width: 100%;
-  }
 }
 
 .register-modal{
@@ -549,60 +518,9 @@ button.toggle-status:disabled{
   line-height: 1.45;
 }
 
-.form-stack{
-  display: grid;
-  gap: 12px;
-  margin-top: 6px;
-}
-
-.modal-input.styled-input{
-  width: 100%;
-  height: 48px;
-  padding: 0 14px;
-  border-radius: 16px;
-  border: 1px solid #dbe2ea;
-  background: #ffffff;
-  font-size: 0.96rem;
-  color: #0f172a;
-  outline: none;
-  box-sizing: border-box;
-  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
-}
-
-.modal-input.styled-input::placeholder{
-  color: #9ca3af;
-}
-
-.modal-input.styled-input:focus{
-  border-color: #93c5fd;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
-}
-
 .register-checkbox{
   margin-top: 2px;
   margin-bottom: 8px;
-}
-
-.checkbox-row{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.checkbox-row input[type="checkbox"]{
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  accent-color: #22c55e;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.checkbox-row label{
-  font-size: 0.95rem;
-  color: #475569;
-  cursor: pointer;
-  user-select: none;
 }
 
 .register-actions{
@@ -613,83 +531,143 @@ button.toggle-status:disabled{
 }
 
 .cancel-btn,
-.save-btn{
+.save-btn,
+.password-cancel-btn,
+.password-save-btn{
   min-width: 140px;
-  height: 48px;
-  padding: 0 18px;
-  border-radius: 16px;
-  font-size: 0.96rem;
-  font-weight: 800;
+  min-height: 46px;
 }
 
-.cancel-btn{
-  border: 1px solid #dbe2ea;
-  background: #f8fafc;
-  color: #0f172a;
+@media (max-width: 1024px){
+  .admin-dashboard-content{
+    padding: 16px;
+  }
 }
 
-.cancel-btn:hover{
-  background: #f1f5f9;
-}
+@media (max-width: 768px){
+  .admin-dashboard{
+    padding-top: 72px;
+  }
 
-.save-btn{
-  border: none;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: #ffffff;
-  box-shadow: 0 12px 24px rgba(34, 197, 94, 0.22);
-}
+  .admin-dashboard-content{
+    padding: 14px;
+  }
 
-.save-btn:hover:not(:disabled){
-  transform: translateY(-1px);
-  box-shadow: 0 16px 30px rgba(34, 197, 94, 0.28);
-}
+  .register-staff-container{
+    justify-content: stretch;
+  }
 
-.save-btn:disabled{
-  background: #d1d5db;
-  box-shadow: none;
-  cursor: not-allowed;
-}
+  .register-staff-btn{
+    width: 100%;
+  }
 
-.modal-close{
-  top: 16px;
-  right: 16px;
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  border: none;
-  background: #f3f4f6;
-  color: #334155;
-  font-size: 1.25rem;
-  font-weight: 700;
-  cursor: pointer;
-}
+  .admin-dashboard h2{
+    font-size: 1.12rem;
+    margin: 22px 0 12px;
+  }
 
-.modal-close:hover{
-  background: #e5e7eb;
-}
+  .user-card-grid{
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
 
-@media (max-width: 640px){
-  .register-modal{
-    width: min(92vw, 92vw);
-    padding: 20px 16px 16px;
+  .user-card{
+    padding: 16px;
+    min-height: unset;
+  }
+
+  .user-header{
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .user-badges{
+    justify-content: flex-start;
+  }
+
+  .user-actions{
+    flex-direction: column;
+  }
+
+  .user-actions > *,
+  .user-actions button,
+  .button-with-toast{
+    width: 100%;
+  }
+
+  .user-actions button.edit-user{
+    width: 100%;
+    height: 46px;
+  }
+
+  button.toggle-role,
+  button.toggle-status{
+    width: 100%;
+    min-height: 46px;
+  }
+
+  .button-with-toast .toast{
+    display: none;
+  }
+
+  .modal-actions,
+  .register-actions,
+  .password-modal-actions{
+    flex-direction: column;
+  }
+
+  .modal-actions button,
+  .register-actions button,
+  .password-modal-actions button,
+  .cancel-btn,
+  .save-btn,
+  .password-cancel-btn,
+  .password-save-btn{
+    width: 100%;
+    min-width: 0;
+  }
+
+  .register-modal,
+  .modal-content,
+  .password-modal{
+    width: 100%;
+    max-width: 100%;
+    padding: 18px 16px;
+    border-radius: 18px;
   }
 
   .modal-header.compact h2{
-    font-size: 1.3rem;
+    font-size: 1.28rem;
   }
 
   .modal-header.compact p{
     max-width: 100%;
     font-size: 0.88rem;
   }
+}
 
-  .register-actions{
-    flex-direction: column;
+@media (max-width: 480px){
+  .admin-dashboard-content{
+    padding: 12px;
   }
 
-  .cancel-btn,
-  .save-btn{
-    width: 100%;
-    min-width: 0;
+  .user-card{
+    border-radius: 16px;
+    padding: 14px;
+  }
+
+  .role-badge,
+  .status-badge{
+    font-size: 0.68rem;
+    padding: 5px 8px;
+  }
+
+  .user-header h3{
+    font-size: 1rem;
+  }
+
+  .user-meta,
+  .staff-note{
+    font-size: 0.88rem;
   }
 }
