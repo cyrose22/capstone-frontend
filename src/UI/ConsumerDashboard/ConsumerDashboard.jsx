@@ -12,8 +12,8 @@ import NotificationPanel from "../Notification/NotificationPanel";
 import VariantModal from "../Variant/VariantModal";
 import CancelOrderModal from "../CancelOrder/CancelOrderModal";
 import ToastMessage from "../ToastMessage/ToastMessage";
-import { io } from 'socket.io-client';
 import logo from "../../assets/logo.png";
+import socket from '../socket/socket';
 
 function ConsumerDashboard() {
   const navigate = useNavigate();
@@ -59,10 +59,6 @@ function ConsumerDashboard() {
   const [notifications, setNotifications] = useState([]);
   const [checkoutItems, setCheckoutItems] = useState([]);
 
-  const socket = io('https://capstone-backend-kiax.onrender.com', {
-    transports: ['websocket', 'polling'],
-  });
-
   const goToProducts = () => {
     setActiveTab("shop");
     // wait for ShopTab to render
@@ -89,16 +85,18 @@ function ConsumerDashboard() {
 
     socket.emit('join-user', user.id);
 
-    socket.on('user-notification', (data) => {
+    const handleUserNotification = (data) => {
       fetchNotifications();
       fetchSales();
       showToastMessage(data.message || 'Order update received', 'info');
-    });
+    };
+
+    socket.on('user-notification', handleUserNotification);
 
     return () => {
-      socket.off('user-notification');
+      socket.off('user-notification', handleUserNotification);
     };
-  }, [user]);
+  }, [user?.id]);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -174,6 +172,8 @@ function ConsumerDashboard() {
   };
 
   const fetchSales = async () => {
+    if (!user?.id) return;
+    
     try {
       const res = await axios.get(
         `https://capstone-backend-kiax.onrender.com/sales/user/${user.id}`

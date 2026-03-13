@@ -112,12 +112,14 @@ function OrdersTab({
           return Number(variant?.quantity || 0) > 0;
         });
 
+        const formatOrderId = (id) => String(id).padStart(6, "0");
+
         return (
           <div key={sale.id} className="order-card">
             <div className="order-card-header">
               <div>
                 <div className="order-card-topline">
-                  <span className="order-id">Order #{sale.id}</span>
+                  <span className="order-id">Order #{formatOrderId(sale.id)}</span>
                   <span className={getStatusClass(sale.status)}>
                     {getStatusLabel(sale.status)}
                   </span>

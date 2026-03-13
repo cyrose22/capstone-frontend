@@ -5,7 +5,7 @@ import Header from '../Header/Header';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import logo from "../../assets/logo.png";
-import { io } from 'socket.io-client';
+import socket from '../socket/socket';
 
 function SalesDashboard() {
   const [sales, setSales] = useState([]);
@@ -19,7 +19,7 @@ function SalesDashboard() {
   const [user] = useState(() => JSON.parse(localStorage.getItem('user')));
   const [showReceiptPopup, setShowReceiptPopup] = useState(false);
   const [selectedReceiptUrl, setSelectedReceiptUrl] = useState(null);
-  const [toastMsg, setToastMsg] = useState('');
+  //const [toastMsg, setToastMsg] = useState('');
 
   const [reportFilter, setReportFilter] = useState('all');
   const [reportDate, setReportDate] = useState('');
@@ -30,14 +30,10 @@ function SalesDashboard() {
   const itemsPerPage = 10;
   const location = useLocation();
 
-  const socket = io('https://capstone-backend-kiax.onrender.com', {
-    transports: ['websocket', 'polling'],
-  });
-
-  const showToast = (msg) => {
-    setToastMsg(msg);
-    setTimeout(() => setToastMsg(''), 2000);
-  };
+  // const showToast = (msg) => {
+  //   setToastMsg(msg);
+  //   setTimeout(() => setToastMsg(''), 2000);
+  // };
 
   useEffect(() => {
     fetchSales();
@@ -47,18 +43,21 @@ function SalesDashboard() {
   useEffect(() => {
     socket.emit('join-admin');
 
-    socket.on('new-order', (data) => {
+    const handleNewOrder = (data) => {
       fetchSales();
-      showToast(data.message || 'New order received');
-    });
+      toast.info(data.message || 'New order received');
+    };
 
-    socket.on('admin-order-updated', (data) => {
+    const handleAdminOrderUpdated = () => {
       fetchSales();
-    });
+    };
+
+    socket.on('new-order', handleNewOrder);
+    socket.on('admin-order-updated', handleAdminOrderUpdated);
 
     return () => {
-      socket.off('new-order');
-      socket.off('admin-order-updated');
+      socket.off('new-order', handleNewOrder);
+      socket.off('admin-order-updated', handleAdminOrderUpdated);
     };
   }, []);
 
@@ -70,14 +69,14 @@ function SalesDashboard() {
     }
   }, [location.state]);
 
-  useEffect(() => {
-    const handleStatusChanged = () => fetchSales();
-    window.addEventListener('order-status-updated', handleStatusChanged);
+  // useEffect(() => {
+  //   const handleStatusChanged = () => fetchSales();
+  //   window.addEventListener('order-status-updated', handleStatusChanged);
 
-    return () => {
-      window.removeEventListener('order-status-updated', handleStatusChanged);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener('order-status-updated', handleStatusChanged);
+  //   };
+  // }, []);
 
   const fetchSales = async () => {
     try {
@@ -132,12 +131,14 @@ function SalesDashboard() {
       setCancelingSaleId(null);
       await fetchSales();
       toast.success('Order cancelled');
-      window.dispatchEvent(new Event('order-status-updated'));
+      //window.dispatchEvent(new Event('order-status-updated'));
     } catch (err) {
       console.error(err);
       toast.error('Failed to cancel order');
     }
   };
+
+  const formatOrderId = (id) => String(id).padStart(6, "0");
 
   const handlePrint = () => {
     const receiptContent = document.getElementById('receipt-content');
@@ -225,6 +226,7 @@ function SalesDashboard() {
       const matchesSearch =
         !keyword ||
         String(sale.id).includes(keyword) ||
+        formatOrderId(sale.id).includes(keyword) ||
         (sale.customer_name || "").toLowerCase().includes(keyword) ||
         (sale.contact || "").toLowerCase().includes(keyword) ||
         (sale.payment_method || "").toLowerCase().includes(keyword) ||
@@ -346,7 +348,7 @@ function SalesDashboard() {
 
         return `
           <tr>
-            <td>#${sale.id}</td>
+            <td>#${formatOrderId(sale.id)}</td>
             <td>${sale.customer_name || 'N/A'}</td>
             <td>${new Date(sale.created_at).toLocaleDateString()}</td>
             <td>${itemDetails}</td>
@@ -653,7 +655,7 @@ function SalesDashboard() {
               <div key={sale.id} className="sales-card sd__card">
                 <div className="card-header sd__cardHeader">
                   <div className="sd__orderMeta">
-                    <div className="sd__orderId">Order #{sale.id}</div>
+                    <div className="sd__orderId">Order #{formatOrderId(sale.id)}</div>
                     <div className="sd__orderDate">
                       {new Date(sale.created_at).toLocaleString()}
                     </div>
@@ -770,7 +772,7 @@ function SalesDashboard() {
                         title="Move to To Receive"
                         onClick={async () => {
                           await updateStatus(sale.id, 'to receive');
-                          window.dispatchEvent(new Event('order-status-updated'));
+                          //window.dispatchEvent(new Event('order-status-updated'));
                           toast.success('Moved to To Receive');
                         }}
                       >
@@ -797,7 +799,7 @@ function SalesDashboard() {
                       title="Mark as Completed"
                       onClick={async () => {
                         await updateStatus(sale.id, 'completed');
-                        window.dispatchEvent(new Event('order-status-updated'));
+                        //window.dispatchEvent(new Event('order-status-updated'));
                         setStatusTab('completed');
                         toast.success('Order Completed!');
                       }}
@@ -911,7 +913,7 @@ function SalesDashboard() {
                   <div className="sd__invoiceMeta">
                     <div>
                       <span>Receipt No.</span>
-                      <strong>#{selectedSale.id}</strong>
+                      <strong>#{formatOrderId(selectedSale.id)}</strong>
                     </div>
                     <div>
                       <span>Date</span>
@@ -1049,7 +1051,7 @@ function SalesDashboard() {
           </div>
         )}
 
-        {toastMsg && <div className="quick-toast sd__toast">{toastMsg}</div>}
+        {/* {toastMsg && <div className="quick-toast sd__toast">{toastMsg}</div>} */}
       </div>
     </div>
   );
