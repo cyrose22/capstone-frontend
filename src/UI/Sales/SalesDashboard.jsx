@@ -25,6 +25,7 @@ function SalesDashboard() {
   const [reportDate, setReportDate] = useState('');
   const [reportMonth, setReportMonth] = useState('');
   const [reportYear, setReportYear] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   const itemsPerPage = 10;
   const location = useLocation();
@@ -210,8 +211,28 @@ function SalesDashboard() {
   };
 
   const filteredSales = useMemo(() => {
-    return sales.filter((sale) => sale.status === statusTab);
-  }, [sales, statusTab]);
+    return sales.filter((sale) => {
+      const matchesStatus = sale.status === statusTab;
+      const keyword = searchTerm.toLowerCase().trim();
+
+      const matchesItems =
+        sale.items?.some((item) =>
+          `${item.variant_name || ""} ${item.product_name || ""}`
+            .toLowerCase()
+            .includes(keyword)
+        ) || false;
+
+      const matchesSearch =
+        !keyword ||
+        String(sale.id).includes(keyword) ||
+        (sale.customer_name || "").toLowerCase().includes(keyword) ||
+        (sale.contact || "").toLowerCase().includes(keyword) ||
+        (sale.payment_method || "").toLowerCase().includes(keyword) ||
+        matchesItems;
+
+      return matchesStatus && matchesSearch;
+    });
+  }, [sales, statusTab, searchTerm]);
 
   const completedSales = useMemo(() => {
     return sales.filter((sale) => sale.status === 'completed');
@@ -580,22 +601,45 @@ function SalesDashboard() {
           </div>
         </div>
 
-        <div className="order-status-tabs sd__tabs">
-          {['processing', 'to receive', 'completed', 'cancelled'].map((status) => (
-            <button
-              key={status}
-              className={`sd__tab ${statusTab === status ? 'sd__tab--active' : ''}`}
-              onClick={() => {
-                setStatusTab(status);
-                setCurrentPage(1);
-              }}
-            >
-              {status === 'processing' && '⏳ Processing'}
-              {status === 'to receive' && '📦 To Receive'}
-              {status === 'completed' && '✅ Completed'}
-              {status === 'cancelled' && '❌ Cancelled'}
-            </button>
-          ))}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "12px",
+            flexWrap: "wrap",
+            margin: "16px 0 20px",
+          }}
+        >
+          <div className="order-status-tabs sd__tabs">
+            {["processing", "to receive", "completed", "cancelled"].map((status) => (
+              <button
+                key={status}
+                className={`sd__tab ${statusTab === status ? "sd__tab--active" : ""}`}
+                onClick={() => {
+                  setStatusTab(status);
+                  setCurrentPage(1);
+                }}
+              >
+                {status === "processing" && "⏳ Processing"}
+                {status === "to receive" && "📦 To Receive"}
+                {status === "completed" && "✅ Completed"}
+                {status === "cancelled" && "❌ Cancelled"}
+              </button>
+            ))}
+          </div>
+
+          <input
+            type="text"
+            className="sd__input"
+            placeholder="Search order, customer, contact..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+            style={{ minWidth: "260px" }}
+          />
         </div>
 
         {filteredSales.length === 0 ? (

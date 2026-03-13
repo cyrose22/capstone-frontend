@@ -591,6 +591,10 @@
     width: 100%;
   }
 
+  .sd__search {
+    min-width: 280px;
+  }
+
   .sales-card-list.sd__grid {
     grid-template-columns: 1fr;
   }
