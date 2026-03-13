@@ -12,7 +12,7 @@ import NotificationPanel from "../Notification/NotificationPanel";
 import VariantModal from "../Variant/VariantModal";
 import CancelOrderModal from "../CancelOrder/CancelOrderModal";
 import ToastMessage from "../ToastMessage/ToastMessage";
-
+import { io } from 'socket.io-client';
 import logo from "../../assets/logo.png";
 
 function ConsumerDashboard() {
@@ -59,6 +59,10 @@ function ConsumerDashboard() {
   const [notifications, setNotifications] = useState([]);
   const [checkoutItems, setCheckoutItems] = useState([]);
 
+  const socket = io('https://capstone-backend-kiax.onrender.com', {
+    transports: ['websocket', 'polling'],
+  });
+
   const goToProducts = () => {
     setActiveTab("shop");
     // wait for ShopTab to render
@@ -79,6 +83,22 @@ function ConsumerDashboard() {
       console.error("Failed to fetch notifications:", err);
     }
   };
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    socket.emit('join-user', user.id);
+
+    socket.on('user-notification', (data) => {
+      fetchNotifications();
+      fetchSales();
+      showToastMessage(data.message || 'Order update received', 'info');
+    });
+
+    return () => {
+      socket.off('user-notification');
+    };
+  }, [user]);
 
   useEffect(() => {
     if (!user?.id) return;

@@ -5,6 +5,7 @@ import Header from '../Header/Header';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import logo from "../../assets/logo.png";
+import { io } from 'socket.io-client';
 
 function SalesDashboard() {
   const [sales, setSales] = useState([]);
@@ -28,6 +29,10 @@ function SalesDashboard() {
   const itemsPerPage = 10;
   const location = useLocation();
 
+  const socket = io('https://capstone-backend-kiax.onrender.com', {
+    transports: ['websocket', 'polling'],
+  });
+
   const showToast = (msg) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(''), 2000);
@@ -36,6 +41,24 @@ function SalesDashboard() {
   useEffect(() => {
     fetchSales();
     fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    socket.emit('join-admin');
+
+    socket.on('new-order', (data) => {
+      fetchSales();
+      showToast(data.message || 'New order received');
+    });
+
+    socket.on('admin-order-updated', (data) => {
+      fetchSales();
+    });
+
+    return () => {
+      socket.off('new-order');
+      socket.off('admin-order-updated');
+    };
   }, []);
 
   useEffect(() => {
