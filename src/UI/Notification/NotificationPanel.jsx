@@ -258,10 +258,14 @@ function NotificationPanel({
               </p>
             ) : (
               <div
+                className="notification-scroll"
                 style={{
                   display: "flex",
                   flexDirection: "column",
                   gap: "0.75rem",
+                  maxHeight: "380px",
+                  overflowY: "auto",
+                  paddingRight: "4px"
                 }}
               >
                 {sortedNotifications.map((change) => (

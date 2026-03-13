@@ -1473,3 +1473,16 @@ html, body {
 .dropdown-item.logout svg {
   color: #ef4444;
 }
+
+.notification-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notification-scroll::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 10px;
+}
+
+.notification-scroll::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
