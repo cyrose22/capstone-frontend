@@ -18,6 +18,7 @@ function SalesDashboard() {
   const [user] = useState(() => JSON.parse(localStorage.getItem('user')));
   const [showReceiptPopup, setShowReceiptPopup] = useState(false);
   const [selectedReceiptUrl, setSelectedReceiptUrl] = useState(null);
+  const [toastMsg, setToastMsg] = useState('');
 
   const [reportFilter, setReportFilter] = useState('all');
   const [reportDate, setReportDate] = useState('');
@@ -26,6 +27,11 @@ function SalesDashboard() {
 
   const itemsPerPage = 10;
   const location = useLocation();
+
+  const showToast = (msg) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(''), 2000);
+  };
 
   useEffect(() => {
     fetchSales();
