@@ -815,25 +815,19 @@ function SalesDashboard() {
 
         {filteredSales.length > 0 && totalPages > 1 && (
           <div className="sd__pagination">
-            <button
-              className="sd__btn"
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
+            {Array.from({ length: totalPages }, (_, index) => {
+              const page = index + 1;
 
-            <span className="sd__pageText">
-              Page {currentPage} of {totalPages}
-            </span>
-
-            <button
-              className="sd__btn"
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
+              return (
+                <button
+                  key={page}
+                  className={`sd__pageBtn ${currentPage === page ? "active" : ""}`}
+                  onClick={() => setCurrentPage(page)}
+                >
+                  {page}
+                </button>
+              );
+            })}
           </div>
         )}
 

@@ -411,10 +411,31 @@
 .sd__pagination {
   display: flex;
   justify-content: center;
-  align-items: center;
   gap: 12px;
-  margin-top: 22px;
-  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.sd__pageBtn {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sd__pageBtn:hover {
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+}
+
+.sd__pageBtn.active {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
 }
 
 .sd__pageText {
