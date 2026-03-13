@@ -17,20 +17,34 @@ function SalesDashboard() {
   const [user] = useState(() => JSON.parse(localStorage.getItem('user')));
   const [showReceiptPopup, setShowReceiptPopup] = useState(false);
   const [selectedReceiptUrl, setSelectedReceiptUrl] = useState(null);
-  const [toastMsg, setToastMsg] = useState('');
-
   const [reportFilter, setReportFilter] = useState('all');
   const [reportDate, setReportDate] = useState('');
   const [reportMonth, setReportMonth] = useState('');
   const [reportYear, setReportYear] = useState('');
-
   const itemsPerPage = 10;
   const location = useLocation();
+  const [toastMsg, setToastMsg] = useState('');
+  const [showToastBox, setShowToastBox] = useState(false);
 
   const showToast = (msg) => {
     setToastMsg(msg);
-    setTimeout(() => setToastMsg(''), 2000);
+    setShowToastBox(true);
+
+    if (window.toastTimer) {
+      clearTimeout(window.toastTimer);
+    }
+
+    window.toastTimer = setTimeout(() => {
+      setShowToastBox(false);
+      setTimeout(() => setToastMsg(''), 250);
+    }, 2000);
   };
+
+  useEffect(() => {
+    return () => {
+      if (window.toastTimer) clearTimeout(window.toastTimer);
+    };
+  }, []);
 
   useEffect(() => {
     fetchSales();
@@ -715,7 +729,7 @@ function SalesDashboard() {
                         onClick={() => {
                           setCancelingSaleId(sale.id);
                           setShowCancelModal(true);
-                          showToast('Cancel order');
+                          showToast('Cancellation modal opened');
                         }}
                       >
                         ❌
@@ -981,7 +995,11 @@ function SalesDashboard() {
           </div>
         )}
 
-        {toastMsg && <div className="quick-toast sd__toast">{toastMsg}</div>}
+        {toastMsg && (
+          <div className={`quick-toast sd__toast ${showToastBox ? 'sd__toast--show' : 'sd__toast--hide'}`}>
+            {toastMsg}
+          </div>
+        )}
       </div>
     </div>
   );
