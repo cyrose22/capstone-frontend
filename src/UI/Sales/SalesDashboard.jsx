@@ -179,7 +179,7 @@ function SalesDashboard() {
           font-size: 13px;
         }
         th {
-          background: #f8fafc;
+          background: #ffffff;
         }
         img {
           width: 42px;
@@ -437,7 +437,7 @@ function SalesDashboard() {
             }
 
             th{
-              background: #f8fafc;
+              background: #ffffff;
               font-weight: 800;
             }
 
@@ -445,7 +445,7 @@ function SalesDashboard() {
               margin-top: 20px;
               padding: 14px;
               border-radius: 10px;
-              background: #f8fafc;
+              background: #ffffff;
               border: 1px solid #e5e7eb;
               font-size: 14px;
               font-weight: 700;

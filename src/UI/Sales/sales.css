@@ -259,7 +259,7 @@
 /* Card body */
 .stylish-body.sd__cardBody {
   border-radius: 16px;
-  background: #f8fafc;
+  background: #ffffff;
   border: 1px solid rgba(15, 23, 42, 0.05);
   padding: 12px;
 }
@@ -533,7 +533,7 @@
 }
 
 .receipt-items th {
-  background: #f8fafc;
+  background: #ffffff;
 }
 
 .receipt-items tfoot td {
@@ -710,7 +710,7 @@
 .sd__invoiceMeta div{
   padding: 10px 12px;
   border-radius: 14px;
-  background: #f8fafc;
+  background: #ffffff;
   border: 1px solid rgba(15, 23, 42, 0.06);
 }
 
@@ -742,7 +742,7 @@
 .sd__invoiceInfoBox{
   padding: 14px;
   border-radius: 16px;
-  background: #f8fafc;
+  background: #ffffff;
   border: 1px solid rgba(15, 23, 42, 0.06);
 }
 
