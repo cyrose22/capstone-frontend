@@ -401,7 +401,7 @@ function AdminDashboard() {
         ))}
       </div>
 
-      <h2>👥 Consumers</h2>
+      <h2>👥 Users</h2>
       <div className="user-card-grid">
         {consumerUsers.map((listedUser) => (
           <div key={listedUser.id} className="user-card">
