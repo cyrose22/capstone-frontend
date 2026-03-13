@@ -3,6 +3,7 @@ import axios from 'axios';
 import './sales.css';
 import Header from '../Header/Header';
 import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import logo from "../../assets/logo.png";
 
 function SalesDashboard() {
@@ -17,34 +18,14 @@ function SalesDashboard() {
   const [user] = useState(() => JSON.parse(localStorage.getItem('user')));
   const [showReceiptPopup, setShowReceiptPopup] = useState(false);
   const [selectedReceiptUrl, setSelectedReceiptUrl] = useState(null);
+
   const [reportFilter, setReportFilter] = useState('all');
   const [reportDate, setReportDate] = useState('');
   const [reportMonth, setReportMonth] = useState('');
   const [reportYear, setReportYear] = useState('');
+
   const itemsPerPage = 10;
   const location = useLocation();
-  const [toastMsg, setToastMsg] = useState('');
-  const [showToastBox, setShowToastBox] = useState(false);
-
-  const showToast = (msg) => {
-    setToastMsg(msg);
-    setShowToastBox(true);
-
-    if (window.toastTimer) {
-      clearTimeout(window.toastTimer);
-    }
-
-    window.toastTimer = setTimeout(() => {
-      setShowToastBox(false);
-      setTimeout(() => setToastMsg(''), 250);
-    }, 2000);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (window.toastTimer) clearTimeout(window.toastTimer);
-    };
-  }, []);
 
   useEffect(() => {
     fetchSales();
@@ -120,11 +101,11 @@ function SalesDashboard() {
       setCancelReason('');
       setCancelingSaleId(null);
       await fetchSales();
-      showToast('Order cancelled');
+      toast.success('Order cancelled');
       window.dispatchEvent(new Event('order-status-updated'));
     } catch (err) {
       console.error(err);
-      alert('Failed to cancel order');
+      toast.error('Failed to cancel order');
     }
   };
 
@@ -690,7 +671,7 @@ function SalesDashboard() {
                     title="View Receipt"
                     onClick={() => {
                       setSelectedSale(sale);
-                      showToast('Viewing receipt');
+                      toast.info('Viewing receipt');
                     }}
                   >
                     🧾
@@ -717,7 +698,7 @@ function SalesDashboard() {
                         onClick={async () => {
                           await updateStatus(sale.id, 'to receive');
                           window.dispatchEvent(new Event('order-status-updated'));
-                          showToast('Moved to To Receive');
+                          toast.success('Moved to To Receive');
                         }}
                       >
                         📦
@@ -729,7 +710,7 @@ function SalesDashboard() {
                         onClick={() => {
                           setCancelingSaleId(sale.id);
                           setShowCancelModal(true);
-                          showToast('Cancellation modal opened');
+                          toast.success('Order cancelled');
                         }}
                       >
                         ❌
@@ -745,7 +726,7 @@ function SalesDashboard() {
                         await updateStatus(sale.id, 'completed');
                         window.dispatchEvent(new Event('order-status-updated'));
                         setStatusTab('completed');
-                        showToast('Marked as completed');
+                        toast.success('Marked as completed');
                       }}
                     >
                       ✅
@@ -995,11 +976,7 @@ function SalesDashboard() {
           </div>
         )}
 
-        {toastMsg && (
-          <div className={`quick-toast sd__toast ${showToastBox ? 'sd__toast--show' : 'sd__toast--hide'}`}>
-            {toastMsg}
-          </div>
-        )}
+        {toastMsg && <div className="quick-toast sd__toast">{toastMsg}</div>}
       </div>
     </div>
   );
