@@ -18,6 +18,8 @@
   background: #ffffff;
   min-height: 100vh;
   padding: 0 0 40px;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .admin-dashboard-content{
@@ -32,6 +34,7 @@
   margin: 18px 0 8px;
   display: flex;
   justify-content: flex-end;
+  width: 100%;
 }
 
 .admin-dashboard h2{
@@ -54,9 +57,10 @@
 
 .user-card-grid{
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
   margin-top: 14px;
+  width: 100%;
 }
 
 .user-card{
@@ -186,7 +190,7 @@
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  align-items: stretch;
+  width: 100%;
 }
 
 .button-with-toast{
@@ -551,14 +555,20 @@ button.toggle-status:disabled{
 
   .admin-dashboard-content{
     padding: 14px;
+    width: 100%;
+    max-width: 100%;
   }
 
   .register-staff-container{
     justify-content: stretch;
   }
 
-  .register-staff-btn{
+  .register-staff-btn {
     width: 100%;
+    min-height: 48px;
+    justify-content: center;
+    text-align: center;
+    white-space: normal;
   }
 
   .admin-dashboard h2{
@@ -572,8 +582,8 @@ button.toggle-status:disabled{
   }
 
   .user-card{
-    padding: 16px;
-    min-height: unset;
+    width: 100%;
+    min-width: 0;
   }
 
   .user-header{
@@ -587,11 +597,19 @@ button.toggle-status:disabled{
 
   .user-actions{
     flex-direction: column;
+    align-items: stretch;
   }
 
   .user-actions > *,
   .user-actions button,
   .button-with-toast{
+    width: 100%;
+  }
+
+  .button-with-toast,
+  .user-actions button,
+  .toggle-role,
+  .toggle-status {
     width: 100%;
   }
 

@@ -15,12 +15,12 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 64px;
+  height: 58px;
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   align-items: center;
-  padding: 0 14px;
+  padding: 0 12px;
   border-bottom: 1px solid var(--border);
   z-index: 300;
   box-sizing: border-box;
@@ -35,8 +35,8 @@
 }
 
 .mobile-brand-logo {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
   border-radius: 10px;
   background: #fff;
@@ -185,7 +185,8 @@
 
   .sidebar {
     transform: translateX(-100%);
-    width: min(82vw, 280px);
+    width: 78vw;
+    max-width: 260px;
     padding-top: 64px;
   }
 
@@ -194,10 +195,28 @@
   }
 
   .sidebar-brand {
-    padding: 14px 16px 16px;
+    padding: 14px 14px 16px;
   }
 
   .sidebar-nav {
-    padding: 14px 12px 20px;
+    padding: 14px 10px 20px;
+  }
+
+  .sidebar a {
+    padding: 0.85rem 0.9rem;
+    font-size: 0.92rem;
+  }
+
+  .logo {
+    font-size: 1.1rem;
+  }
+
+  .sidebar-subtitle {
+    font-size: 0.78rem;
+  }
+
+  .sidebar-logo-img {
+    width: 40px;
+    height: 40px;
   }
 }
