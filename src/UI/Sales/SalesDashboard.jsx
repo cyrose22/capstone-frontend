@@ -342,18 +342,13 @@ function SalesDashboard() {
     const rows = filteredReportSales
       .map((sale) => {
         const itemDetails =
-          sale.items
-            ?.map((item) => {
-              const productName = item.product_name || 'Product';
-              const hasVariant =
-                item.variant_name &&
-                item.variant_name.trim() &&
-                item.variant_name.toLowerCase() !== productName.toLowerCase();
-
-              return hasVariant
-                ? `${productName} (${item.variant_name}) × ${item.quantity}`
-                : `${productName} × ${item.quantity}`;
-            })
+          sale.items?.map(item =>
+              `${item.product_name || "Product"}${
+                item.variant_name && item.variant_name !== "Original"
+                  ? ` (${item.variant_name})`
+                  : ""
+              } × ${item.quantity}`
+            )
             .join(', ') || 'No items';
         return `
           <tr>
