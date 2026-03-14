@@ -18,6 +18,7 @@ function Chatbot() {
   const [open, setOpen] = useState(false);
   const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
   const userName = storedUser?.fullname || storedUser?.username || "there";
+  const userInitial = (userName || "U").trim().charAt(0).toUpperCase();
 
   const [messages, setMessages] = useState([
     {
@@ -502,57 +503,90 @@ function Chatbot() {
                 gap: "12px",
               }}
             >
-              {messages.map((m, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.18 }}
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: m.sender === "user" ? "flex-end" : "flex-start",
-                  }}
-                >
-                  <div
-                    style={{
-                      maxWidth: m.text?.type === "products" ? "88%" : "80%",
-                      background:
-                        m.sender === "user"
-                          ? "linear-gradient(135deg,#6366f1,#7c3aed)"
-                          : "#ffffff",
-                      color: m.sender === "user" ? "#ffffff" : "#111827",
-                      border: m.sender === "bot" ? "1px solid #e5e7eb" : "none",
-                      borderRadius:
-                        m.sender === "user"
-                          ? "20px 20px 8px 20px"
-                          : "20px 20px 20px 8px",
-                      padding: "12px 14px",
-                      fontSize: "14px",
-                      lineHeight: 1.5,
-                      boxShadow: "0 8px 18px rgba(15,23,42,0.08)",
-                    }}
-                  >
-                    {renderMessageContent(m)}
-                  </div>
+              {messages.map((m, i) => {
+                const isUser = m.sender === "user";
 
-                  <div
+                return (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.18 }}
                     style={{
-                      fontSize: "10px",
-                      color: "#94a3b8",
-                      marginTop: "4px",
-                      padding: "0 4px",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: isUser ? "flex-end" : "flex-start",
                     }}
                   >
-                    {m.time
-                      ? new Date(m.time).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : ""}
-                  </div>
-                </motion.div>
-              ))}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-end",
+                        gap: "8px",
+                        flexDirection: isUser ? "row-reverse" : "row",
+                        maxWidth: "100%",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          borderRadius: "50%",
+                          flexShrink: 0,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "13px",
+                          fontWeight: 800,
+                          color: "#fff",
+                          background: isUser
+                            ? "linear-gradient(135deg,#fb923c,#f97316)"
+                            : "linear-gradient(135deg,#6366f1,#7c3aed)",
+                          boxShadow: "0 6px 14px rgba(15,23,42,0.12)",
+                        }}
+                      >
+                        {isUser ? userInitial : <Bot size={16} />}
+                      </div>
+
+                      <div
+                        style={{
+                          maxWidth: m.text?.type === "products" ? "88%" : "80%",
+                          background: isUser
+                            ? "linear-gradient(135deg,#6366f1,#7c3aed)"
+                            : "#ffffff",
+                          color: isUser ? "#ffffff" : "#111827",
+                          border: isUser ? "none" : "1px solid #e5e7eb",
+                          borderRadius: isUser
+                            ? "20px 20px 8px 20px"
+                            : "20px 20px 20px 8px",
+                          padding: "12px 14px",
+                          fontSize: "14px",
+                          lineHeight: 1.5,
+                          boxShadow: "0 8px 18px rgba(15,23,42,0.08)",
+                        }}
+                      >
+                        {renderMessageContent(m)}
+                      </div>
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: "10px",
+                        color: "#94a3b8",
+                        marginTop: "4px",
+                        padding: isUser ? "0 40px 0 4px" : "0 4px 0 40px",
+                      }}
+                    >
+                      {m.time
+                        ? new Date(m.time).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : ""}
+                    </div>
+                  </motion.div>
+                );
+              })}
 
               {isTyping && (
                 <motion.div
@@ -560,32 +594,57 @@ function Chatbot() {
                   animate={{ opacity: 1, y: 0 }}
                   style={{
                     alignSelf: "flex-start",
-                    background: "#ffffff",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "20px 20px 20px 8px",
-                    padding: "12px 14px",
-                    boxShadow: "0 8px 18px rgba(15,23,42,0.08)",
+                    display: "flex",
+                    alignItems: "flex-end",
+                    gap: "8px",
                   }}
                 >
-                  <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-                    {[0, 1, 2].map((dot) => (
-                      <motion.span
-                        key={dot}
-                        animate={{ opacity: [0.3, 1, 0.3], y: [0, -2, 0] }}
-                        transition={{
-                          repeat: Infinity,
-                          duration: 0.9,
-                          delay: dot * 0.12,
-                        }}
-                        style={{
-                          width: "8px",
-                          height: "8px",
-                          borderRadius: "50%",
-                          background: "#94a3b8",
-                          display: "inline-block",
-                        }}
-                      />
-                    ))}
+                  <div
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      background: "linear-gradient(135deg,#6366f1,#7c3aed)",
+                      color: "#fff",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      boxShadow: "0 6px 14px rgba(15,23,42,0.12)",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Bot size={16} />
+                  </div>
+
+                  <div
+                    style={{
+                      background: "#ffffff",
+                      border: "1px solid #e5e7eb",
+                      borderRadius: "20px 20px 20px 8px",
+                      padding: "12px 14px",
+                      boxShadow: "0 8px 18px rgba(15,23,42,0.08)",
+                    }}
+                  >
+                    <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                      {[0, 1, 2].map((dot) => (
+                        <motion.span
+                          key={dot}
+                          animate={{ opacity: [0.3, 1, 0.3], y: [0, -2, 0] }}
+                          transition={{
+                            repeat: Infinity,
+                            duration: 0.9,
+                            delay: dot * 0.12,
+                          }}
+                          style={{
+                            width: "8px",
+                            height: "8px",
+                            borderRadius: "50%",
+                            background: "#94a3b8",
+                            display: "inline-block",
+                          }}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </motion.div>
               )}
