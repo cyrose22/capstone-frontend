@@ -123,7 +123,7 @@ function Chatbot() {
           ...prev,
           {
             sender: "bot",
-            text: "💡 Still there? I can help with products, delivery, payments, or contact details.",
+            text: "💡 Still there? I can help with products, order status, payments, or contact details.",
             time: new Date(),
           },
         ]);
