@@ -291,63 +291,181 @@ function Chatbot() {
     if (message.text?.type === "order_status") {
       const order = message.text.order || {};
 
-      return (
-        <div>
-          <div
-            style={{
-              marginBottom: "10px",
-              fontWeight: 800,
-              color: "#111827",
-            }}
-          >
-            📦 Order #{order.id}
-          </div>
+      const status = String(order.status || "").toLowerCase();
 
+      const statusStyles =
+        status === "completed"
+          ? {
+              bg: "rgba(34,197,94,0.14)",
+              color: "#15803d",
+              label: "Completed",
+            }
+          : status === "processing"
+          ? {
+              bg: "rgba(245,158,11,0.14)",
+              color: "#b45309",
+              label: "Processing",
+            }
+          : status === "cancelled"
+          ? {
+              bg: "rgba(239,68,68,0.14)",
+              color: "#b91c1c",
+              label: "Cancelled",
+            }
+          : {
+              bg: "rgba(59,130,246,0.14)",
+              color: "#1d4ed8",
+              label: order.status || "Unknown",
+            };
+
+      const rowStyle = {
+        display: "grid",
+        gridTemplateColumns: "84px 1fr",
+        gap: "8px",
+        alignItems: "start",
+      };
+
+      const labelStyle = {
+        color: "#64748b",
+        fontWeight: 700,
+        fontSize: "12px",
+      };
+
+      const valueStyle = {
+        color: "#111827",
+        fontWeight: 600,
+        fontSize: "13px",
+        minWidth: 0,
+        wordBreak: "break-word",
+      };
+
+      return (
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "100%",
+          }}
+        >
           <div
             style={{
-              display: "grid",
-              gap: "8px",
               background: "#ffffff",
               border: "1px solid #e5e7eb",
-              borderRadius: "14px",
-              padding: "12px",
-              boxShadow: "0 4px 12px rgba(15,23,42,0.06)",
+              borderRadius: "18px",
+              boxShadow: "0 8px 18px rgba(15,23,42,0.06)",
+              overflow: "hidden",
             }}
           >
-            <div>
-              <strong>Status:</strong>{" "}
-              <span
+            <div
+              style={{
+                padding: "12px 14px",
+                borderBottom: "1px solid #eef2f7",
+                background: "linear-gradient(180deg, #fff7ed 0%, #ffffff 100%)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "10px",
+              }}
+            >
+              <div
                 style={{
-                  padding: "4px 10px",
-                  borderRadius: "999px",
-                  fontSize: "12px",
-                  fontWeight: 700,
-                  background:
-                    order.status === "completed"
-                      ? "rgba(34,197,94,0.15)"
-                      : order.status === "processing"
-                      ? "rgba(245,158,11,0.15)"
-                      : order.status === "cancelled"
-                      ? "rgba(239,68,68,0.15)"
-                      : "rgba(59,130,246,0.15)",
-                  color:
-                    order.status === "completed"
-                      ? "#15803d"
-                      : order.status === "processing"
-                      ? "#b45309"
-                      : order.status === "cancelled"
-                      ? "#b91c1c"
-                      : "#1d4ed8",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  minWidth: 0,
                 }}
               >
-                {order.status}
+                <div
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                    borderRadius: "10px",
+                    background: "rgba(99,102,241,0.10)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    fontSize: "15px",
+                  }}
+                >
+                  📦
+                </div>
+
+                <div
+                  style={{
+                    fontWeight: 800,
+                    color: "#0f172a",
+                    fontSize: "15px",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Order #{order.id}
+                </div>
+              </div>
+
+              <span
+                style={{
+                  padding: "6px 10px",
+                  borderRadius: "999px",
+                  fontSize: "11px",
+                  fontWeight: 800,
+                  background: statusStyles.bg,
+                  color: statusStyles.color,
+                  whiteSpace: "nowrap",
+                  textTransform: "capitalize",
+                  flexShrink: 0,
+                }}
+              >
+                {statusStyles.label}
               </span>
             </div>
-            <div><strong>Customer:</strong> {order.customer_name}</div>
-            <div><strong>Contact:</strong> {order.contact}</div>
-            <div><strong>Payment:</strong> {order.payment_method}</div>
-            <div><strong>Total:</strong> {order.total}</div>
-            <div><strong>Date:</strong> {order.created_at}</div>
+
+            <div
+              style={{
+                padding: "14px",
+                display: "grid",
+                gap: "10px",
+              }}
+            >
+              <div style={rowStyle}>
+                <div style={labelStyle}>Customer</div>
+                <div style={valueStyle}>{order.customer_name || "—"}</div>
+              </div>
+
+              <div style={rowStyle}>
+                <div style={labelStyle}>Contact</div>
+                <div style={valueStyle}>{order.contact || "—"}</div>
+              </div>
+
+              <div style={rowStyle}>
+                <div style={labelStyle}>Payment</div>
+                <div style={valueStyle}>{order.payment_method || "—"}</div>
+              </div>
+
+              <div style={rowStyle}>
+                <div style={labelStyle}>Total</div>
+                <div
+                  style={{
+                    ...valueStyle,
+                    color: "#15803d",
+                    fontWeight: 800,
+                  }}
+                >
+                  {order.total || "—"}
+                </div>
+              </div>
+
+              <div style={rowStyle}>
+                <div style={labelStyle}>Date</div>
+                <div
+                  style={{
+                    ...valueStyle,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {order.created_at || "—"}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       );
@@ -550,7 +668,10 @@ function Chatbot() {
 
                       <div
                         style={{
-                          maxWidth: m.text?.type === "products" ? "88%" : "80%",
+                          maxWidth:
+                            m.text?.type === "products" || m.text?.type === "order_status"
+                              ? "90%"
+                              : "80%",
                           background: isUser
                             ? "linear-gradient(135deg,#6366f1,#7c3aed)"
                             : "#ffffff",
