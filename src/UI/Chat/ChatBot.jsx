@@ -38,7 +38,7 @@ function Chatbot() {
   const quickReplies = [
     { label: "Home", icon: <House size={14} /> },
     { label: "Products", icon: <ShoppingBag size={14} /> },
-    { label: "Order Status", icon: <Truck size={14} /> },
+    { label: "Track My Last Order", icon: <Truck size={14} /> },
     { label: "Payment", icon: <CreditCard size={14} /> },
     { label: "Contact", icon: <Phone size={14} /> },
   ];
@@ -124,7 +124,7 @@ function Chatbot() {
           ...prev,
           {
             sender: "bot",
-            text: "💡 Still there? I can help with products, order status, payments, or contact details.",
+            text: "💡 Still there? I can help with products, track your last order, payments, or contact details.",
             time: new Date(),
           },
         ]);
