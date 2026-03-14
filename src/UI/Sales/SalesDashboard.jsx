@@ -343,9 +343,18 @@ function SalesDashboard() {
       .map((sale) => {
         const itemDetails =
           sale.items
-            ?.map((item) => `${item.variant_name || item.product_name} × ${item.quantity}`)
-            .join(', ') || 'No items';
+            ?.map((item) => {
+              const productName = item.product_name || 'Product';
+              const hasVariant =
+                item.variant_name &&
+                item.variant_name.trim() &&
+                item.variant_name.toLowerCase() !== productName.toLowerCase();
 
+              return hasVariant
+                ? `${productName} (${item.variant_name}) × ${item.quantity}`
+                : `${productName} × ${item.quantity}`;
+            })
+            .join(', ') || 'No items';
         return `
           <tr>
             <td>#${formatOrderId(sale.id)}</td>
@@ -710,7 +719,12 @@ function SalesDashboard() {
                         />
                         <div className="sd__itemInfo">
                           <span className="sd__itemName">
-                            {item.variant_name || item.product_name}
+                            {item.product_name || 'Product'}
+                            {item.variant_name &&
+                            item.variant_name.trim() &&
+                            item.variant_name.toLowerCase() !== (item.product_name || '').toLowerCase()
+                              ? ` (${item.variant_name})`
+                              : ''}
                           </span>
                           <span className="sd__itemSub">
                             Qty: {item.quantity} · ₱
