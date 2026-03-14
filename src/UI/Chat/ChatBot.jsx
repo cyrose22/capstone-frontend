@@ -290,7 +290,6 @@ function Chatbot() {
 
     if (message.text?.type === "order_status") {
       const order = message.text.order || {};
-
       const status = String(order.status || "").toLowerCase();
 
       const statusStyles =
@@ -340,12 +339,7 @@ function Chatbot() {
       };
 
       return (
-        <div
-          style={{
-            width: "100%",
-            maxWidth: "100%",
-          }}
-        >
+        <div style={{ width: "100%", maxWidth: "100%" }}>
           <div
             style={{
               background: "#ffffff",
@@ -426,6 +420,77 @@ function Chatbot() {
                 gap: "10px",
               }}
             >
+              {order.items && order.items.length > 0 && (
+                <div
+                  style={{
+                    background: "#f8fafc",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "14px",
+                    padding: "10px 12px",
+                    display: "grid",
+                    gap: "8px",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontWeight: 800,
+                      fontSize: "12px",
+                      color: "#475569",
+                    }}
+                  >
+                    Items
+                  </div>
+
+                  {order.items.map((item, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                        gap: "10px",
+                      }}
+                    >
+                      <div style={{ minWidth: 0 }}>
+                        <div
+                          style={{
+                            fontSize: "13px",
+                            fontWeight: 700,
+                            color: "#111827",
+                            lineHeight: 1.3,
+                          }}
+                        >
+                          {item.product_name}
+                        </div>
+
+                        {item.variant_name && item.variant_name !== "Original" && (
+                          <div
+                            style={{
+                              fontSize: "11px",
+                              color: "#64748b",
+                              marginTop: "2px",
+                            }}
+                          >
+                            {item.variant_name}
+                          </div>
+                        )}
+                      </div>
+
+                      <div
+                        style={{
+                          fontSize: "12px",
+                          fontWeight: 800,
+                          color: "#475569",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        x{item.quantity}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div style={rowStyle}>
                 <div style={labelStyle}>Customer</div>
                 <div style={valueStyle}>{order.customer_name || "—"}</div>
@@ -470,7 +535,6 @@ function Chatbot() {
         </div>
       );
     }
-
     return <span dangerouslySetInnerHTML={{ __html: String(message.text) }} />;
   };
 
