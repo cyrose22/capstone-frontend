@@ -16,7 +16,7 @@ import {
 
 function Chatbot() {
   const [open, setOpen] = useState(false);
-  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
   const userName = storedUser?.fullname || storedUser?.username || "there";
 
   const [messages, setMessages] = useState([
@@ -72,6 +72,7 @@ function Chatbot() {
         body: JSON.stringify({
           message: userText,
           userName,
+          userId: storedUser?.id,
         }),
       });
 
