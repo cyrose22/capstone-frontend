@@ -180,44 +180,14 @@ function PaymentModal({
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          width: "min(860px, 96vw)",
-          maxHeight: "90vh",
-          borderRadius: 18,
-          overflow: "hidden",
-          background: "rgba(255,255,255,0.92)",
-          backdropFilter: "blur(12px)",
-          boxShadow: "0 24px 80px rgba(0,0,0,0.35)",
-          border: "1px solid rgba(255,255,255,0.6)",
-          position: "relative",
+          width: "100%",
+          maxHeight: "100vh",
+          overflowY: "auto",
+          display: "grid",
+          placeItems: "center",
+          padding: 16,
         }}
       >
-        {/* <button
-          onClick={onClose}
-          aria-label="Close payment modal"
-          style={{
-            position: "absolute",
-            top: 12,
-            right: 12,
-            width: 40,
-            height: 40,
-            borderRadius: 14,
-            border: "1px solid rgba(0,0,0,0.10)",
-            background: "rgba(255,255,255,0.9)",
-            cursor: "pointer",
-            fontSize: 20,
-            zIndex: 10,
-          }}
-        >
-          ×
-        </button> */}
-
-        <div
-          style={{
-            padding: 16,
-            maxHeight: "90vh",
-            overflowY: "auto",
-          }}
-        >
           <PaymentDashboard
             cart={cart}
             total={total}
@@ -237,7 +207,6 @@ function PaymentModal({
           />
         </div>
       </div>
-    </div>
   );
 }
 
