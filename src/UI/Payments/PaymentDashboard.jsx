@@ -560,7 +560,7 @@ const PaymentDashboard = ({
           borderRadius: 16,
           padding: 14,
           border: selected ? `2px solid ${accent}` : "1px solid rgba(0,0,0,0.10)",
-          background: selected ? `${accent}10` : "rgba(255,255,255,0.85)",
+          background: "#fff",
           boxShadow: selected
             ? "0 16px 40px rgba(15,23,42,0.12)"
             : "0 10px 26px rgba(15,23,42,0.06)",
