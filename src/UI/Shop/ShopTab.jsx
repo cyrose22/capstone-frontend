@@ -27,6 +27,8 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
 
   // fetch + normalize
   const fetchProducts = async () => {
+    const scrollY = window.scrollY;
+
     try {
       const res = await axios.get(
         "https://capstone-backend-kiax.onrender.com/products"
@@ -75,6 +77,10 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
       });
 
       setProducts(normalized);
+
+      requestAnimationFrame(() => {
+        window.scrollTo(0, scrollY);
+      });
     } catch (err) {
       console.error("Failed to fetch products:", err);
     }
@@ -83,9 +89,12 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
   // auto refresh + focus refresh
   useEffect(() => {
     fetchProducts();
+
+    if (searchTerm.trim()) return;
+
     const interval = setInterval(fetchProducts, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [searchTerm]);
 
   useEffect(() => {
     const onFocus = () => fetchProducts();
