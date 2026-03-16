@@ -107,8 +107,7 @@ function CartModal({
         <div
           style={{
             padding: "16px 18px",
-            background:
-              "linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.84))",
+            background: "#fff",
             borderBottom: "1px solid rgba(0,0,0,0.06)",
             display: "flex",
             alignItems: "center",
@@ -122,7 +121,7 @@ function CartModal({
                 width: 42,
                 height: 42,
                 borderRadius: 14,
-                background: "rgba(59,130,246,0.12)",
+                background: "#fff",
                 display: "grid",
                 placeItems: "center",
                 fontSize: 18,
@@ -486,9 +485,9 @@ function CartModal({
                 style={{
                   padding: "11px 16px",
                   borderRadius: 14,
-                  border: "1px solid rgba(59,130,246,0.25)",
-                  background: "rgba(59,130,246,0.10)",
-                  color: "#2563eb",
+                  background: "#fff",
+                  color: "#0f172a",
+                  border: "1px solid rgba(0,0,0,0.10)",
                   fontWeight: 900,
                   cursor: "pointer",
                 }}
