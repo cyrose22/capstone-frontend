@@ -422,21 +422,21 @@ function FakeGCashModal({ total, user, onSuccess, onCancel }) {
         <div style={{ marginTop: 16, display: "flex", gap: 10 }}>
           <button
             onClick={handlePay}
-            disabled={loading || !isValidPHNumber(contact)}
+            disabled={loading || !normalizeContact(contact)}
             style={{
               flex: 1,
               padding: "12px 14px",
               borderRadius: 14,
               border: "none",
-              cursor: loading || !isValidPHNumber(contact) ? "not-allowed" : "pointer",
+              cursor: loading || !normalizeContact(contact) ? "not-allowed" : "pointer",
               color: "#fff",
               fontWeight: 950,
               background:
-                loading || !isValidPHNumber(contact)
+                loading || !normalizeContact(contact)
                   ? "#94a3b8"
                   : "linear-gradient(135deg, #2563eb, #0ea5e9)",
               boxShadow:
-                loading || !isValidPHNumber(contact)
+                loading || !normalizeContact(contact)
                   ? "none"
                   : "0 16px 30px rgba(37,99,235,0.25)",
             }}
