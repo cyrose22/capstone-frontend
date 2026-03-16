@@ -357,9 +357,9 @@ function ProductDashboard() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this product?")) return;
+    if (!window.confirm("Remove this product?")) return;
 
-    const toastId = toast.loading("Deleting product...");
+    const toastId = toast.loading("Removing product...");
 
     try {
       await axios.delete(`${API_URL}/${id}`);
@@ -490,7 +490,7 @@ function ProductDashboard() {
                       className="danger-btn"
                       onClick={() => handleDelete(p.id)}
                     >
-                      Delete
+                      Remove
                     </button>
                   </div>
                 </div>
