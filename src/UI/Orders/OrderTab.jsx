@@ -1,21 +1,17 @@
-import React, { useMemo, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useMemo, useState } from "react";
 
 function OrdersTab({
-  salesHistory,
-  products,
-  cart,
+  salesHistory = [],
+  products = [],
+  cart = [],
   setCart,
   setActiveTab,
   setShowCartModal,
-  setCancelModalVisible,
-  setSaleToCancel,
-  setCancelReason,
-  enrichSalesWithImages,
-  setSalesHistory,
-  user,
 }) {
   const [statusFilter, setStatusFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const ORDERS_PER_PAGE = 4;
 
   const formatCurrency = (amount) =>
     `₱${Number(amount || 0).toLocaleString("en-PH", {
@@ -25,20 +21,28 @@ function OrdersTab({
 
   const normalizeStatus = (status) => (status || "").toLowerCase().trim();
 
-  const filteredSales = useMemo(() => {
-    const allSales = salesHistory || [];
-    if (statusFilter === "all") return allSales;
-    return allSales.filter(
-      (sale) => normalizeStatus(sale.status) === statusFilter
-    );
-  }, [salesHistory, statusFilter]);
+  const formatOrderId = (id) => String(id || 0).padStart(6, "0");
+
+  const formatDateTime = (value) => {
+    if (!value) return "No date available";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "Invalid date";
+
+    return date.toLocaleString("en-PH", {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  };
 
   const getStatusLabel = (status) => {
     const normalized = normalizeStatus(status);
-    if (normalized === "processing") return "⏳ Processing";
-    if (normalized === "to receive") return "📦 To Receive";
-    if (normalized === "completed") return "✅ Completed";
-    if (normalized === "cancelled") return "❌ Cancelled";
+    if (normalized === "processing") return "Processing";
+    if (normalized === "to receive") return "To Receive";
+    if (normalized === "completed") return "Completed";
+    if (normalized === "cancelled") return "Cancelled";
     return status || "Unknown";
   };
 
@@ -59,6 +63,114 @@ function OrdersTab({
     { label: "Cancelled", value: "cancelled" },
   ];
 
+  const filteredSales = useMemo(() => {
+    const sorted = [...salesHistory].sort(
+      (a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)
+    );
+
+    if (statusFilter === "all") return sorted;
+
+    return sorted.filter(
+      (sale) => normalizeStatus(sale.status) === statusFilter
+    );
+  }, [salesHistory, statusFilter]);
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredSales.length / ORDERS_PER_PAGE)
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const paginatedSales = useMemo(() => {
+    const start = (currentPage - 1) * ORDERS_PER_PAGE;
+    return filteredSales.slice(start, start + ORDERS_PER_PAGE);
+  }, [filteredSales, currentPage]);
+
+  const handleBuyAgain = (sale) => {
+    if (!sale?.items?.length) return;
+
+    const updatedCart = [...cart];
+    let hasAddedItem = false;
+
+    sale.items.forEach((item) => {
+      const product = products.find(
+        (p) =>
+          p?.name?.toLowerCase() === (item?.product_name || "").toLowerCase()
+      );
+
+      if (!product) return;
+
+      const variant =
+        product?.variants?.find(
+          (v) =>
+            String(v.id) === String(item.variantId || item.variant_id) ||
+            v.variant_name === item.variantName ||
+            v.variant_name === item.variant_name
+        ) || null;
+
+      if (!variant || Number(variant.quantity) <= 0) return;
+
+      const availableQty = Number(variant.quantity) || 0;
+      const requestedQty = Number(item.quantity) || 1;
+      const finalQty = Math.min(requestedQty, availableQty);
+
+      const imageSrc =
+        variant?.images?.[0] ||
+        variant?.image ||
+        item.variant_image ||
+        item.product_image ||
+        product?.image ||
+        null;
+
+      const cartItem = {
+        id: product.id,
+        name: product.name,
+        price: Number(variant.price ?? item.price) || 0,
+        quantity: finalQty,
+        variantId: variant.id,
+        variantName: variant.variant_name,
+        image: imageSrc,
+        variantStock: availableQty,
+      };
+
+      const existingIndex = updatedCart.findIndex(
+        (c) =>
+          c.id === cartItem.id &&
+          String(c.variantId) === String(cartItem.variantId)
+      );
+
+      if (existingIndex >= 0) {
+        const currentQty = Number(updatedCart[existingIndex].quantity) || 0;
+        updatedCart[existingIndex] = {
+          ...updatedCart[existingIndex],
+          quantity: Math.min(currentQty + finalQty, availableQty),
+        };
+      } else {
+        updatedCart.push(cartItem);
+      }
+
+      hasAddedItem = true;
+    });
+
+    if (!hasAddedItem) {
+      alert("Selected items are out of stock.");
+      return;
+    }
+
+    setCart(updatedCart);
+    setActiveTab("shop");
+    setShowCartModal(true);
+  };
+
   return (
     <div className="orders-wrap">
       <h3 className="orders-title">📜 Order History</h3>
@@ -66,6 +178,12 @@ function OrdersTab({
       <div className="orders-filters">
         {tabs.map((tab) => {
           const isActive = statusFilter === tab.value;
+          const count =
+            tab.value === "all"
+              ? salesHistory.length
+              : salesHistory.filter(
+                  (sale) => normalizeStatus(sale.status) === tab.value
+                ).length;
 
           return (
             <button
@@ -73,20 +191,19 @@ function OrdersTab({
               onClick={() => setStatusFilter(tab.value)}
               className={`orders-filter-btn ${isActive ? "active" : ""}`}
             >
-              {tab.label}
+              {tab.label} <span className="orders-filter-count">({count})</span>
             </button>
           );
         })}
       </div>
 
       {filteredSales.length === 0 && (
-        <div className="orders-empty">
-          No orders in this category.
-        </div>
+        <div className="orders-empty">No orders in this category.</div>
       )}
 
-      {filteredSales.map((sale) => {
+      {paginatedSales.map((sale) => {
         const items = sale.items || [];
+
         const total =
           sale.total ??
           items.reduce(
@@ -94,8 +211,9 @@ function OrdersTab({
               sum + Number(item.price || 0) * Number(item.quantity || 0),
             0
           );
-        const canBuyAgain = (sale.items || []).some((item) => {
-          const product = (products || []).find(
+
+        const canBuyAgain = items.some((item) => {
+          const product = products.find(
             (p) =>
               p?.name?.toLowerCase() ===
               (item?.product_name || "").toLowerCase()
@@ -112,32 +230,32 @@ function OrdersTab({
           return Number(variant?.quantity || 0) > 0;
         });
 
-        const formatOrderId = (id) => String(id).padStart(6, "0");
-
         return (
           <div key={sale.id} className="order-card">
             <div className="order-card-header">
               <div>
                 <div className="order-card-topline">
-                  <span className="order-id">Order #{formatOrderId(sale.id)}</span>
+                  <span className="order-id">
+                    Order #{formatOrderId(sale.id)}
+                  </span>
                   <span className={getStatusClass(sale.status)}>
                     {getStatusLabel(sale.status)}
                   </span>
                 </div>
 
                 <div className="order-date">
-                  {new Date(sale.created_at).toLocaleString()}
+                  {formatDateTime(sale.created_at)}
                 </div>
               </div>
 
               <div className="order-payment-pill">
-                💳 Payment: {sale.payment_method || "N/A"}
+                Payment: {sale.payment_method || "N/A"}
               </div>
             </div>
 
             <div className="order-items">
               {items.map((item, i) => {
-                const product = (products || []).find(
+                const product = products.find(
                   (p) =>
                     p?.name?.toLowerCase() ===
                     (item?.product_name || "").toLowerCase()
@@ -155,17 +273,19 @@ function OrdersTab({
                   item.variant_image ||
                   item.product_image ||
                   variant?.images?.[0] ||
+                  variant?.image ||
                   product?.image ||
                   null;
 
-                const variantLabel = item.variantName || item.variant_name || "";
+                const variantLabel =
+                  item.variantName || item.variant_name || "";
                 const showVariant =
                   variantLabel &&
                   variantLabel !== item.product_name &&
                   variantLabel.toLowerCase() !== "original";
 
                 return (
-                  <div key={i} className="order-item-row">
+                  <div key={`${sale.id}-${i}`} className="order-item-row">
                     <div className="order-item-image">
                       {imageSrc ? (
                         <img
@@ -173,7 +293,8 @@ function OrdersTab({
                           alt={
                             item.variantName ||
                             item.variant_name ||
-                            item.product_name
+                            item.product_name ||
+                            "Product"
                           }
                         />
                       ) : (
@@ -199,7 +320,7 @@ function OrdersTab({
 
                     <div className="order-item-total">
                       {formatCurrency(
-                        Number(item.price) * Number(item.quantity)
+                        Number(item.price || 0) * Number(item.quantity || 0)
                       )}
                     </div>
                   </div>
@@ -218,90 +339,9 @@ function OrdersTab({
                   <button
                     className="order-btn order-btn-buy"
                     disabled={!canBuyAgain}
-                    onClick={() => {
-                      if (!sale.items) return;
-
-                      const updatedCart = [...cart];
-                      let hasAddedItem = false;
-
-                      sale.items.forEach((item) => {
-                        const product = (products || []).find(
-                          (p) =>
-                            p?.name?.toLowerCase() ===
-                            (item?.product_name || "").toLowerCase()
-                        );
-
-                        if (!product) return;
-
-                        const variant =
-                          product?.variants?.find(
-                            (v) =>
-                              String(v.id) === String(item.variantId || item.variant_id) ||
-                              v.variant_name === item.variantName ||
-                              v.variant_name === item.variant_name
-                          ) || null;
-
-                        // skip if no variant or no stock
-                        if (!variant || Number(variant.quantity) <= 0) {
-                          return;
-                        }
-
-                        const availableQty = Number(variant.quantity) || 0;
-                        const requestedQty = Number(item.quantity) || 1;
-                        const finalQty = Math.min(requestedQty, availableQty);
-
-                        const imageSrc =
-                          variant?.image ||
-                          item.variant_image ||
-                          item.product_image ||
-                          product?.image ||
-                          null;
-
-                        const cartItem = {
-                          id: product.id,
-                          name: product.name,
-                          price: Number(variant.price ?? item.price) || 0,
-                          quantity: finalQty,
-                          variantId: variant.id,
-                          variantName: variant.variant_name,
-                          image: imageSrc,
-
-                          // ⭐ ADD THIS
-                          variantStock: Number(variant.quantity) || 0,
-                        };
-
-                        const existingIndex = updatedCart.findIndex(
-                          (c) =>
-                            c.id === cartItem.id &&
-                            String(c.variantId) === String(cartItem.variantId)
-                        );
-
-                        if (existingIndex >= 0) {
-                          const currentQty = Number(updatedCart[existingIndex].quantity) || 0;
-                          const mergedQty = Math.min(currentQty + finalQty, availableQty);
-
-                          updatedCart[existingIndex] = {
-                            ...updatedCart[existingIndex],
-                            quantity: mergedQty,
-                          };
-                        } else {
-                          updatedCart.push(cartItem);
-                        }
-
-                        hasAddedItem = true;
-                      });
-
-                      if (!hasAddedItem) {
-                        alert("Selected items are out of stock.");
-                        return;
-                      }
-
-                      setCart(updatedCart);
-                      setActiveTab("shop");
-                      setShowCartModal(true);
-                    }}
+                    onClick={() => handleBuyAgain(sale)}
                   >
-                    {canBuyAgain ? "🔁 Buy Again" : "Out of Stock"}
+                    {canBuyAgain ? "Buy Again" : "Out of Stock"}
                   </button>
                 )}
               </div>
@@ -310,7 +350,7 @@ function OrdersTab({
             {normalizeStatus(sale.status) === "cancelled" &&
               sale.cancel_description && (
                 <div className="order-cancel-box">
-                  <div className="order-cancel-title">❌ Order Cancelled</div>
+                  <div className="order-cancel-title">Order Cancelled</div>
 
                   <p>
                     <strong>Reason:</strong> {sale.cancel_description}
@@ -331,6 +371,30 @@ function OrdersTab({
           </div>
         );
       })}
+
+      {filteredSales.length > ORDERS_PER_PAGE && (
+        <div className="orders-pagination">
+          <button
+            className="orders-page-btn"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+          >
+            Prev
+          </button>
+
+          <div className="orders-page-info">
+            Page {currentPage} of {totalPages}
+          </div>
+
+          <button
+            className="orders-page-btn"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }
