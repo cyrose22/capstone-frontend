@@ -594,6 +594,21 @@ const PaymentDashboard = ({
               <div style={{ fontWeight: 950, color: "#0f172a", fontSize: 14 }}>
                 {title}
               </div>
+              {selected && (
+                <div
+                  style={{
+                    background: `${accent}20`,
+                    color: accent,
+                    fontWeight: 800,
+                    fontSize: 11,
+                    padding: "4px 8px",
+                    borderRadius: 999,
+                    lineHeight: 1,
+                  }}
+                >
+                  Selected
+                </div>
+              )}
             </div>
 
             <div
