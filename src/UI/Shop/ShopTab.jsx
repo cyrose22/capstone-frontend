@@ -199,7 +199,7 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
       </div>
 
       {/* Product grid */}
-      <div className="shop-grid">
+      <div className="shop-grid shop-grid-fixed">
         {currentProducts.length === 0 ? (
           <div className="shop-empty-state">
             <h3>No products found</h3>

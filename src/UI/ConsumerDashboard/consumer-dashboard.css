@@ -1690,3 +1690,15 @@ html, body {
   border-color: #ff6b35;
   box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.12);
 }
+
+.shop-grid-fixed {
+  min-height: 420px;
+}
+
+.shop-empty-state {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
