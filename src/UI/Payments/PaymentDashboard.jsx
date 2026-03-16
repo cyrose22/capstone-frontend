@@ -318,7 +318,7 @@
 
 import React, { useState } from "react";
 import axios from "axios";
-import gcashLogo from "../assets/logo.png";
+import gcashLogo from "../../assets/gcash_logo.png";
 
 function FakeGCashModal({ total, user, onSuccess, onCancel }) {
   const [loading, setLoading] = useState(false);
