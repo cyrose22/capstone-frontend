@@ -318,6 +318,7 @@
 
 import React, { useState } from "react";
 import axios from "axios";
+import gcashLogo from "../assets/logo.png";
 
 function FakeGCashModal({ total, user, onSuccess, onCancel }) {
   const [loading, setLoading] = useState(false);
@@ -415,11 +416,18 @@ function FakeGCashModal({ total, user, onSuccess, onCancel }) {
                 background: "rgba(255,255,255,0.16)",
                 display: "grid",
                 placeItems: "center",
-                fontSize: 20,
-                fontWeight: 900,
+                padding: 6,
               }}
             >
-              ₱
+              <img
+                src={gcashLogo}
+                alt="GCash"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                }}
+              />
             </div>
 
             <div>
