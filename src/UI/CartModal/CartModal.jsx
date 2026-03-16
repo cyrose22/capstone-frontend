@@ -324,7 +324,7 @@ function CartModal({
                             gap: 8,
                             padding: 6,
                             borderRadius: 16,
-                            background: "#f1f5f9",
+                            background: "#fff",
                             border: "1px solid rgba(0,0,0,0.05)",
                           }}
                         >
