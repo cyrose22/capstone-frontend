@@ -398,17 +398,22 @@ function FakeGCashModal({ total, user, onSuccess, onCancel }) {
           <label style={{ fontSize: 12, fontWeight: 900, color: "#334155" }}>GCash number</label>
           <input
             value={contact}
-            onChange={(e) => setContact(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value.replace(/[^\d+]/g, "").slice(0, 13);
+              setContact(value);
+              if (error) setError("");
+            }}
             placeholder="09XXXXXXXXX / 639XXXXXXXXX"
             style={{
               width: "100%",
               marginTop: 6,
               padding: "12px 12px",
               borderRadius: 14,
-              border: "1px solid rgba(0,0,0,0.12)",
+              border: error ? "1px solid #ef4444" : "1px solid rgba(0,0,0,0.12)",
               outline: "none",
               fontWeight: 800,
               background: "#fff",
+              boxSizing: "border-box",
             }}
           />
           {error && <div style={{ marginTop: 8, color: "#ef4444", fontWeight: 800, fontSize: 12 }}>{error}</div>}
@@ -417,20 +422,26 @@ function FakeGCashModal({ total, user, onSuccess, onCancel }) {
         <div style={{ marginTop: 16, display: "flex", gap: 10 }}>
           <button
             onClick={handlePay}
-            disabled={loading}
+            disabled={loading || !isValidPHNumber(contact)}
             style={{
               flex: 1,
               padding: "12px 14px",
               borderRadius: 14,
               border: "none",
-              cursor: loading ? "not-allowed" : "pointer",
+              cursor: loading || !isValidPHNumber(contact) ? "not-allowed" : "pointer",
               color: "#fff",
               fontWeight: 950,
-              background: loading ? "#94a3b8" : "linear-gradient(135deg, #2563eb, #0ea5e9)",
-              boxShadow: "0 16px 30px rgba(37,99,235,0.25)",
+              background:
+                loading || !isValidPHNumber(contact)
+                  ? "#94a3b8"
+                  : "linear-gradient(135deg, #2563eb, #0ea5e9)",
+              boxShadow:
+                loading || !isValidPHNumber(contact)
+                  ? "none"
+                  : "0 16px 30px rgba(37,99,235,0.25)",
             }}
           >
-            {loading ? "⏳ Processing..." : "Pay with GCash"}
+            {loading ? "Processing..." : "Pay with GCash"}
           </button>
 
           <button
