@@ -191,7 +191,7 @@ function PaymentModal({
           position: "relative",
         }}
       >
-        <button
+        {/* <button
           onClick={onClose}
           aria-label="Close payment modal"
           style={{
@@ -209,7 +209,7 @@ function PaymentModal({
           }}
         >
           ×
-        </button>
+        </button> */}
 
         <div
           style={{
