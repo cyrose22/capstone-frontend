@@ -580,7 +580,7 @@ const PaymentDashboard = ({
               borderRadius: 14,
               display: "grid",
               placeItems: "center",
-              background: selected ? `${accent}1A` : "rgba(15,23,42,0.05)",
+              background: "#fff",
               border: "1px solid rgba(0,0,0,0.06)",
               fontSize: 18,
               flexShrink: 0,
@@ -678,7 +678,8 @@ const PaymentDashboard = ({
                 width: 40,
                 height: 40,
                 borderRadius: 14,
-                background: "rgba(239,68,68,0.10)",
+                background: "#fff",
+                border: "1px solid rgba(0,0,0,0.06)",
                 display: "grid",
                 placeItems: "center",
               }}
