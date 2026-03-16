@@ -84,7 +84,7 @@ function OrdersTab({
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [statusFilter, orderSearch]);
+  }, [statusFilter]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
