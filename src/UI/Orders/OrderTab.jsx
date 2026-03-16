@@ -10,6 +10,7 @@ function OrdersTab({
 }) {
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [orderSearch, setOrderSearch] = useState("");
 
   const itemsPerPage = 4;
 
@@ -57,20 +58,33 @@ function OrdersTab({
   ];
 
   const filteredSales = useMemo(() => {
-    const sorted = [...salesHistory].sort(
+    let sorted = [...salesHistory].sort(
       (a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)
     );
 
-    if (statusFilter === "all") return sorted;
+    if (statusFilter !== "all") {
+      sorted = sorted.filter(
+        (sale) => normalizeStatus(sale.status) === statusFilter
+      );
+    }
 
-    return sorted.filter(
-      (sale) => normalizeStatus(sale.status) === statusFilter
-    );
-  }, [salesHistory, statusFilter]);
+    if (orderSearch.trim() !== "") {
+      const keyword = orderSearch.replace(/\D/g, "").trim();
+      if (keyword) {
+        sorted = sorted.filter((sale) =>
+          formatOrderId(sale.id).includes(keyword)
+        );
+      } else {
+        sorted = [];
+      }
+    }
+
+    return sorted;
+  }, [salesHistory, statusFilter, orderSearch]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [statusFilter]);
+  }, [statusFilter, orderSearch]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -181,6 +195,15 @@ function OrdersTab({
             </button>
           );
         })}
+      </div>
+
+      <div className="orders-search">
+        <input
+          type="text"
+          placeholder="🔎 Search Order #"
+          value={orderSearch}
+          onChange={(e) => setOrderSearch(e.target.value)}
+        />
       </div>
 
       {currentSales.length === 0 ? (

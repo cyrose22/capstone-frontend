@@ -1669,3 +1669,24 @@ html, body {
     grid-template-columns: 1fr;
   }
 }
+
+.orders-search {
+  margin-bottom: 16px;
+}
+
+.orders-search input {
+  width: 100%;
+  max-width: 340px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: #fff;
+}
+
+.orders-search input:focus {
+  border-color: #ff6b35;
+  box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.12);
+}
