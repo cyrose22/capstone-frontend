@@ -468,7 +468,7 @@ const PaymentDashboard = ({
   const [submitting, setSubmitting] = useState(false);
   const [showGCashModal, setShowGCashModal] = useState(false);
 
-  const createOrder = async (contactOverride = "") => {
+  const createOrder = async (contactOverride = "", paymentReference = "") => {
     const cleanedCart = cart.map((item) => ({
       productId: Number(item.productId || item.id),
       variantId:
@@ -506,11 +506,18 @@ const PaymentDashboard = ({
     localStorage.setItem("recentOrderId", String(createdSale.data.saleId));
 
     setToastType("success");
-    setToastMessage("✅ Order placed successfully!");
+    setToastMessage(
+      paymentReference
+        ? `✅ Payment successful! Ref: ${paymentReference}`
+        : "✅ Order placed successfully!"
+    );
     setShowToast(true);
 
     localStorage.removeItem("cart");
-    setTimeout(() => window.location.reload(), 300);
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
   };
 
   const handleSubmitPayment = async () => {
@@ -587,22 +594,6 @@ const PaymentDashboard = ({
               <div style={{ fontWeight: 950, color: "#0f172a", fontSize: 14 }}>
                 {title}
               </div>
-
-              {selected && (
-                <div
-                  style={{
-                    background: `${accent}20`,
-                    color: accent,
-                    fontWeight: 800,
-                    fontSize: 11,
-                    padding: "4px 8px",
-                    borderRadius: 999,
-                    lineHeight: 1,
-                  }}
-                >
-                  Selected
-                </div>
-              )}
             </div>
 
             <div
@@ -754,12 +745,12 @@ const PaymentDashboard = ({
                 color: "#0f172a",
               }}
             >
-              ❌ Cancel
+              Cancel
             </button>
 
             <button
               onClick={handleSubmitPayment}
-              disabled={submitting}
+              disabled={!paymentMethod || submitting}
               style={{
                 padding: "12px 16px",
                 borderRadius: 14,
@@ -767,13 +758,17 @@ const PaymentDashboard = ({
                 cursor: submitting ? "not-allowed" : "pointer",
                 color: "#fff",
                 fontWeight: 950,
-                background: submitting
-                  ? "#94a3b8"
-                  : "linear-gradient(135deg, #22c55e, #16a34a)",
-                boxShadow: "0 16px 30px rgba(34,197,94,0.22)",
+                background:
+                  !paymentMethod || submitting
+                    ? "#94a3b8"
+                    : "linear-gradient(135deg, #22c55e, #16a34a)",
+                boxShadow:
+                  !paymentMethod || submitting
+                    ? "none"
+                    : "0 16px 30px rgba(34,197,94,0.22)",
               }}
             >
-              {submitting ? "⏳ Processing..." : "✅ Confirm"}
+              {submitting ? "⏳ Processing..." : "Confirm"}
             </button>
           </div>
         </div>
@@ -785,7 +780,7 @@ const PaymentDashboard = ({
           user={user}
           onSuccess={async (ref, normalized) => {
             setShowGCashModal(false);
-            await createOrder(normalized);
+            await createOrder(normalized, ref);
           }}
           onCancel={() => setShowGCashModal(false)}
         />
