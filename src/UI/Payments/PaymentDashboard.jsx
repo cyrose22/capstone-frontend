@@ -323,19 +323,25 @@ function FakeGCashModal({ total, user, onSuccess, onCancel }) {
   const [loading, setLoading] = useState(false);
   const [contact, setContact] = useState(user?.contact || "");
   const [error, setError] = useState("");
+  const [focused, setFocused] = useState(false);
 
   const normalizeContact = (num) => {
-    let cleaned = num.trim();
-    if (cleaned.startsWith("09") && cleaned.length === 11) return "+63" + cleaned.slice(1);
-    if (cleaned.startsWith("639") && cleaned.length === 12) return "+" + cleaned;
-    if (cleaned.startsWith("+63") && cleaned.length === 13) return cleaned;
+    const cleaned = String(num || "").trim();
+
+    if (/^09\d{9}$/.test(cleaned)) return `+63${cleaned.slice(1)}`;
+    if (/^639\d{9}$/.test(cleaned)) return `+${cleaned}`;
+    if (/^\+639\d{9}$/.test(cleaned)) return cleaned;
+
     return "";
   };
 
+  const isValid = Boolean(normalizeContact(contact));
+
   const handlePay = () => {
     const normalized = normalizeContact(contact);
+
     if (!normalized) {
-      setError("⚠️ Please enter a valid PH number (09XXXXXXXXX or 639XXXXXXXXX).");
+      setError("Enter a valid GCash number.");
       return;
     }
 
@@ -354,7 +360,7 @@ function FakeGCashModal({ total, user, onSuccess, onCancel }) {
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0,0,0,0.65)",
+        background: "rgba(15,23,42,0.58)",
         display: "grid",
         placeItems: "center",
         padding: 16,
@@ -363,101 +369,234 @@ function FakeGCashModal({ total, user, onSuccess, onCancel }) {
     >
       <div
         style={{
-          width: "min(420px, 96vw)",
-          borderRadius: 18,
-          background: "rgba(255,255,255,0.95)",
-          backdropFilter: "blur(10px)",
-          border: "1px solid rgba(255,255,255,0.6)",
-          boxShadow: "0 24px 80px rgba(0,0,0,0.35)",
-          padding: 18,
+          width: "min(430px, 96vw)",
+          borderRadius: 24,
+          overflow: "hidden",
+          background: "#ffffff",
+          boxShadow: "0 30px 80px rgba(0,0,0,0.32)",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-          <div style={{ fontWeight: 950, fontSize: 16, color: "#0f172a" }}>💳 GCash Payment</div>
+        <div
+          style={{
+            background: "linear-gradient(135deg, #0057ff, #00a8ff)",
+            padding: "18px 18px 20px",
+            color: "#fff",
+            position: "relative",
+          }}
+        >
           <button
             onClick={onCancel}
+            disabled={loading}
+            aria-label="Close GCash modal"
             style={{
+              position: "absolute",
+              top: 14,
+              right: 14,
               width: 38,
               height: 38,
-              borderRadius: 14,
-              border: "1px solid rgba(0,0,0,0.10)",
-              background: "rgba(255,255,255,0.9)",
-              cursor: "pointer",
+              borderRadius: 12,
+              border: "1px solid rgba(255,255,255,0.24)",
+              background: "rgba(255,255,255,0.18)",
+              color: "#fff",
+              cursor: loading ? "not-allowed" : "pointer",
               fontSize: 18,
+              backdropFilter: "blur(6px)",
             }}
           >
             ×
           </button>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div
+              style={{
+                width: 42,
+                height: 42,
+                borderRadius: 14,
+                background: "rgba(255,255,255,0.16)",
+                display: "grid",
+                placeItems: "center",
+                fontSize: 20,
+                fontWeight: 900,
+              }}
+            >
+              ₱
+            </div>
+
+            <div>
+              <div style={{ fontSize: 20, fontWeight: 900, lineHeight: 1.1 }}>
+                GCash Payment
+              </div>
+              <div
+                style={{
+                  marginTop: 4,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  opacity: 0.92,
+                }}
+              >
+                Secure checkout simulation
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div style={{ marginTop: 10, color: "#64748b", fontWeight: 700 }}>
-          Amount to pay: <span style={{ color: "#0f172a", fontWeight: 950 }}>₱{total.toLocaleString()}</span>
-        </div>
-
-        <div style={{ marginTop: 14 }}>
-          <label style={{ fontSize: 12, fontWeight: 900, color: "#334155" }}>GCash number</label>
-          <input
-            value={contact}
-            onChange={(e) => {
-              const value = e.target.value.replace(/[^\d+]/g, "").slice(0, 13);
-              setContact(value);
-              if (error) setError("");
-            }}
-            placeholder="09XXXXXXXXX / 639XXXXXXXXX"
+        <div style={{ padding: 18 }}>
+          <div
             style={{
-              width: "100%",
-              marginTop: 6,
-              padding: "12px 12px",
-              borderRadius: 14,
-              border: error ? "1px solid #ef4444" : "1px solid rgba(0,0,0,0.12)",
-              outline: "none",
-              fontWeight: 800,
-              background: "#fff",
-              boxSizing: "border-box",
-            }}
-          />
-          {error && <div style={{ marginTop: 8, color: "#ef4444", fontWeight: 800, fontSize: 12 }}>{error}</div>}
-        </div>
-
-        <div style={{ marginTop: 16, display: "flex", gap: 10 }}>
-          <button
-            onClick={handlePay}
-            disabled={loading || !normalizeContact(contact)}
-            style={{
-              flex: 1,
-              padding: "12px 14px",
-              borderRadius: 14,
-              border: "none",
-              cursor: loading || !normalizeContact(contact) ? "not-allowed" : "pointer",
-              color: "#fff",
-              fontWeight: 950,
-              background:
-                loading || !normalizeContact(contact)
-                  ? "#94a3b8"
-                  : "linear-gradient(135deg, #2563eb, #0ea5e9)",
-              boxShadow:
-                loading || !normalizeContact(contact)
-                  ? "none"
-                  : "0 16px 30px rgba(37,99,235,0.25)",
+              borderRadius: 18,
+              background: "#f8fbff",
+              border: "1px solid #dbeafe",
+              padding: 16,
             }}
           >
-            {loading ? "Processing..." : "Pay with GCash"}
-          </button>
+            <div
+              style={{
+                fontSize: 12,
+                fontWeight: 800,
+                color: "#64748b",
+                textTransform: "uppercase",
+                letterSpacing: 0.4,
+              }}
+            >
+              Amount to pay
+            </div>
+            <div
+              style={{
+                marginTop: 6,
+                fontSize: 30,
+                fontWeight: 950,
+                color: "#0f172a",
+                lineHeight: 1,
+              }}
+            >
+              ₱{Number(total).toLocaleString()}
+            </div>
+          </div>
 
-          <button
-            onClick={onCancel}
+          <div
             style={{
-              padding: "12px 14px",
+              marginTop: 14,
               borderRadius: 14,
-              border: "1px solid rgba(0,0,0,0.10)",
-              background: "rgba(15,23,42,0.04)",
-              cursor: "pointer",
-              fontWeight: 900,
-              color: "#0f172a",
+              background: "#eff6ff",
+              border: "1px solid #bfdbfe",
+              padding: "10px 12px",
+              fontSize: 12,
+              color: "#1e40af",
+              fontWeight: 700,
             }}
           >
-            Cancel
-          </button>
+            Demo only. No real GCash transaction will be made.
+          </div>
+
+          <div style={{ marginTop: 18 }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: 8,
+                fontSize: 13,
+                fontWeight: 800,
+                color: "#334155",
+              }}
+            >
+              GCash mobile number
+            </label>
+
+            <input
+              type="text"
+              value={contact}
+              onChange={(e) => {
+                const value = e.target.value.replace(/[^\d+]/g, "").slice(0, 13);
+                setContact(value);
+                if (error) setError("");
+              }}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              placeholder="09XXXXXXXXX or 639XXXXXXXXX"
+              style={{
+                width: "100%",
+                boxSizing: "border-box",
+                padding: "15px 16px",
+                borderRadius: 16,
+                border: error
+                  ? "1.5px solid #ef4444"
+                  : focused
+                  ? "1.5px solid #2563eb"
+                  : "1.5px solid #cbd5e1",
+                boxShadow:
+                  focused && !error ? "0 0 0 4px rgba(37,99,235,0.12)" : "none",
+                outline: "none",
+                fontSize: 18,
+                fontWeight: 800,
+                color: "#0f172a",
+                background: "#fff",
+                transition: "0.15s ease",
+              }}
+            />
+
+            <div
+              style={{
+                marginTop: 8,
+                minHeight: 18,
+                fontSize: 12,
+                fontWeight: 700,
+                color: error
+                  ? "#ef4444"
+                  : isValid && contact
+                  ? "#16a34a"
+                  : "#64748b",
+              }}
+            >
+              {error
+                ? error
+                : isValid && contact
+                ? "Valid GCash number"
+                : "Use 09XXXXXXXXX, 639XXXXXXXXX, or +639XXXXXXXXX"}
+            </div>
+          </div>
+
+          <div style={{ marginTop: 18, display: "flex", gap: 10 }}>
+            <button
+              onClick={handlePay}
+              disabled={loading || !isValid}
+              style={{
+                flex: 1,
+                padding: "14px 16px",
+                borderRadius: 16,
+                border: "none",
+                background:
+                  loading || !isValid
+                    ? "#94a3b8"
+                    : "linear-gradient(135deg, #0057ff, #00a8ff)",
+                color: "#fff",
+                fontSize: 16,
+                fontWeight: 900,
+                cursor: loading || !isValid ? "not-allowed" : "pointer",
+                boxShadow:
+                  loading || !isValid
+                    ? "none"
+                    : "0 16px 30px rgba(0,87,255,0.28)",
+              }}
+            >
+              {loading ? "Processing..." : "Pay with GCash"}
+            </button>
+
+            <button
+              onClick={onCancel}
+              disabled={loading}
+              style={{
+                padding: "14px 18px",
+                borderRadius: 16,
+                border: "1px solid rgba(0,0,0,0.10)",
+                background: "#fff",
+                color: "#0f172a",
+                fontSize: 15,
+                fontWeight: 800,
+                cursor: loading ? "not-allowed" : "pointer",
+              }}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -635,7 +774,6 @@ const PaymentDashboard = ({
           </div>
         </div>
 
-        {/* Custom radio */}
         <div
           style={{
             width: 24,
@@ -671,7 +809,6 @@ const PaymentDashboard = ({
           overflow: "hidden",
         }}
       >
-        {/* Header */}
         <div
           style={{
             padding: 16,
@@ -680,7 +817,8 @@ const PaymentDashboard = ({
             alignItems: "center",
             justifyContent: "space-between",
             gap: 12,
-            background: "linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.80))",
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.80))",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -698,8 +836,17 @@ const PaymentDashboard = ({
               🧾
             </div>
             <div>
-              <div style={{ fontWeight: 950, color: "#0f172a" }}>Select Payment Method</div>
-              <div style={{ fontSize: 12, fontWeight: 800, color: "#64748b", marginTop: 2 }}>
+              <div style={{ fontWeight: 950, color: "#0f172a" }}>
+                Select Payment Method
+              </div>
+              <div
+                style={{
+                  fontSize: 12,
+                  fontWeight: 800,
+                  color: "#64748b",
+                  marginTop: 2,
+                }}
+              >
                 Choose how you want to pay
               </div>
             </div>
@@ -722,7 +869,6 @@ const PaymentDashboard = ({
           </button>
         </div>
 
-        {/* Body */}
         <div style={{ padding: 16 }}>
           <div style={{ display: "grid", gap: 12 }}>
             <OptionCard
@@ -758,8 +904,15 @@ const PaymentDashboard = ({
             </div>
           </div>
 
-          {/* Actions */}
-          <div style={{ marginTop: 16, display: "flex", justifyContent: "flex-end", gap: 10, flexWrap: "wrap" }}>
+          <div
+            style={{
+              marginTop: 16,
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: 10,
+              flexWrap: "wrap",
+            }}
+          >
             <button
               onClick={onClose}
               style={{
@@ -782,7 +935,7 @@ const PaymentDashboard = ({
                 padding: "12px 16px",
                 borderRadius: 14,
                 border: "none",
-                cursor: submitting ? "not-allowed" : "pointer",
+                cursor: !paymentMethod || submitting ? "not-allowed" : "pointer",
                 color: "#fff",
                 fontWeight: 950,
                 background:
@@ -795,7 +948,7 @@ const PaymentDashboard = ({
                     : "0 16px 30px rgba(34,197,94,0.22)",
               }}
             >
-              {submitting ? "⏳ Processing..." : "Confirm"}
+              {submitting ? "Processing..." : "Confirm"}
             </button>
           </div>
         </div>
