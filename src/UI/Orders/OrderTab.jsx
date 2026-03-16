@@ -239,7 +239,9 @@ function OrdersTab({
                   </div>
                 </div>
 
-                <div className="order-items">
+                <div
+                  className={`order-items ${items.length > 2 ? "scrollable" : ""}`}
+                >
                   {items.map((item, i) => {
                     const product = products.find(
                       (p) =>
