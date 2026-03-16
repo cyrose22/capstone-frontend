@@ -489,7 +489,7 @@ function ConsumerDashboard() {
           {/* little feature chips */}
           <div className="hero-features">
             <span>✅ Quality Products</span>
-            <span>✅ Online Ordering</span>
+            <span>✅ Easy Ordering</span>
           </div>
 
           <div className="hero-buttons">
