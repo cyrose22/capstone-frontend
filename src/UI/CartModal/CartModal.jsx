@@ -96,7 +96,7 @@ function CartModal({
           maxHeight: "88vh",
           borderRadius: 20,
           overflow: "hidden",
-          background: "rgba(255,255,255,0.96)",
+          background: "#fff",
           backdropFilter: "blur(10px)",
           boxShadow: "0 22px 70px rgba(0,0,0,0.35)",
           border: "1px solid rgba(255,255,255,0.6)",
@@ -166,8 +166,7 @@ function CartModal({
           style={{
             padding: 16,
             overflowY: "auto",
-            background:
-              "linear-gradient(180deg, rgba(248,250,252,0.92), rgba(255,255,255,0.96))",
+            background: "#fff",
           }}
         >
           {cart.length === 0 ? (
@@ -458,7 +457,7 @@ function CartModal({
             style={{
               padding: 16,
               borderTop: "1px solid rgba(0,0,0,0.06)",
-              background: "rgba(255,255,255,0.96)",
+              background: "#fff",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
