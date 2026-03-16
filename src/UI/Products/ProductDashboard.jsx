@@ -490,7 +490,7 @@ function ProductDashboard() {
                       className="danger-btn"
                       onClick={() => handleDelete(p.id)}
                     >
-                      Remove
+                      Delete
                     </button>
                   </div>
                 </div>
