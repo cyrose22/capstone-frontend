@@ -553,7 +553,7 @@ const PaymentDashboard = ({
           borderRadius: 16,
           padding: 14,
           border: selected ? `2px solid ${accent}` : "1px solid rgba(0,0,0,0.10)",
-          background: selected ? "rgba(255,255,255,1)" : "rgba(255,255,255,0.85)",
+          background: selected ? `${accent}10` : "rgba(255,255,255,0.85)",
           boxShadow: selected
             ? "0 16px 40px rgba(15,23,42,0.12)"
             : "0 10px 26px rgba(15,23,42,0.06)",
@@ -583,10 +583,36 @@ const PaymentDashboard = ({
           </div>
 
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontWeight: 950, color: "#0f172a", fontSize: 14 }}>
-              {title}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              <div style={{ fontWeight: 950, color: "#0f172a", fontSize: 14 }}>
+                {title}
+              </div>
+
+              {selected && (
+                <div
+                  style={{
+                    background: `${accent}20`,
+                    color: accent,
+                    fontWeight: 800,
+                    fontSize: 11,
+                    padding: "4px 8px",
+                    borderRadius: 999,
+                    lineHeight: 1,
+                  }}
+                >
+                  Selected
+                </div>
+              )}
             </div>
-            <div style={{ fontSize: 12, fontWeight: 800, color: "#64748b", marginTop: 3 }}>
+
+            <div
+              style={{
+                fontSize: 12,
+                fontWeight: 800,
+                color: "#64748b",
+                marginTop: 3,
+              }}
+            >
               {subtitle}
             </div>
           </div>
@@ -595,14 +621,21 @@ const PaymentDashboard = ({
         {/* Custom radio */}
         <div
           style={{
-            width: 22,
-            height: 22,
-            borderRadius: 999,
-            border: selected ? `6px solid ${accent}` : "2px solid rgba(100,116,139,0.7)",
-            background: "#fff",
+            width: 24,
+            height: 24,
+            borderRadius: "50%",
+            border: `2px solid ${selected ? accent : "rgba(100,116,139,0.7)"}`,
+            background: selected ? accent : "#fff",
+            display: "grid",
+            placeItems: "center",
+            color: "#fff",
+            fontSize: 12,
+            fontWeight: 900,
             flexShrink: 0,
           }}
-        />
+        >
+          {selected ? "✓" : ""}
+        </div>
       </button>
     );
   };
