@@ -13,7 +13,7 @@ import VariantModal from "../Variant/VariantModal";
 import CancelOrderModal from "../CancelOrder/CancelOrderModal";
 import ToastMessage from "../ToastMessage/ToastMessage";
 import logo from "../../assets/logo.png";
-import socket from "../socket/socket";
+import socket from '../socket/socket';
 
 function ConsumerDashboard() {
   const navigate = useNavigate();
@@ -54,44 +54,17 @@ function ConsumerDashboard() {
   const [savingPassword, setSavingPassword] = useState(false);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const productsRef = useRef(null);
   const [cartBounce, setCartBounce] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [checkoutItems, setCheckoutItems] = useState([]);
 
-  const productsRef = useRef(null);
-  const ordersRef = useRef(null);
-
-  const scrollToProducts = () => {
-    setTimeout(() => {
-      productsRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }, 50);
-  };
-
-  const scrollToOrders = () => {
-    setTimeout(() => {
-      ordersRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }, 50);
-  };
-
   const goToProducts = () => {
     setActiveTab("shop");
-    scrollToProducts();
-  };
-
-  const goToOrders = () => {
-    if (!user?.token) {
-      navigate("/login?redirect=/");
-      return;
-    }
-
-    setActiveTab("shop");
-    scrollToOrders();
+    // wait for ShopTab to render
+    setTimeout(() => {
+      productsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
   };
 
   const fetchNotifications = async () => {
@@ -110,18 +83,18 @@ function ConsumerDashboard() {
   useEffect(() => {
     if (!user?.id) return;
 
-    socket.emit("join-user", user.id);
+    socket.emit('join-user', user.id);
 
     const handleUserNotification = (data) => {
       fetchNotifications();
       fetchSales();
-      showToastMessage(data.message || "Order update received", "info");
+      showToastMessage(data.message || 'Order update received', 'info');
     };
 
-    socket.on("user-notification", handleUserNotification);
+    socket.on('user-notification', handleUserNotification);
 
     return () => {
-      socket.off("user-notification", handleUserNotification);
+      socket.off('user-notification', handleUserNotification);
     };
   }, [user?.id]);
 
@@ -162,7 +135,7 @@ function ConsumerDashboard() {
   }, []);
 
   useEffect(() => {
-    if (!user?.token && activeTab === "profile") {
+    if (!user?.token && (activeTab === "profile" || activeTab === "orders")) {
       setActiveTab("shop");
     }
   }, [user, activeTab]);
@@ -171,12 +144,8 @@ function ConsumerDashboard() {
     const shouldOpenOrders = localStorage.getItem("openOrdersTab");
 
     if (shouldOpenOrders === "true" && user?.token) {
-      setActiveTab("shop");
+      setActiveTab("orders");
       localStorage.removeItem("openOrdersTab");
-
-      setTimeout(() => {
-        scrollToOrders();
-      }, 150);
     }
   }, [user]);
 
@@ -204,7 +173,7 @@ function ConsumerDashboard() {
 
   const fetchSales = async () => {
     if (!user?.id) return;
-
+    
     try {
       const res = await axios.get(
         `https://capstone-backend-kiax.onrender.com/sales/user/${user.id}`
@@ -297,11 +266,15 @@ function ConsumerDashboard() {
       name: product.name,
       price: Number(autoVariant?.price ?? product.price ?? 0),
       image: product.image || null,
+
       variantId: resolvedVariantId,
       variantName: autoVariant?.variantName ?? product.variantName ?? product.name,
       variantImage:
         autoVariant?.variantImage ?? product.variantImage ?? product.image ?? null,
+
       quantity: 1,
+
+      // ⭐ THIS IS THE FIX
       variantStock:
         autoVariant?.variantStock ??
         product.variantStock ??
@@ -388,6 +361,7 @@ function ConsumerDashboard() {
       maximumFractionDigits: 2,
     })}`;
 
+  
   const categoryCounts = products.reduce((acc, p) => {
     const c = p.category || "Others";
     acc[c] = (acc[c] || 0) + 1;
@@ -396,6 +370,7 @@ function ConsumerDashboard() {
 
   return (
     <div className="storefront-layout">
+
       <header className="store-header">
         <div className="store-topbar">
           <span>Need help? Call us: +63 912 345 6789</span>
@@ -485,8 +460,8 @@ function ConsumerDashboard() {
                           navigate("/");
                         }}
                       >
-                        <LogOut size={18} />
-                        <span> Logout</span>
+                         <LogOut size={18} />
+                         <span> Logout</span>
                       </button>
                     </>
                   )}
@@ -497,115 +472,125 @@ function ConsumerDashboard() {
         </div>
       </header>
 
-      {activeTab !== "profile" && (
-        <>
-          <section className="store-hero">
-            <div className="store-hero-inner">
-              <div className="hero-left">
-                <div className="hero-badge">🐾 Trusted Pet Supplies</div>
+      <section className="store-hero">
+        <div className="store-hero-inner">
+          <div className="hero-left">
+          {/* small badge */}
+          <div className="hero-badge">🐾 Trusted Pet Supplies</div>
 
-                <img src={logo} alt="Pet Store" className="hero-logo" />
+          {/* logo */}
+          <img src={logo} alt="Pet Store" className="hero-logo" />
 
-                <p className="hero-subtitle">
-                  Premium food, treats, vitamins & accessories
-                </p>
+          {/* subtitle */}
+          <p className="hero-subtitle">
+            Premium food, treats, vitamins & accessories
+          </p>
 
-                <div className="hero-features">
-                  <span>✅ Quality Products</span>
-                  <span>✅ Easy Ordering</span>
-                </div>
-
-                <div className="hero-buttons">
-                  <button className="btn btn-primary" onClick={goToProducts}>
-                    Shop Now
-                  </button>
-
-                  <button className="btn btn-secondary" onClick={goToOrders}>
-                    Track Orders
-                  </button>
-                </div>
-              </div>
-
-              <div className="hero-right">
-                <div className="hero-card">
-                  <h3>Trusted Pet Supplies</h3>
-                  <p>Quality food, treats & accessories</p>
-
-                  <div className="hero-mini">
-                    <span>🕒 Open 8AM – 7PM</span>
-                    <span>📍 Liloan, Cebu</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="category-strip">
-            <div className="category-strip-inner">
-              <div className="category-strip-title">
-                <h2>Browse Products</h2>
-                <p>Filter by category</p>
-              </div>
-
-              <div
-                className="category-pills"
-                role="tablist"
-                aria-label="Product categories"
-              >
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    type="button"
-                    className={`cat-pill ${selectedCategory === cat ? "active" : ""}`}
-                    onClick={() => {
-                      setSelectedCategory(cat);
-                      goToProducts();
-                    }}
-                  >
-                    {cat === "All" ? "All" : `${cat} (${categoryCounts[cat] || 0})`}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <div className="store-content">
-            <div ref={productsRef} className="scroll-target">
-              <ShopTab
-                products={products}
-                addToCart={addToCart}
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-              />
-            </div>
-
-            {user?.token && (
-              <div ref={ordersRef} className="scroll-target">
-                <OrdersTab
-                  salesHistory={salesHistory}
-                  products={products}
-                  cart={cart}
-                  setCart={setCart}
-                  setActiveTab={setActiveTab}
-                  setShowCartModal={setShowCartModal}
-                  setCancelModalVisible={setCancelModalVisible}
-                  setSaleToCancel={setSaleToCancel}
-                  setCancelReason={() => {}}
-                  enrichSalesWithImages={(x) => x}
-                  setSalesHistory={setSalesHistory}
-                  user={user}
-                />
-              </div>
-            )}
+          {/* little feature chips */}
+          <div className="hero-features">
+            <span>✅ Quality Products</span>
+            <span>✅ Easy Ordering</span>
           </div>
-        </>
-      )}
 
-      {activeTab === "profile" && (
-        <div className="store-content">
-          <ProfileTab user={user} setUser={setUser} />
+          <div className="hero-buttons">
+            <button className="btn btn-primary" onClick={goToProducts}>
+              Shop Now
+            </button>
+
+            <button
+              className="btn btn-secondary"
+              onClick={() => {
+                if (!user?.token) {
+                  navigate("/login?redirect=/");
+                  return;
+                }
+
+                setActiveTab("orders");
+              }}
+            >
+              Track Orders
+            </button>
+          </div>
         </div>
-      )}
+
+        <div className="hero-right">
+          <div className="hero-card">
+            <h3>Trusted Pet Supplies</h3>
+            <p>Quality food, treats & accessories</p>
+
+            <div className="hero-mini">
+              <span>🕒 Open 8AM – 7PM</span>
+              <span>📍 Liloan, Cebu</span>
+            </div>
+          </div>
+        </div>
+          
+        </div>
+      </section>
+
+      <section className="category-strip">
+        <div className="category-strip-inner">
+          <div className="category-strip-title">
+            <h2>Browse Products</h2>
+            <p>Filter by category</p>
+          </div>
+
+          <div className="category-pills" role="tablist" aria-label="Product categories">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                className={`cat-pill ${selectedCategory === cat ? "active" : ""}`}
+                onClick={() => {
+                  setSelectedCategory(cat);
+                  goToProducts();
+                }}
+              >
+                {cat === "All" ? "All" : `${cat} (${categoryCounts[cat] || 0})`}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="store-content">
+
+        {activeTab === "shop" && (
+          <div ref={productsRef}>
+            <ShopTab
+              products={products}
+              addToCart={addToCart}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+            />
+          </div>
+        )}
+
+        {activeTab === "orders" && (
+          <OrdersTab
+            salesHistory={salesHistory}
+            products={products}
+            cart={cart}
+            setCart={setCart}
+            setActiveTab={setActiveTab}
+            setShowCartModal={setShowCartModal}
+            setCancelModalVisible={setCancelModalVisible}
+            setSaleToCancel={setSaleToCancel}
+            setCancelReason={() => {}}  // or your real state if you have it
+            enrichSalesWithImages={(x) => x} // or your real function if you have it
+            setSalesHistory={setSalesHistory}
+            user={user}
+          />
+        )}
+
+        {activeTab === "profile" && (
+          <ProfileTab
+            user={user}
+            setUser={setUser}
+          />
+        )}
+
+      </div>
 
       {showCartModal && (
         <CartModal
@@ -660,7 +645,13 @@ function ConsumerDashboard() {
         />
       )}
 
-      {showToast && <ToastMessage type={toastType} message={toastMessage} />}
+      {showToast && (
+        <ToastMessage
+          type={toastType}
+          message={toastMessage}
+        />
+      )}
+
     </div>
   );
 }
