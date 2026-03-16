@@ -412,19 +412,16 @@ function FakeGCashModal({ total, user, onSuccess, onCancel }) {
               style={{
                 width: 42,
                 height: 42,
-                borderRadius: 14,
-                background: "rgba(255,255,255,0.16)",
-                display: "grid",
-                placeItems: "center",
-                padding: 6,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
               <img
                 src={gcashLogo}
                 alt="GCash"
                 style={{
-                  width: "100%",
-                  height: "100%",
+                  height: 34,
                   objectFit: "contain",
                 }}
               />
