@@ -6,13 +6,12 @@ function FakeGCashModal({ total, onSuccess, onCancel }) {
   const [error, setError] = useState("");
 
   const isValidPHNumber = (value) => {
-    const cleaned = value.trim();
-    return /^(09\d{9}|639\d{9}|\+639\d{9})$/.test(cleaned);
+    return /^09\d{9}$/.test(value);
   };
 
   const handlePay = () => {
     if (!isValidPHNumber(contact)) {
-      setError("Please enter a valid GCash number.");
+      setError("Please enter a valid GCash number (09XXXXXXXXX).");
       return;
     }
 
@@ -23,6 +22,13 @@ function FakeGCashModal({ total, onSuccess, onCancel }) {
       setLoading(false);
       onSuccess();
     }, 2000);
+  };
+
+  const handleNumberChange = (e) => {
+    const value = e.target.value.replace(/\D/g, "").slice(0, 11);
+    setContact(value);
+
+    if (error) setError("");
   };
 
   return (
@@ -51,7 +57,6 @@ function FakeGCashModal({ total, onSuccess, onCancel }) {
         <button
           onClick={onCancel}
           disabled={loading}
-          aria-label="Close GCash modal"
           style={{
             position: "absolute",
             top: 14,
@@ -118,10 +123,7 @@ function FakeGCashModal({ total, onSuccess, onCancel }) {
           <input
             type="text"
             value={contact}
-            onChange={(e) => {
-              setContact(e.target.value);
-              if (error) setError("");
-            }}
+            onChange={handleNumberChange}
             placeholder="09XXXXXXXXX"
             style={{
               width: "100%",
@@ -156,19 +158,23 @@ function FakeGCashModal({ total, onSuccess, onCancel }) {
         <div style={{ display: "flex", gap: "10px" }}>
           <button
             onClick={handlePay}
-            disabled={loading || !contact.trim()}
+            disabled={loading || !isValidPHNumber(contact)}
             style={{
               flex: 1,
               padding: "12px",
-              background: loading || !contact.trim()
-                ? "#94a3b8"
-                : "linear-gradient(135deg, #2563eb, #0ea5e9)",
+              background:
+                loading || !isValidPHNumber(contact)
+                  ? "#94a3b8"
+                  : "linear-gradient(135deg, #2563eb, #0ea5e9)",
               color: "#fff",
               fontSize: "1rem",
               fontWeight: "700",
               border: "none",
               borderRadius: "12px",
-              cursor: loading || !contact.trim() ? "not-allowed" : "pointer",
+              cursor:
+                loading || !isValidPHNumber(contact)
+                  ? "not-allowed"
+                  : "pointer",
             }}
           >
             {loading ? "Processing..." : "Pay with GCash"}
