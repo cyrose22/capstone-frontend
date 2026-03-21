@@ -1702,3 +1702,53 @@ html, body {
   align-items: center;
   justify-content: center;
 }
+
+.cat-more-wrapper {
+  position: relative;
+}
+
+.more-btn {
+  background: #f9fafb;
+}
+
+/* dropdown */
+.cat-more-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+
+  min-width: 220px;
+  max-height: 300px;
+  overflow-y: auto;
+
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+
+  border-radius: 14px;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+  border: 1px solid #eee;
+
+  padding: 8px;
+  z-index: 999;
+}
+
+/* items */
+.cat-more-item {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: 0.18s;
+}
+
+.cat-more-item:hover {
+  background: #fff3ed;
+  color: #c2410c;
+}

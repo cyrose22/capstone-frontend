@@ -58,6 +58,7 @@ function ConsumerDashboard() {
   const [cartBounce, setCartBounce] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [checkoutItems, setCheckoutItems] = useState([]);
+  const [showMore, setShowMore] = useState(false);
 
   const goToProducts = () => {
     setActiveTab("shop");
@@ -170,6 +171,17 @@ function ConsumerDashboard() {
       console.error(err);
     }
   };
+
+  const TOP_LIMIT = 6;
+
+  const topCategories = [
+    "All",
+    ...categories.filter(c => c !== "All").slice(0, TOP_LIMIT)
+  ];
+
+  const moreCategories = categories.filter(
+    c => !topCategories.includes(c)
+  );
 
   const fetchSales = async () => {
     if (!user?.id) return;
@@ -536,10 +548,10 @@ function ConsumerDashboard() {
           </div>
 
           <div className="category-pills" role="tablist" aria-label="Product categories">
-            {categories.map((cat) => (
+            {/* TOP CATEGORIES */}
+            {topCategories.map((cat) => (
               <button
                 key={cat}
-                type="button"
                 className={`cat-pill ${selectedCategory === cat ? "active" : ""}`}
                 onClick={() => {
                   setSelectedCategory(cat);
@@ -549,6 +561,36 @@ function ConsumerDashboard() {
                 {cat === "All" ? "All" : `${cat} (${categoryCounts[cat] || 0})`}
               </button>
             ))}
+
+            {/* MORE BUTTON */}
+            {moreCategories.length > 0 && (
+              <div className="cat-more-wrapper">
+                <button
+                  className="cat-pill more-btn"
+                  onClick={() => setShowMore((p) => !p)}
+                >
+                  More ▾
+                </button>
+
+                {showMore && (
+                  <div className="cat-more-dropdown">
+                    {moreCategories.map((cat) => (
+                      <button
+                        key={cat}
+                        className="cat-more-item"
+                        onClick={() => {
+                          setSelectedCategory(cat);
+                          setShowMore(false);
+                          goToProducts();
+                        }}
+                      >
+                        {cat} ({categoryCounts[cat] || 0})
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </section>
