@@ -174,9 +174,15 @@ function ConsumerDashboard() {
     }
   };
 
+  const categoryCounts = products.reduce((acc, p) => {
+    const c = p.category || "Others";
+    acc[c] = (acc[c] || 0) + 1;
+    return acc;
+  }, {});
+
   const TOP_LIMIT = 6;
 
- const sortedCategories = Object.keys(categoryCounts).sort(
+  const sortedCategories = Object.keys(categoryCounts).sort(
     (a, b) => categoryCounts[b] - categoryCounts[a]
   );
 
@@ -186,7 +192,7 @@ function ConsumerDashboard() {
   ];
 
   const moreCategories = categories.filter(
-    c => !topCategories.includes(c)
+    (c) => c !== "All" && !topCategories.includes(c)
   );
 
   const fetchSales = async () => {
@@ -378,13 +384,6 @@ function ConsumerDashboard() {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })}`;
-
-  
-  const categoryCounts = products.reduce((acc, p) => {
-    const c = p.category || "Others";
-    acc[c] = (acc[c] || 0) + 1;
-    return acc;
-  }, {});
 
   return (
     <div className="storefront-layout">
