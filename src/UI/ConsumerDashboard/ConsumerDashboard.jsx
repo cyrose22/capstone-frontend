@@ -125,7 +125,9 @@ function ConsumerDashboard() {
     if (products.length > 0) {
       const uniqueCategories = [
         "All",
-        ...new Set(products.map((p) => p.category || "Others")),
+        ...Array.from(
+          new Set(products.map((p) => p.category || "Others"))
+        ),
       ];
       setCategories(uniqueCategories);
     }
@@ -174,9 +176,13 @@ function ConsumerDashboard() {
 
   const TOP_LIMIT = 6;
 
+ const sortedCategories = Object.keys(categoryCounts).sort(
+    (a, b) => categoryCounts[b] - categoryCounts[a]
+  );
+
   const topCategories = [
     "All",
-    ...categories.filter(c => c !== "All").slice(0, TOP_LIMIT)
+    ...sortedCategories.slice(0, TOP_LIMIT)
   ];
 
   const moreCategories = categories.filter(
