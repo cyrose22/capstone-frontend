@@ -89,12 +89,7 @@ function ShopTab({ addToCart, selectedCategory, setSelectedCategory }) {
   // auto refresh + focus refresh
   useEffect(() => {
     fetchProducts();
-
-    if (searchTerm.trim()) return;
-
-    const interval = setInterval(fetchProducts, 5000);
-    return () => clearInterval(interval);
-  }, [searchTerm]);
+  }, []);
 
   useEffect(() => {
     const onFocus = () => fetchProducts();
