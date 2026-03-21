@@ -1099,6 +1099,21 @@ html, body {
   .cat-more-wrapper {
     flex: 0 0 auto;
   }
+
+  .cat-more-wrapper {
+    position: relative;
+  }
+
+  .cat-more-dropdown {
+    position: fixed;
+    top: 160px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: none;
+    max-height: 52vh;
+    z-index: 3000;
+  }
 }
 
 @media (max-width: 480px) {
