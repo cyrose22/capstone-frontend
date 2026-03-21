@@ -1105,14 +1105,13 @@ html, body {
   }
 
   .cat-more-dropdown {
-    position: fixed;
-    top: 160px;
     left: 12px;
     right: 12px;
+    top: auto;
+    bottom: 12px;
     width: auto;
-    max-width: none;
-    max-height: 52vh;
-    z-index: 3000;
+    max-height: 60vh;
+    border-radius: 20px;
   }
 }
 
@@ -1751,24 +1750,21 @@ html, body {
 }
 
 .cat-more-dropdown {
-  position: absolute;
-  top: calc(100% + 12px);
-  box-shadow:
-    0 24px 48px rgba(15, 23, 42, 0.16),
-    0 8px 20px rgba(15, 23, 42, 0.08);
-  left: 0;
-  width: 260px;
+  position: fixed;
+  top: 170px;
+  right: 20px;
+  width: 280px;
   max-height: 360px;
   overflow: hidden;
-
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 20px;
-  z-index: 999;
-  animation: catDropdownIn 0.18s ease;
+  box-shadow:
+    0 20px 40px rgba(15, 23, 42, 0.14),
+    0 6px 16px rgba(15, 23, 42, 0.08);
+  z-index: 5000;
 }
 
 .cat-more-header {
