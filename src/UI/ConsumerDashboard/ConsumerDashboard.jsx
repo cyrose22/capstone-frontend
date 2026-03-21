@@ -579,19 +579,37 @@ function ConsumerDashboard() {
 
                 {showMore && (
                   <div className="cat-more-dropdown">
-                    {moreCategories.map((cat) => (
-                      <button
-                        key={cat}
-                        className="cat-more-item"
-                        onClick={() => {
-                          setSelectedCategory(cat);
-                          setShowMore(false);
-                          goToProducts();
-                        }}
-                      >
-                        {cat} ({categoryCounts[cat] || 0})
-                      </button>
-                    ))}
+                    <div className="cat-more-header">
+                      <span>More Categories</span>
+                      <small>{moreCategories.length} available</small>
+                    </div>
+
+                    <div className="cat-more-list">
+                      {moreCategories.map((cat) => {
+                        const isActive = selectedCategory === cat;
+
+                        return (
+                          <button
+                            key={cat}
+                            className={`cat-more-item ${isActive ? "active" : ""}`}
+                            onClick={() => {
+                              setSelectedCategory(cat);
+                              setShowMore(false);
+                              goToProducts();
+                            }}
+                          >
+                            <span className="cat-more-item-left">
+                              <span className="cat-more-dot" />
+                              <span>{cat}</span>
+                            </span>
+
+                            <span className="cat-more-count">
+                              {categoryCounts[cat] || 0}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </div>
