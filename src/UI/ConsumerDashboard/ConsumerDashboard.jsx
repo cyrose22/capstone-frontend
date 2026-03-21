@@ -101,15 +101,8 @@ function ConsumerDashboard() {
 
   useEffect(() => {
     if (!user?.id) return;
-
     fetchNotifications();
-
-    const interval = setInterval(() => {
-      fetchNotifications();
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [user]);
+  }, [user?.id]);
 
   useEffect(() => {
     const stored = localStorage.getItem("user");
@@ -154,14 +147,8 @@ function ConsumerDashboard() {
 
   useEffect(() => {
     if (!user?.id) return;
-
     fetchSales();
-    const interval = setInterval(() => {
-      fetchSales();
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [user]);
+  }, [user?.id]);
 
   const fetchProducts = async () => {
     try {
