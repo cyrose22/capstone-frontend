@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "./product-dashboard.css";
+import logo from "../../assets/logo.png";
 import Header from "../Header/Header";
 
 const API_URL = "https://capstone-backend-kiax.onrender.com/products";
@@ -403,15 +404,19 @@ function ProductDashboard() {
       <div className="dashboard-container">
         <Header title="🛍️ Product Dashboard" />
 
-        <div className="dashboard-toolbar sales-style-toolbar">
-          <div className="dashboard-heading">
-            <h2 className="dashboard-title">Products</h2>
-            <p className="dashboard-subtitle">
-              Manage your catalog, variants, stock, and images.
-            </p>
+        <div className="dashboard-top-row">
+          <div className="dashboard-intro-card">
+            <div className="dashboard-intro-icon">
+              <img src={logo} alt="Oscar D’Gr8" />
+            </div>
+
+            <div className="dashboard-intro-text">
+              <h2>Products</h2>
+              <p>Manage your catalog, variants, stock, and images.</p>
+            </div>
           </div>
 
-          <div className="toolbar-actions">
+          <div className="dashboard-top-actions">
             <button className="primary-btn" onClick={openAddModal}>
               + Add Product
             </button>
