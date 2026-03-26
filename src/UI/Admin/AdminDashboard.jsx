@@ -233,15 +233,16 @@ function AdminDashboard() {
     const isSelf = listedUser.username === loggedInUser;
     const isInactive = listedUser.status === 'inactive';
 
-    const canEditPassword =
-      loggedInRole === 'admin' ||
-      (loggedInRole === 'staff' && (listedUser.role === 'user' || isSelf));
-
     return (
       <>
-        <div className="user-header">
+        <div className={`user-card-top role-${listedUser.role}`}>
+          <div className="user-avatar">{getInitials(listedUser.fullname)}</div>
+
           <div className="user-main">
-            <h3>{listedUser.fullname}</h3>
+            <h3>
+              {listedUser.fullname}
+              {isSelf && <span className="self-badge">You</span>}
+            </h3>
             <p className="user-meta">
               <strong>Username:</strong> {listedUser.username}
             </p>
@@ -258,106 +259,50 @@ function AdminDashboard() {
           </div>
         </div>
 
-        {listedUser.role === 'staff' && (
-          <p className="staff-note">
-            Internal staff account only. No customer registration address required.
-          </p>
-        )}
+        <div className="user-card-body">
+          <div className="info-pill">
+            <span className="info-label">Account Type</span>
+            <span className="info-value">{listedUser.role}</span>
+          </div>
+
+          <div className="info-pill">
+            <span className="info-label">Status</span>
+            <span className="info-value">
+              {isInactive ? 'Restricted' : 'Live Access'}
+            </span>
+          </div>
+
+          {listedUser.role === 'staff' && (
+            <p className="staff-note">
+              Internal staff account only. No customer registration address required.
+            </p>
+          )}
+        </div>
 
         <div className="user-actions">
-          {/* {canEditPassword && (
-            <div
-              className="button-with-toast"
-              onMouseEnter={() => setHovered(`edit-${listedUser.id}`)}
-              onMouseLeave={() => setHovered(null)}
-            >
-              <button
-                onClick={() => {
-                  setEditingUser(listedUser);
-                  setNewPassword('');
-                  setShowPassword(false);
-                }}
-                className="edit-user"
-                type="button"
-              >
-                <FaEdit />
-              </button>
-              {hovered === `edit-${listedUser.id}` && (
-                <span className="toast">Change Password</span>
-              )}
-            </div>
-          )} */}
-
           {loggedInRole === 'admin' && !isSelf && (
             <>
               {listedUser.role === 'staff' && (
-                <div
-                  className="button-with-toast"
-                  onMouseEnter={() => setHovered(`toggle-role-${listedUser.id}`)}
-                  onMouseLeave={() => setHovered(null)}
+                <button
+                  className="toggle-role"
+                  onClick={() => toggleUserRole(listedUser)}
+                  type="button"
+                  disabled={actionLoadingId === listedUser.id}
                 >
-                  <button
-                    className="toggle-role"
-                    onClick={() => toggleUserRole(listedUser)}
-                    type="button"
-                    disabled={actionLoadingId === listedUser.id}
-                  >
-                    {actionLoadingId === listedUser.id ? 'Please wait...' : 'Make Admin'}
-                  </button>
-                  {hovered === `toggle-role-${listedUser.id}` && (
-                    <span className="toast">Promote staff to admin</span>
-                  )}
-                </div>
+                  {actionLoadingId === listedUser.id ? 'Please wait...' : 'Promote to Admin'}
+                </button>
               )}
 
-              {listedUser.role === 'admin' &&
-                listedUser.username !== loggedInUser && (
-                  <div
-                    className="button-with-toast"
-                    onMouseEnter={() => setHovered(`toggle-role-${listedUser.id}`)}
-                    onMouseLeave={() => setHovered(null)}
-                  >
-                    <button
-                      className="toggle-role"
-                      onClick={() => toggleUserRole(listedUser)}
-                      type="button"
-                      disabled={actionLoadingId === listedUser.id}
-                    >
-                      {actionLoadingId === listedUser.id
-                        ? 'Please wait...'
-                        : 'Demote to Staff'}
-                    </button>
-                    {hovered === `toggle-role-${listedUser.id}` && (
-                      <span className="toast">Remove admin access</span>
-                    )}
-                  </div>
-                )}
-
-              {/* {(listedUser.role === 'staff' || listedUser.role === 'user') && (
-                <div
-                  className="button-with-toast"
-                  onMouseEnter={() => setHovered(`status-${listedUser.id}`)}
-                  onMouseLeave={() => setHovered(null)}
+              {listedUser.role === 'admin' && listedUser.username !== loggedInUser && (
+                <button
+                  className="toggle-role danger-soft"
+                  onClick={() => toggleUserRole(listedUser)}
+                  type="button"
+                  disabled={actionLoadingId === listedUser.id}
                 >
-                  <button
-                    className={`toggle-status ${isInactive ? 'activate' : 'deactivate'}`}
-                    onClick={() => toggleUserStatus(listedUser)}
-                    disabled={actionLoadingId === listedUser.id}
-                    type="button"
-                  >
-                    {actionLoadingId === listedUser.id
-                      ? 'Please wait...'
-                      : isInactive
-                      ? 'Activate'
-                      : 'Deactivate'}
-                  </button>
-                  {hovered === `status-${listedUser.id}` && (
-                    <span className="toast">
-                      {isInactive ? 'Restore account access' : 'Disable account access'}
-                    </span>
-                  )}
-                </div>
-              )} */}
+                  {actionLoadingId === listedUser.id ? 'Please wait...' : 'Demote to Staff'}
+                </button>
+              )}
             </>
           )}
         </div>
@@ -381,6 +326,28 @@ function AdminDashboard() {
         >
           <FaUserPlus /> Register New Staff
         </button>
+      </div>
+
+      <div className="dashboard-summary">
+        <div className="summary-card admins">
+          <span className="summary-label">Admins</span>
+          <strong>{adminUsers.length}</strong>
+        </div>
+
+        <div className="summary-card staff">
+          <span className="summary-label">Staff</span>
+          <strong>{staffUsers.length}</strong>
+        </div>
+
+        <div className="summary-card users">
+          <span className="summary-label">Users</span>
+          <strong>{consumerUsers.length}</strong>
+        </div>
+
+        <div className="summary-card total">
+          <span className="summary-label">Total Accounts</span>
+          <strong>{users.length}</strong>
+        </div>
       </div>
 
       <h2>🛡️ Admins</h2>
