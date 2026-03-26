@@ -274,12 +274,12 @@ function AdminDashboard() {
             <span className="info-value">{listedUser.role}</span>
           </div>
 
-          <div className="info-pill">
-            <span className="info-label">Status</span>
-            <span className="info-value">
-              {isInactive ? 'Restricted' : 'Live Access'}
-            </span>
-          </div>
+          {listedUser.role === 'user' && listedUser.contact && (
+            <div className="info-pill">
+              <span className="info-label">Contact #</span>
+              <span className="info-value">{listedUser.contact}</span>
+            </div>
+          )}
 
           {listedUser.role === 'staff' && (
             <p className="staff-note">
