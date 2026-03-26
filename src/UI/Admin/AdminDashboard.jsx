@@ -265,7 +265,7 @@ function AdminDashboard() {
         )}
 
         <div className="user-actions">
-          {canEditPassword && (
+          {/* {canEditPassword && (
             <div
               className="button-with-toast"
               onMouseEnter={() => setHovered(`edit-${listedUser.id}`)}
@@ -286,7 +286,7 @@ function AdminDashboard() {
                 <span className="toast">Change Password</span>
               )}
             </div>
-          )}
+          )} */}
 
           {loggedInRole === 'admin' && !isSelf && (
             <>
