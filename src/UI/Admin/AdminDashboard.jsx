@@ -333,7 +333,7 @@ function AdminDashboard() {
                   </div>
                 )}
 
-              {(listedUser.role === 'staff' || listedUser.role === 'user') && (
+              {/* {(listedUser.role === 'staff' || listedUser.role === 'user') && (
                 <div
                   className="button-with-toast"
                   onMouseEnter={() => setHovered(`status-${listedUser.id}`)}
@@ -357,7 +357,7 @@ function AdminDashboard() {
                     </span>
                   )}
                 </div>
-              )}
+              )} */}
             </>
           )}
         </div>
