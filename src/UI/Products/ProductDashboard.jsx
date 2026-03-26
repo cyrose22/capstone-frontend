@@ -403,7 +403,7 @@ function ProductDashboard() {
       <div className="dashboard-container">
         <Header title="🛍️ Product Dashboard" />
 
-        <div className="dashboard-toolbar dashboard-toolbar--aligned">
+        <div className="dashboard-toolbar sales-style-toolbar">
           <div className="dashboard-heading">
             <h2 className="dashboard-title">Products</h2>
             <p className="dashboard-subtitle">
