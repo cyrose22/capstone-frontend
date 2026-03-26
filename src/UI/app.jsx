@@ -77,7 +77,7 @@ function AppWrapper() {
     location.pathname === '/login' ||
     location.pathname === '/register' ||
     !user?.token ||
-    user?.role === 'admin';
+    ['admin', 'staff'].includes(user?.role);
 
   return (
     <>
