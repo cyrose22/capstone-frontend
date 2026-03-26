@@ -15,6 +15,8 @@ function Header() {
 
   const [newOrdersCount, setNewOrdersCount] = useState(0);
 
+  const canSeeBell = role === "admin" || role === "staff";
+
   const getSince = () =>
     localStorage.getItem("admin_last_seen_orders") ||
     new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
@@ -23,7 +25,7 @@ function Header() {
     localStorage.setItem("admin_last_seen_orders", new Date().toISOString());
 
   useEffect(() => {
-    if (role !== "admin") return;
+    if (!canSeeBell) return;
 
     let isMounted = true;
 
@@ -50,7 +52,7 @@ function Header() {
       isMounted = false;
       clearInterval(interval);
     };
-  }, [role]);
+  }, [canSeeBell]);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -72,7 +74,7 @@ function Header() {
       </div>
 
       <div className="header-right">
-        {role === "admin" && (
+        {canSeeBell && (
           <button
             className={`bell-modern ${newOrdersCount > 0 ? "has-new" : ""}`}
             onClick={handleBellClick}
