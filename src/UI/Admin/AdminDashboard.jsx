@@ -229,6 +229,15 @@ function AdminDashboard() {
     setShowStaffPassword(false);
   };
 
+  const getInitials = (name = '') => {
+    return name
+      .split(' ')
+      .map((part) => part[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
+  };
+
   const renderUserCard = (listedUser) => {
     const isSelf = listedUser.username === loggedInUser;
     const isInactive = listedUser.status === 'inactive';
