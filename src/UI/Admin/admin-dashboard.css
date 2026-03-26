@@ -880,3 +880,48 @@ button.toggle-role.danger-soft{
   margin-top: 34px;
   margin-bottom: 16px;
 }
+
+.dashboard-topbar{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+.dashboard-title{
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.dashboard-subtitle{
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.register-staff-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ff7a59, #ff5a36);
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(255, 90, 54, 0.22);
+  transition: 0.25s ease;
+}
+
+.register-staff-btn:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 16px 28px rgba(255, 90, 54, 0.28);
+}

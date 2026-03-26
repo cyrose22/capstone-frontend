@@ -327,13 +327,15 @@ function AdminDashboard() {
     <div className="admin-dashboard">
       <Header title="🧑‍💼 Admin Dashboard" />
 
-      <div className="register-staff-container">
-        <button
-          className="register-staff-btn"
-          onClick={() => setShowRegisterModal(true)}
-          type="button"
-        >
-          <FaUserPlus /> Register New Staff
+      <div className="dashboard-topbar">
+        <div>
+          <h1 className="dashboard-title">Users Management</h1>
+          <p className="dashboard-subtitle">Manage admins, staff, and customer accounts</p>
+        </div>
+
+        <button className="register-staff-btn">
+          <i className="fas fa-user-plus"></i>
+          <span>Add Staff</span>
         </button>
       </div>
 
