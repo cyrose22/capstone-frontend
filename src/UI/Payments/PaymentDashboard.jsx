@@ -630,6 +630,7 @@ const PaymentDashboard = ({
 }) => {
   const [submitting, setSubmitting] = useState(false);
   const [showGCashModal, setShowGCashModal] = useState(false);
+  const [showGcashOptions, setShowGcashOptions] = useState(false);
 
   const createOrder = async (contactOverride = "", paymentReference = "") => {
     const cleanedCart = cart.map((item) => ({
