@@ -18,6 +18,7 @@ function ProductDashboard() {
   const [editingId, setEditingId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const itemsPerPage = 6;
 
@@ -63,12 +64,19 @@ function ProductDashboard() {
     }
   };
 
-  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const filteredProducts = useMemo(() => {
+    return products.filter((p) =>
+      (p.name || "").toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [products, searchTerm]);
+
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+
   const paginatedProducts = useMemo(() => {
     const indexOfLast = currentPage * itemsPerPage;
     const indexOfFirst = indexOfLast - itemsPerPage;
-    return products.slice(indexOfFirst, indexOfLast);
-  }, [products, currentPage]);
+    return filteredProducts.slice(indexOfFirst, indexOfLast);
+  }, [filteredProducts, currentPage]);
 
   const resetForm = () => {
     setForm({
@@ -412,6 +420,16 @@ function ProductDashboard() {
           </div>
 
           <div className="toolbar-actions">
+            <input
+              type="text"
+              className="dashboard-search-input"
+              placeholder="Search products by name..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+            />
             <button className="primary-btn" onClick={openAddModal}>
               + Add Product
             </button>
@@ -419,7 +437,7 @@ function ProductDashboard() {
         </div>
 
         <div className="product-grid">
-          {products.length === 0 ? (
+          {filteredProducts.length === 0 ? (
             <div className="empty-state">
               <h3>No products yet</h3>
               <p>Start by adding your first product.</p>

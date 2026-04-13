@@ -771,3 +771,33 @@
   align-items: center;
   gap: 10px;
 }
+
+.dashboard-search-input {
+  min-height: 44px;
+  min-width: 260px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--text);
+  outline: none;
+  transition: 0.18s ease;
+}
+
+.dashboard-search-input:focus {
+  border-color: rgba(238, 77, 45, 0.45);
+  box-shadow: 0 0 0 4px rgba(238, 77, 45, 0.12);
+}
+
+@media (max-width: 560px) {
+  .toolbar-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dashboard-search-input {
+    width: 100%;
+    min-width: 0;
+  }
+}
