@@ -316,7 +316,7 @@
 
 // export default PaymentDashboard;
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import gcashLogo from "../../assets/gcash_logo.png";
 
@@ -325,6 +325,7 @@ function FakeGCashModal({ total, user, onSuccess, onCancel }) {
   const [contact, setContact] = useState(user?.contact || "");
   const [error, setError] = useState("");
   const [focused, setFocused] = useState(false);
+  const [showGcashOptions, setShowGcashOptions] = useState(false);
 
   const normalizeContact = (num) => {
     const cleaned = String(num || "").trim();
@@ -355,6 +356,13 @@ function FakeGCashModal({ total, user, onSuccess, onCancel }) {
       onSuccess(reference, normalized);
     }, 1500);
   };
+
+  useEffect(() => {
+    if (!paymentMethod) {
+      setPaymentMethod("COD");
+      setHasSelectedPayment(true);
+    }
+  }, [paymentMethod, setPaymentMethod, setHasSelectedPayment]);
 
   return (
     <div
@@ -883,13 +891,167 @@ const PaymentDashboard = ({
               icon="🚚"
               accent="#ef4444"
             />
-            <OptionCard
-              value="GCash"
-              title="Pay via GCash"
-              subtitle="Fast & convenient e-wallet payment"
-              icon="💳"
-              accent="#2563eb"
-            />
+
+            <div
+              style={{
+                borderRadius: 16,
+                border: "1px solid rgba(0,0,0,0.10)",
+                background: "#fff",
+                overflow: "hidden",
+                boxShadow: "0 10px 26px rgba(15,23,42,0.06)",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setShowGcashOptions((prev) => !prev)}
+                style={{
+                  width: "100%",
+                  textAlign: "left",
+                  padding: 14,
+                  border: "none",
+                  background: "#fff",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 14,
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: 14,
+                      display: "grid",
+                      placeItems: "center",
+                      background: "#fff",
+                      border: "1px solid rgba(0,0,0,0.06)",
+                      fontSize: 18,
+                      flexShrink: 0,
+                    }}
+                  >
+                    💳
+                  </div>
+
+                  <div>
+                    <div style={{ fontWeight: 950, color: "#0f172a", fontSize: 14 }}>
+                      Other payment option
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 800,
+                        color: "#64748b",
+                        marginTop: 3,
+                      }}
+                    >
+                      Choose GCash if you prefer e-wallet payment
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    fontSize: 18,
+                    fontWeight: 900,
+                    color: "#64748b",
+                    transform: showGcashOptions ? "rotate(180deg)" : "rotate(0deg)",
+                    transition: "0.18s ease",
+                  }}
+                >
+                  ▾
+                </div>
+              </button>
+
+              {showGcashOptions && (
+                <div
+                  style={{
+                    padding: "0 14px 14px",
+                    borderTop: "1px solid rgba(0,0,0,0.06)",
+                    background: "#f8fafc",
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPaymentMethod("GCash");
+                      setHasSelectedPayment(true);
+                    }}
+                    style={{
+                      width: "100%",
+                      marginTop: 12,
+                      textAlign: "left",
+                      borderRadius: 14,
+                      padding: 14,
+                      border:
+                        paymentMethod === "GCash"
+                          ? "2px solid #2563eb"
+                          : "1px solid rgba(0,0,0,0.10)",
+                      background: "#fff",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: 14,
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <div
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 12,
+                          display: "grid",
+                          placeItems: "center",
+                          background: "#eff6ff",
+                          border: "1px solid #bfdbfe",
+                          fontSize: 16,
+                        }}
+                      >
+                        💙
+                      </div>
+
+                      <div>
+                        <div style={{ fontWeight: 900, color: "#0f172a", fontSize: 14 }}>
+                          Pay via GCash
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 12,
+                            fontWeight: 800,
+                            color: "#64748b",
+                            marginTop: 3,
+                          }}
+                        >
+                          Fast & convenient e-wallet payment
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      style={{
+                        width: 22,
+                        height: 22,
+                        borderRadius: "50%",
+                        border: `2px solid ${
+                          paymentMethod === "GCash" ? "#2563eb" : "rgba(100,116,139,0.7)"
+                        }`,
+                        background: paymentMethod === "GCash" ? "#2563eb" : "#fff",
+                        display: "grid",
+                        placeItems: "center",
+                        color: "#fff",
+                        fontSize: 11,
+                        fontWeight: 900,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {paymentMethod === "GCash" ? "✓" : ""}
+                    </div>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           <div
