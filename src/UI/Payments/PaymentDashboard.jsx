@@ -325,7 +325,6 @@ function FakeGCashModal({ total, user, onSuccess, onCancel }) {
   const [contact, setContact] = useState(user?.contact || "");
   const [error, setError] = useState("");
   const [focused, setFocused] = useState(false);
-  const [showGcashOptions, setShowGcashOptions] = useState(false);
 
   const normalizeContact = (num) => {
     const cleaned = String(num || "").trim();
@@ -356,13 +355,6 @@ function FakeGCashModal({ total, user, onSuccess, onCancel }) {
       onSuccess(reference, normalized);
     }, 1500);
   };
-
-  useEffect(() => {
-    if (!paymentMethod) {
-      setPaymentMethod("COD");
-      setHasSelectedPayment(true);
-    }
-  }, [paymentMethod, setPaymentMethod, setHasSelectedPayment]);
 
   return (
     <div
@@ -631,6 +623,13 @@ const PaymentDashboard = ({
   const [submitting, setSubmitting] = useState(false);
   const [showGCashModal, setShowGCashModal] = useState(false);
   const [showGcashOptions, setShowGcashOptions] = useState(false);
+
+  useEffect(() => {
+    if (!paymentMethod) {
+      setPaymentMethod("COD");
+      setHasSelectedPayment(true);
+    }
+  }, [paymentMethod, setPaymentMethod, setHasSelectedPayment]);
 
   const createOrder = async (contactOverride = "", paymentReference = "") => {
     const cleanedCart = cart.map((item) => ({
